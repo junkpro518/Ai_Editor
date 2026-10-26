@@ -97,7 +97,7 @@ https://github.com/github/spec-kit.git
 
 Spec Kit must always be kept on the latest available update. Before starting any work that depends on Spec Kit, run `specify self upgrade` first. If the update cannot be verified or completed, stop and notify the user before proceeding.
 
-Use the Spec Kit commands available in the project.
+Use the Spec Kit skills available in the project.
 
 Start by reviewing:
 1. Constitution
@@ -105,17 +105,52 @@ Start by reviewing:
 3. Current task scope
 4. Existing implementation
 
-Then execute the workflow in order:
-1. **Clarify** — resolve ambiguities before planning
-2. **Plan** — define the technical approach
-3. **Tasks** — break work into verifiable steps
-4. **Implement** — write code only after the previous steps are clear
+Before any feature work, the project must have:
+- **Constitution** — the project principles → `/speckit-constitution`. If `.specify/memory/constitution.md` is still the unfilled template, stop and create it first.
+- **Converge** — when entering a codebase that already has code but no specs, run `/speckit-converge` once so the existing work is captured as tasks before anything new is planned.
 
-Do not skip or reorder any phase for new features, major changes, or unclear work.
+Then execute the workflow in order:
+1. **Specify** — create the feature spec → `/speckit-specify`
+2. **Clarify** — resolve ambiguities before planning → `/speckit-clarify`
+3. **Plan** — define the technical approach → `/speckit-plan`
+4. **Agent Context Update** — sync the chosen stack into the agent context file, immediately after planning → `/speckit-agent-context-update`
+5. **Checklist** — validate that requirements are complete, clear, and consistent → `/speckit-checklist`
+6. **Tasks** — break work into verifiable steps → `/speckit-tasks`
+7. **Tasks to Issues** — publish the task breakdown as GitHub issues, immediately after tasks → `/speckit-taskstoissues`
+8. **Analyze** — cross-artifact consistency check before writing code → `/speckit-analyze`
+9. **Implement** — write code only after the previous steps are clear → `/speckit-implement`
+10. **Converge** — assess the code against the spec and append any unbuilt work as tasks → `/speckit-converge`
+
+Every step is mandatory. No step may be skipped, reordered, or merged into another for new features, major changes, or unclear work. There are no optional steps.
+
+A step that produces no findings still counts as executed. When clarify finds no ambiguities, or analyze finds no inconsistencies, record that result and move to the next step — running a step and finding nothing is not the same as skipping it.
+
+Converge may append new tasks. When it does, return to step 9, implement them, then converge again. The feature is complete when converge finds nothing remaining.
+
+### Security review after every coding phase
+
+«تُستخدم بعد كل مرحلة من مراحل كتابة الكود» — the `security-audit` skill (`.claude/skills/security-audit`, from Cloudflare) runs after every phase that writes code: each `/speckit-implement` run and each implement → converge loop.
+- Use its **guidance mode**: a focused review of the code that phase added or changed — trust boundaries, input handling, auth, secrets, data isolation. Fix confirmed findings before running converge; record "no findings" when there are none (the step still counts as executed).
+- Run the **complete six-phase audit** only when the user asks for it or before a release: it launches many agents and costs much more.
+- Follow the skill's execution-safety rules as written: never probe deployed services, production data or paid APIs; execute target code only in a sandbox.
+
+**Note on `security-audit`:**
+- Run the skill with a model that accepts defensive code review and does not refuse the request. Examples mentioned by Ahmed Nagdy in his video: GLM 5.3 and Kimi.
+- If the current model refuses, do not bypass or work around the refusal. Switch the model for this task only, and tell the user.
+- Review only the user's own code.
 
 If the user asks to implement immediately but the required spec artifacts are missing, stop and create or request the missing spec artifacts first.
 
-## 7. Instruction Sync: CLAUDE.md ↔ AGENTS.md
+## 7. Claude Code Plugins
+
+After the project structure, architecture, and required tools are defined, Claude Code must review the official Claude plugins directory:
+https://github.com/anthropics/claude-plugins-official
+
+Claude Code must only install plugins that directly match the approved project tools and workflow. Do not install plugins speculatively.
+
+Before installing, updating, or using a plugin, verify that it is trusted, relevant, and documented in the project plan.
+
+## 8. Instruction Sync: CLAUDE.md ↔ AGENTS.md
 
 `CLAUDE.md` and `AGENTS.md` must stay aligned on core project rules.
 
@@ -133,6 +168,27 @@ Tool-specific instructions may differ when necessary.
 
 When changing one file, review the other file and update any shared rules so both agents follow the same project standards.
 
+## 9. Build on What Exists
+
+**Reuse before reinventing. Study prior art before designing.**
+
+- Study how established products solve the problem before designing a solution. Adopt their proven patterns and conventions rather than inventing an approach from scratch.
+- Prefer established, well-maintained libraries when they reduce overall complexity or improve reliability. Do not reimplement common functionality without a clear reason.
+- Lean on the dependencies already in the project before writing your own implementation or adding packages. Do not assume a library lacks a capability without checking its documentation and types.
+
+## 10. Incremental Delivery, Durable Architecture
+
+**Ship something that works, then grow it. Decide the shape for the long term.**
+
+- Grow the system in layers. Start from the smallest version that works end to end, and add each new capability on top of a product that already works. Never trade a working product for unfinished complexity.
+- Make architectural decisions for the long term. Do not accept a stopgap that only works for now and is meant to be replaced later.
+
+This does not override Section 2. Simplicity governs how a component is implemented; long-term thinking governs the boundaries, contracts, and data shapes between components.
+
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+
+## Shared toolbox (server)
+
+Before adding skills or tools to this project, read `TOOLBOX.md`: pick only what this project needs from `~/toolbox` (`kit search`, `kit add`). Deploy from `docker-compose.example.yml` — memory limit, login in front of public sites, secrets only in `.env`.

@@ -1,0 +1,17 @@
+# Abdullah (@Abdullah_Ops1) on X
+
+**المصدر:** https://x.com/abdullah_ops1/status/2106682395764125807?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+**قُرئ:** 2026-10-05 20:34
+
+---
+
+Title: Abdullah (@Abdullah_Ops1) on X
+
+URL Source: https://x.com/abdullah_ops1/status/2106682395764125807?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+
+Published Time: 2026-10-04T09:46:38.000Z
+
+Markdown Content:
+[![Image 1: Avatar](https://pbs.twimg.com/profile_images/2042921460444880897/AS4n0Ne8_normal.jpg)](https://x.com/Abdullah_Ops1)
+
+تبغون تسوون استوديو موشن كامل وتطلعون فيديوهات زي هذا يوميًا؟ الموضوع بسييط: افتحوا مجلد جديد في Claude Code خلوه يبني لكم مشروع Remotion عطوه الهوية: الألوان، الخط، نوع الحركة، مقاس 1080×1920 خلوه يسوي Components ثابتة للعناوين، الكروت، الواجهات، الكود، الـCTA بعدها كل يوم عطوه الموضوع فقط وهو يقسمه مشاهد ويطلع الفيديو بنفس الستايل البرومبت: ابني لي Motion Graphics Studio باستخدام Remotion + React + TypeScript. يكون عندي Design System ثابت، Components قابلة لإعادة الاستخدام، Scene Engine، ودعم عربي RTL. المقاس 1080x1920 و30fps، والستايل Premium Tech Motion أبغى بعد كذا أقول لك فقط: “سو لي فيديو عن [الموضوع]” وتستخدم نفس الهوية والحركات بدون ما تعيد البناء من الصفر وتقدرون بعد تربطون أي نموذج أو خدمة لها API: صوت، صور، فيديو، ترجمة أو حتى توليد سكربت ويصير الاستوديو يسوي لكم السلسلة كاملة من الفكرة إلى الفيديو يعني بدل ما كل فيديو تبداه من الصفر، تبني الاستوديو مرة وبعدها تستخدمه يوميًا [#ClaudeCode](https://x.com/hashtag/ClaudeCode)[#Remotion](https://x.com/hashtag/Remotion)[#AI](https://x.com/hashtag/AI)[#MotionGraphics](https://x.com/hashtag/MotionGraphics)[#ذكاء_اصطناعي](https://x.com/hashtag/%D8%B0%D9%83%D8%A7%D8%A1_%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A)[#برمجة](https://x.com/hashtag/%D8%A8%D8%B1%D9%85%D8%AC%D8%A9)

@@ -1,0 +1,27 @@
+# ‎احمد محمد أحمد‎ (@zo7al.10) on Threads
+
+**المصدر:** https://www.threads.com/@zo7al.10/post/DesAXj4jc0Q?xmt=AQG0a-THGcQ6qFjFORGEOdPSK_DjeZcE20HJj_d3uL9eECK2XlIrtn30m-aCCGNxljw0F4qO&slof=1
+**قُرئ:** 2026-10-21 08:10
+
+---
+
+Title: ‎احمد محمد أحمد‎ (@zo7al.10) on Threads
+
+URL Source: https://www.threads.com/@zo7al.10/post/DesAXj4jc0Q?xmt=AQG0a-THGcQ6qFjFORGEOdPSK_DjeZcE20HJj_d3uL9eECK2XlIrtn30m-aCCGNxljw0F4qO&slof=1
+
+Markdown Content:
+[![Image 1: zo7al.10's profile picture](https://scontent-atl3-2.cdninstagram.com/v/t51.2885-19/475416451_995076095411906_4686137245134118391_n.jpg?stp=dst-jpg_s206x206_tt6&_nc_cat=105&ccb=7-5&_nc_sid=30ff31&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy45NjUuQzMifQ%3D%3D&_nc_ohc=NVkM1eMKitIQ7kNvwHzDQCZ&_nc_oc=Ado_XsiOgN-cCHAQUxR8xkh-nQW8y2nIdvGowNd9xHY26mSpQOyjoVic1SLTF38Y9ig&_nc_zt=24&_nc_ht=scontent-atl3-2.cdninstagram.com&_nc_ss=7b289&oh=00_AQPNtEuYJ7Lnsc3GlDpHpeGk3wnXyLfG4mtIpVveB7PUYg&oe=6ADE2CA2)](https://www.threads.com/@zo7al.10)
+
+مستودع واحد يجمع 475 فيديو صُنعت كلها بـ Claude Opus 5.5 — موشن جرافيكس، أنيميشن ثلاثي الأبعاد، فيديوهات شرح، وألعاب تفاعلية.
+
+كل فيديو معه البرومبت الأصلي ومنشور صانعه، فتقدر تأخذ الفكرة وتعدّلها على مشروعك. الفكرة: البرومبت يطلب من Opus 5.5 كتابة الأنيميشن ككود (HTML/Canvas/Three.js) ثم يتصيّر في المتصفح مش توليد فيديو مباشر مثل Veo.
+
+الرابط: https://github*com/yihui-dev/awesome-opus5-5-videos
+
+9
+
+1
+
+1
+
+11

@@ -1,0 +1,21 @@
+# Himanshu Hingorani (@himanshubuildss) on X
+
+**المصدر:** https://x.com/himanshubuildss/status/2103374896147378635?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+**قُرئ:** 2026-09-27 08:48
+
+---
+
+Title: Himanshu Hingorani (@himanshubuildss) on X
+
+URL Source: https://x.com/himanshubuildss/status/2103374896147378635?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+
+Published Time: 2026-09-25T06:43:48.000Z
+
+Markdown Content:
+[![Image 1: Avatar](https://pbs.twimg.com/profile_images/2040486128294436864/JziGJtod_normal.jpg)](https://x.com/himanshubuildss)
+
+I've tested every vibe coding resource I could find this year. These are the 28 I actually kept, grouped by what you're stuck on. Bookmark this one 🔖 🧵👇 1. [scrolltide.co](http://scrolltide.co/) - 200+full build prompts for 3D and scroll-driven sites, each one a complete design brief rather than a component you drop in. 2. Minimal Gallery ([minimal.gallery](http://minimal.gallery/)) — curated high-end sites to feed your agent 3. Kage ([kage.design](http://kage.design/)) — real UI inspiration mapped straight to prompts 4. Refero Styles ([styles.refero.design](http://styles.refero.design/)) — 2,000+ real product styles with typography 5. Component Gallery ([component.gallery](http://component.gallery/)) — 2,600+ examples of how top design systems solve the same element 6. AppShot Gallery ([appshot.gallery](http://appshot.gallery/)) — real app screenshots for mobile 7. Navbar Gallery ([navbar.gallery](http://navbar.gallery/)) 8. Footer Design ([footer.design](http://footer.design/)) 9. CTA Gallery ([cta.gallery](http://cta.gallery/)) — conversion-tested forms, popups, buttons 10. 404s ([404s.design](http://404s.design/)) 11. DESIGNmd ([designmd.ai](http://designmd.ai/)) — design systems as markdown your agent can read 12 VibePrompt ([vibeprompts.dev](http://vibeprompts.dev/)) — ready-made prompts for dashboards and landing pages 13. [21st.dev](http://21st.dev/) — component registry that plugs into agents via MCP 14. Kinetics ([kinetics.colorion.co](http://kinetics.colorion.co/)) — 150+ motion effects with React code and prompts 15. shadcn/ui ([ui.shadcn.com](http://ui.shadcn.com/)) — still the gold standard 16. Aceternity UI ([ui.aceternity.com](http://ui.aceternity.com/)) — 200+ animated React/Tailwind 17. Magic UI ([magicui.design](http://magicui.design/)) 18. Motion Primitives ([motion-primitives.com](http://motion-primitives.com/)) 19. Uiverse ([uiverse.io](http://uiverse.io/)) 20. UIAble ([uiable.com](http://uiable.com/)) 21. mapcn ([mapcn.dev](http://mapcn.dev/)) — map components, markers, routes, popups 22. MicroKit UI ([microkit.co](http://microkit.co/)) — micro-interactions 23. Liquid Glass ([glass.samasante.com](http://glass.samasante.com/)) — glass refraction components 24. CSS Text Effects ([text-effects.colorion.co](http://text-effects.colorion.co/)) 25. Circle Loaders ([circleloaders.dominikakissi.com](http://circleloaders.dominikakissi.com/)) 26. Gradient Buttons ([gradientbuttons.colorion.co](http://gradientbuttons.colorion.co/)) 27. Kitbitz ([kitbitz.art](http://kitbitz.art/)) — 2,000+ hand-drawn illustrations 28. 3Dicons ([3dicons.co](http://3dicons.co/)) 29. Anime.js ([animejs.com](http://animejs.com/))
+
+[Video 3](blob:https://x.com/04f8d3b5-8368-4906-a44e-5635c3bb9cd3)
+
+00:36

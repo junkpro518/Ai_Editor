@@ -1,0 +1,221 @@
+# ‎محمد mabuzant تقنية و AI ابداعي‎ on Instagram‎ ليش مواقع ناس تحس فيها حياة، وموقعك ثابت مثل البوستر؟
+
+**المصدر:** https://www.instagram.com/p/Dd_w0MyDuwn/?stkn=cndmcGJjcWc5cXg2
+**قُرئ:** 2026-10-04 07:53
+
+---
+
+Title: ‎محمد mabuzant | تقنية و AI ابداعي‎ on Instagram‎: "ليش مواقع ناس تحس فيها حياة، وموقعك ثابت مثل البوستر؟
+
+تقدر تعلّم Claude Code مهارات جديدة بأمر واحد، وتظل معاه كل جلسة بدل ما تعيد الشرح كل مرة. هذي الخمس اللي تخلي اللي تبنيه يتحرك، وكلها مجانية ومفتوحة المصدر:
+
+1. Three.js: مشاهد 3D، كاميرا، إضاءة
+git clone https://github.com/CloudAI-X/threejs-skills
+(وانسخ مجلد .claude/skills لمشروعك)
+
+2. GSAP، الرسمية من GreenSock: Timelines و ScrollTrigger
+/plugin marketplace add greensock/gsap-skills
+
+3. Design DNA: يطلّع تصميم أي موقع كـ tokens
+npx skills add zanwei/design-dna -a claude-code -g -y
+
+4. Motion Design من فريق LottieFiles: التوقيت والـ easing وترتيب الحركة
+npx skills add LottieFiles/motion-design-skill
+
+5. Genjutsu: cast و paint و bunshin
+/plugin marketplace add AThevon/genjutsu
+/plugin install genjutsu
+
+مب عارف من وين تبدأ؟ ابدأ بـ Design DNA.
+احفظ البوست لجلسة البناء الياية، وأرسله لصديقك المصمم.
+
+#ClaudeCode #كلود #ذكاء_اصطناعي #تصميم_مواقع #AI"‎
+
+URL Source: https://www.instagram.com/p/Dd_w0MyDuwn/?stkn=cndmcGJjcWc5cXg2
+
+Markdown Content:
+[](https://www.instagram.com/)
+
+[Log In](https://www.instagram.com/accounts/login/?next=%2Fp%2FDd_w0MyDuwn%2F%3Fstkn%3DcndmcGJjcWc5cXg2&source=desktop_nav)
+
+[Sign Up](https://www.instagram.com/accounts/emailsignup/)
+
+![Image 1: mabuzant's profile picture](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-19/542686588_18517373857060623_1880713974885838223_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=108&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=XMYUVQYVdf0Q7kNvwG6V_TC&_nc_oc=AdrYwk-EmbTpFzEf4ta_L1QEpXX3UMDbwwgNQZlv3cwhhuQ5j99t4ByNtbhC-T_WrBU&_nc_zt=24&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQM_SseBbdMFeT4hIBRDjvq08_hszjYeej0foijDHihPUA&oe=6AC798E5)
+
+Never miss a post from mabuzant
+
+Sign up for Instagram to stay in the loop.
+
+[Sign up](https://www.instagram.com/accounts/emailsignup/)
+
+[Log in](https://www.instagram.com/accounts/login/?source=desktop_dynamic_landing_dialog)
+
+![Image 2: Photo by محمد mabuzant | تقنية و AI ابداعي on October 02, 2026. May be a cartoon of poster and text.](https://scontent-atl3-2.cdninstagram.com/v/t51.82787-15/831424268_18622204981060623_962171166355549731_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=101&ig_cache_key=Mzk5OTEyOTIwMDU1NjM3Nzc5Mg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTA4MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=bZMgnCgnQukQ7kNvwHNuCKJ&_nc_oc=AdpustUg9_GuhAZ4zAdkGNyCGx1Uhgq5kh8erS2HvzeUxoFg-ts8vIPHpaMGAM2NEZM&_nc_zt=23&_nc_ht=scontent-atl3-2.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQPd7SSnF9SvPK67TmJp0I75Fs9mw1ILlEcnIvEmGJMXDg&oe=6AC7999A)
+
+![Image 3: mabuzant's profile picture](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-19/542686588_18517373857060623_1880713974885838223_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=108&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=XMYUVQYVdf0Q7kNvwG6V_TC&_nc_oc=AdrYwk-EmbTpFzEf4ta_L1QEpXX3UMDbwwgNQZlv3cwhhuQ5j99t4ByNtbhC-T_WrBU&_nc_zt=24&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQM_SseBbdMFeT4hIBRDjvq08_hszjYeej0foijDHihPUA&oe=6AC798E5)
+
+[mabuzant](https://www.instagram.com/mabuzant/)
+
+•
+
+Follow
+
+* * *
+
+[![Image 4: mabuzant's profile picture](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-19/542686588_18517373857060623_1880713974885838223_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=108&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=XMYUVQYVdf0Q7kNvwG6V_TC&_nc_oc=AdrYwk-EmbTpFzEf4ta_L1QEpXX3UMDbwwgNQZlv3cwhhuQ5j99t4ByNtbhC-T_WrBU&_nc_zt=24&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQM_SseBbdMFeT4hIBRDjvq08_hszjYeej0foijDHihPUA&oe=6AC798E5)](https://www.instagram.com/mabuzant/)
+
+[mabuzant](https://www.instagram.com/mabuzant/)1d
+
+ليش مواقع ناس تحس فيها حياة، وموقعك ثابت مثل البوستر؟  
+  
+تقدر تعلّم Claude Code مهارات جديدة بأمر واحد، وتظل معاه كل جلسة بدل ما تعيد الشرح كل مرة. هذي الخمس اللي تخلي اللي تبنيه يتحرك، وكلها مجانية ومفتوحة المصدر:  
+  
+1. Three.js: مشاهد 3D، كاميرا، إضاءة  
+git clone https://github.com/CloudAI-X/threejs-skills  
+(وانسخ مجلد .claude/skills لمشروعك)  
+  
+2. GSAP، الرسمية من GreenSock: Timelines و ScrollTrigger  
+/plugin marketplace add greensock/gsap-skills  
+  
+3. Design DNA: يطلّع تصميم أي موقع كـ tokens  
+npx skills add zanwei/design-dna -a claude-code -g -y  
+  
+4. Motion Design من فريق LottieFiles: التوقيت والـ easing وترتيب الحركة  
+npx skills add LottieFiles/motion-design-skill  
+  
+5. Genjutsu: cast و paint و bunshin  
+/plugin marketplace add AThevon/genjutsu  
+/plugin install genjutsu  
+  
+مب عارف من وين تبدأ؟ ابدأ بـ Design DNA.  
+احفظ البوست لجلسة البناء الياية، وأرسله لصديقك المصمم.  
+  
+[#ClaudeCode](https://www.instagram.com/explore/tags/claudecode/)[#كلود](https://www.instagram.com/explore/tags/%D9%83%D9%84%D9%88%D8%AF/)[#ذكاء_اصطناعي](https://www.instagram.com/explore/tags/%D8%B0%D9%83%D8%A7%D8%A1_%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A/)[#تصميم_مواقع](https://www.instagram.com/explore/tags/%D8%AA%D8%B5%D9%85%D9%8A%D9%85_%D9%85%D9%88%D8%A7%D9%82%D8%B9/)[#AI](https://www.instagram.com/explore/tags/ai/)
+
+[![Image 5: alahmad55's profile picture](https://scontent-atl3-2.cdninstagram.com/v/t51.2885-19/11850000_1607197406215812_1989298860_a.jpg?_nc_cat=105&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xNTAuQzMifQ%3D%3D&_nc_ohc=mpBe-N3iIIQQ7kNvwF4riWX&_nc_oc=AdrOANeLL8SlOdQtqU3PnrtVFYBhl6a0z7DgrHVYLO7BE_huJOpgW_ka3IVA2Ea_SP8&_nc_zt=24&_nc_ht=scontent-atl3-2.cdninstagram.com&_nc_ss=7b689&oh=00_AQNR6e2wVeM6X-ov-hWZf97WUkZF4sAPW2nFnW2wXamTTA&oe=6AC7BF71)](https://www.instagram.com/alahmad55/)
+
+[alahmad55](https://www.instagram.com/alahmad55/)[15h](https://www.instagram.com/p/Dd_w0MyDuwn/c/18107978513218264/)
+
+🔥🔥
+
+Like
+
+Reply
+
+[![Image 6: ai.alkhamis's profile picture](https://scontent-atl3-1.cdninstagram.com/v/t51.2885-19/454041891_2179515155758548_7126020412469448462_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=107&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=S6IT3KA4XZEQ7kNvwHM2joZ&_nc_oc=AdpSsiKTSuyjx6WEh5zMysFYYXFZ-k7jxZRVF67ycBS6zjdO0FHQcZ0iiNKiHahXa-I&_nc_zt=24&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_ss=7b689&oh=00_AQPEmd0BFdBVQHIFn-r_rZWlIS5Z0KUisTw2dNy-ywRYTg&oe=6AC79DCB)](https://www.instagram.com/ai.alkhamis/)
+
+[ai.alkhamis](https://www.instagram.com/ai.alkhamis/)[19h](https://www.instagram.com/p/Dd_w0MyDuwn/c/17946472599072435/)
+
+👏👏👏
+
+1 like
+
+Reply
+
+[![Image 7: itstroyesiadian's profile picture](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-19/749491418_18323840203278777_7308315641894789361_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=109&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy44NDguQzMifQ%3D%3D&_nc_ohc=Rh1Iqol4CBYQ7kNvwHEeX1B&_nc_oc=AdoE76w5oLIQATfWsGFIenbiKZnpCucoR9mNBS-msnNmS5LnXeCcqNhEBpSJDaT53xM&_nc_zt=24&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQMQDuAulSU9i5sPzMz6mpoJVM863YmFBcgMNd8mFUY13g&oe=6AC7B018)](https://www.instagram.com/itstroyesiadian/)
+
+[itstroyesiadian](https://www.instagram.com/itstroyesiadian/)[1d](https://www.instagram.com/p/Dd_w0MyDuwn/c/17949118437320497/)
+
+👏
+
+Like
+
+Reply
+
+[![Image 8: ahmedhamdy_uro's profile picture](https://scontent-atl3-2.cdninstagram.com/v/t51.2885-19/322947567_522147093210446_3915560110030186264_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=111&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=XJQMMvI7S1wQ7kNvwExGq8x&_nc_oc=AdqTTi2FC-IUnmTKX0Moqk8OrJxyvwEPI46ufvRvQfLohBlAbdISNpy0QGONbEOEQWI&_nc_zt=24&_nc_ht=scontent-atl3-2.cdninstagram.com&_nc_ss=7b689&oh=00_AQMT6kd4ttlQJAJczR8dKiDwFCD0khgiMbOkaJrqh4cStA&oe=6AC79788)](https://www.instagram.com/ahmedhamdy_uro/)
+
+[ahmedhamdy_uro](https://www.instagram.com/ahmedhamdy_uro/)[1d](https://www.instagram.com/p/Dd_w0MyDuwn/c/17910154044500633/)
+
+🔥🔥
+
+1 like
+
+Reply
+
+[![Image 9: basima.abushanab's profile picture](https://scontent-atl3-2.cdninstagram.com/v/t51.2885-19/15535328_187769745029348_7382210691970629632_a.jpg?_nc_cat=105&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xNTAuQzMifQ%3D%3D&_nc_ohc=bVu6GBer7h4Q7kNvwEpPeq3&_nc_oc=AdoGm4cl9OIwowz5RA3Lv8eC3gfpAkQHmKL1Gly8lWdaPJWdwUrCFzvI3cBctr4ps3s&_nc_zt=24&_nc_ht=scontent-atl3-2.cdninstagram.com&_nc_ss=7b689&oh=00_AQPJUS-bGb5LNr4Yuk4NYG53ZIUdLcb8bOQRCpHz_BF94w&oe=6AC79276)](https://www.instagram.com/basima.abushanab/)
+
+[basima.abushanab](https://www.instagram.com/basima.abushanab/)[1d](https://www.instagram.com/p/Dd_w0MyDuwn/c/17900569296379192/)
+
+🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+1 like
+
+Reply
+
+[![Image 10: its_mahmoud.dev's profile picture](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-19/795027480_18466692349115588_5943734733727399509_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=103&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=lAWlbSKSWooQ7kNvwGO_6JV&_nc_oc=AdqizgY1825s4Bt6xDW9DFe9CZfYQRCv5dIEZYQ2FkjKWGmtJIfgKnCb3tJ-xdpZADc&_nc_zt=24&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQMohKhq7sfOIALiKdRwAWwaPu4Olw3uvm3cbD1QOaVPcA&oe=6AC79356)](https://www.instagram.com/its_mahmoud.dev/)
+
+[its_mahmoud.dev](https://www.instagram.com/its_mahmoud.dev/)[1d](https://www.instagram.com/p/Dd_w0MyDuwn/c/18633346582049235/)
+
+👏👏👏👏
+
+Like
+
+Reply
+
+117 7
+
+[1 day ago](https://www.instagram.com/mabuzant/p/Dd_w0MyDuwn/)
+
+[Log in](https://www.instagram.com/accounts/login/?next=%2Fp%2FDd_w0MyDuwn%2F&source=post_comment_input) to like or comment.
+
+* * *
+
+More posts from [mabuzant](https://www.instagram.com/mabuzant/)
+
+[![Image 11: Photo by محمد mabuzant | تقنية و AI ابداعي on June 20, 2026.](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-15/723904551_18588005179060623_365130830656808668_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=108&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=jRkU3ZIEbF0Q7kNvwFq2I6r&_nc_oc=Adqv_hCiFEnZlMNeBTOPipi6a9yaq8zAqhaBah-v9NJjY6i6pOjJJdwirPAI5W1uyjI&_nc_zt=23&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQOCQbUf_qhH1npjcuB2EcRnTRiVAJb-AKgnwu6YDajhXA&oe=6AC7A184)](https://www.instagram.com/mabuzant/p/DZzssQvimdo/)
+
+[![Image 12: Photo by محمد mabuzant | تقنية و AI ابداعي on June 05, 2026.](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-15/716150453_18583756216060623_1348879073490644798_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=106&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=K3Xmw4bJe3UQ7kNvwExUBjA&_nc_oc=AdqHQdhqc-Oa1YIker3PlIWZHZS97UT_pQuBJwoR7dI6MB51WvXOQIQ4kGsQfdORLQE&_nc_zt=23&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQMbzYg53qOyoY1UU5Ff8oDd8mosGjyWzNOp4_UnOV1iTA&oe=6AC7A0CD)](https://www.instagram.com/mabuzant/p/DZNUDX7FtJT/)
+
+[![Image 13: Video by محمد mabuzant | تقنية و AI ابداعي on April 08, 2026.](https://scontent-atl3-2.cdninstagram.com/v/t51.82787-15/642506113_18567936586060623_4869488069305250087_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=111&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_ohc=mRIMc62GeOUQ7kNvwFUMxiq&_nc_oc=AdoE5bSfMxDGR3ybX9edlh4XsoI-GaEqZGS4zGnCVxIxxSGJPB4W2G2o8zIgi8l6yuM&_nc_zt=23&_nc_ht=scontent-atl3-2.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQOPY44LNTwv7C9klYAhNh4ZYz3lFImf0dkXXjXlzidUgA&oe=6AC7B199)](https://www.instagram.com/mabuzant/reel/DW304lXOVAM/)
+
+[![Image 14: Video by محمد mabuzant | تقنية و AI ابداعي on October 02, 2026. May be an image of one or more people, beard and text.](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-15/834834427_18622574608060623_8003974232589506442_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=100&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_ohc=2kdpKvWr5owQ7kNvwEgqyV8&_nc_oc=AdoG7v-97L2h8vriL7dM1ugaI7ZeDnDZ-L_x6fAPt-IYvndDiy58-1UxMde5tfZ3LsM&_nc_zt=23&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQN44HwAiqVjC5pnnJbif1zWOZzGbWZ7-RU4_9KQU5dzLQ&oe=6AC7A402)](https://www.instagram.com/mabuzant/reel/DeAHNE6qb6H/)
+
+[![Image 15: Photo by محمد mabuzant | تقنية و AI ابداعي on October 03, 2026. May be an image of text.](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-15/830669909_18622463338060623_8827497483048118912_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=109&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=_HfcDcLyKKQQ7kNvwH-7ueW&_nc_oc=AdpDl9P1q2taRRACPTG4euzR2tCjzfTU8GvArCfEY8VIBJcdMsIXrdgOfx6Ani8O79E&_nc_zt=23&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQMQYETT7nKabjldX71Ox3p1ubPQ2YK4_Lro3FpuPEbrAg&oe=6AC7A13A)](https://www.instagram.com/mabuzant/p/DeBzJrLCnXL/)
+
+[![Image 16: Video by محمد mabuzant | تقنية و AI ابداعي on September 29, 2026. May be an illustration of poster and text.](https://scontent-atl3-2.cdninstagram.com/v/t51.82787-15/832231939_18622472398060623_212579748958090270_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=104&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_ohc=zVWwpsr5SvoQ7kNvwG9nCQN&_nc_oc=AdpeDtW9FrWlnRv-bsVSr_8UeScMSF-a68nbhSwMkWADs1vWgybAFKdUCql4byf_1Lk&_nc_zt=23&_nc_ht=scontent-atl3-2.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQOHusmMN7S0OL7Rz6Me9tuYhaLDOz7ThsEpnujjT4e4Wg&oe=6AC79C6D)](https://www.instagram.com/mabuzant/reel/Dd3T7gnKA14/)
+
+[![Image 17: Photo by محمد mabuzant | تقنية و AI ابداعي on October 01, 2026. May be an image of text.](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-15/831065061_18621882940060623_8372651083891869011_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=110&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=4-sget6cNlUQ7kNvwEudJas&_nc_oc=AdrfshFJ408RnxKtt0bd_tewBu4MJ6pOqyXy5r8WJcDqo4RJdV2oz5l_iOsG_9OgfwA&_nc_zt=23&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQMtIlZi0_HC7IAbcUCbG0Rm2ZqRrkfTy6-YTKHlra-MlA&oe=6AC7A793)](https://www.instagram.com/mabuzant/p/Dd9WqckiKYu/)
+
+[![Image 18: Video by محمد mabuzant | تقنية و AI ابداعي on October 01, 2026. May be an image of text.](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-15/829225821_18621891541060623_6801596116337214595_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=106&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_ohc=OPz0043w1yEQ7kNvwHtToCE&_nc_oc=AdqGTyi0961hN6oJxDiWq4Nck6_rnOhkXjpx0Jb22oJl2xSJimBmhf86VxuS-m26JPA&_nc_zt=23&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQO7oEQ8XEqprtG6uJ_qVQLG_bfu1UErqBibi-bIR6sECg&oe=6AC7B980)](https://www.instagram.com/mabuzant/reel/Dd9ZiWVgNwh/)
+
+[![Image 19: Photo by محمد mabuzant | تقنية و AI ابداعي on October 01, 2026. May be an image of text.](https://scontent-atl3-1.cdninstagram.com/v/t51.82787-15/830669435_18621852367060623_81477033455287734_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=103&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=ndvO2G5E-BcQ7kNvwEpFRVK&_nc_oc=AdoQ1WkETzoFlLSxEAWjfYfUJDFQgMfpztSTAs7awPDW5r_l6ubwMnREyV56KUxtNtw&_nc_zt=23&_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_gid=ZTtPpUnzy1zXFzjDGNZk9w&_nc_ss=7b689&oh=00_AQMdlp0_js5qKsdCGnl9Kj_gN8lF1SJcvvXfyM-wKllQ2Q&oe=6AC79825)](https://www.instagram.com/mabuzant/p/Dd9L5HIDv-r/)
+
+[See more posts](https://www.instagram.com/mabuzant/)
+
+* * *
+
+[Meta](https://about.meta.com/)
+
+[About](https://about.instagram.com/)
+
+[Blog](https://about.instagram.com/blog/)
+
+[Jobs](https://about.instagram.com/about-us/careers)
+
+[Help](https://help.instagram.com/)
+
+[API](https://developers.facebook.com/docs/instagram)
+
+[Privacy](https://www.instagram.com/legal/privacy/)
+
+[Terms](https://www.instagram.com/legal/terms/)
+
+[Locations](https://www.instagram.com/explore/locations/)
+
+[Popular](https://www.instagram.com/popular/)
+
+[Instagram Lite](https://www.instagram.com/web/lite/)
+
+[Meta AI](https://www.meta.ai/?utm_source=foa_web_footer)
+
+[Muse](https://muse.ai/)
+
+[Threads](https://www.threads.com/)
+
+[Contact Uploading & Non-Users](https://www.facebook.com/help/instagram/261704639352628)
+
+[Meta Verified](https://www.instagram.com/accounts/meta_verified/?entrypoint=web_footer)
+
+English
+
+© 2026 Instagram from Meta

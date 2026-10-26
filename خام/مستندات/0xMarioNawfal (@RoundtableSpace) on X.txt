@@ -1,0 +1,25 @@
+# 0xMarioNawfal (@RoundtableSpace) on X
+
+**المصدر:** https://x.com/roundtablespace/status/2103828182541734166?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+**قُرئ:** 2026-09-27 08:48
+
+---
+
+Title: 0xMarioNawfal (@RoundtableSpace) on X
+
+URL Source: https://x.com/roundtablespace/status/2103828182541734166?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+
+Published Time: 2026-09-26T12:45:00.000Z
+
+Markdown Content:
+[![Image 1: Avatar](https://pbs.twimg.com/profile_images/2012162102283407360/U-fPj6wg_normal.jpg)](https://x.com/RoundtableSpace)
+
+[0xMarioNawfal](https://x.com/RoundtableSpace)[@RoundtableSpace](https://x.com/RoundtableSpace)
+
+this is pure treasure: 20 AI agent skills that cover the entire build-to-launch loop. specs, architecture, agents, backend, data, UI, testing, security, analytics and delivery. DEFINE THE JOB 1.⁠ ⁠bmad-spec turn ideas into structured specs. ⁠ [github.com/bmad-code-org/…](https://github.com/bmad-code-org/bmad-method) ⁠ 2.⁠ ⁠domain-modeling model the core concepts and relationships in your system. ⁠ [github.com/mattpocock/ski…](https://github.com/mattpocock/skills) ⁠ 3.⁠ ⁠codebase-design plan how the codebase should be structured. ⁠ [github.com/mattpocock/ski…](https://github.com/mattpocock/skills) ⁠ 4.⁠ ⁠google-agents-cli-workflow build agent workflows with Google Agents CLI. ⁠ [github.com/google/agents-…](https://github.com/google/agents-cli) ⁠ 5.⁠ ⁠prompt-optimizer improve and refine prompts. ⁠ [github.com/getsentry/skil…](https://github.com/getsentry/skills) ⁠ BUILD THE SYSTEM 6.⁠ ⁠google-agents-cli-adk-code build agent code with Google’s tooling. ⁠ [github.com/google/agents-…](https://github.com/google/agents-cli) ⁠ 7.⁠ ⁠mastra skills for building AI agent systems. ⁠ [github.com/mastra-ai/skil…](https://github.com/mastra-ai/skills) ⁠ 8.⁠ ⁠typesafe-ai build AI workflows with stronger type safety. ⁠ [github.com/typesafe-ai/sk…](https://github.com/typesafe-ai/skills) ⁠ 9.⁠ ⁠fastify-best-practices better patterns for Fastify backends. ⁠ [github.com/mcollina/skills](https://github.com/mcollina/skills) ⁠ 10.⁠ ⁠neon-postgres work with Neon + Postgres. ⁠ [github.com/neondatabase/a…](https://github.com/neondatabase/agent-skills) ⁠ MAKE IT USABLE 11.⁠ ⁠prisma-database-setup set up the database layer with Prisma. ⁠ [github.com/prisma/skills](https://github.com/prisma/skills) ⁠ 12.⁠ ⁠clerk-orgs add organization and auth workflows. ⁠ [github.com/clerk/skills](https://github.com/clerk/skills) ⁠ 13.⁠ ⁠emil-design-eng improve product design and frontend execution. ⁠ [github.com/emilkowalski/s…](https://github.com/emilkowalski/skills) ⁠ 14.⁠ ⁠review-animations review and improve UI animations. ⁠ [github.com/emilkowalski/s…](https://github.com/emilkowalski/skills) ⁠ 15.⁠ ⁠remotion-best-practices build better programmatic video workflows. ⁠ [github.com/remotion-dev/s…](https://github.com/remotion-dev/skills) ⁠ VERIFY THE REAL THING 16.⁠ ⁠playwright-cli test real browser journeys. ⁠ [github.com/microsoft/play…](https://github.com/microsoft/playwright-cli) ⁠ 17.⁠ ⁠semgrep scan the codebase for security issues. ⁠ [github.com/semgrep/skills](https://github.com/semgrep/skills) ⁠ 18.⁠ ⁠sentry-fix-issues find and fix production issues. ⁠ [github.com/getsentry/sent…](https://github.com/getsentry/sentry-agent-skills) ⁠ 19.⁠ ⁠instrument-product-analytics track what users actually do inside the product. ⁠ [github.com/posthog/skills](https://github.com/posthog/skills) ⁠ 20.⁠ ⁠email-best-practices improve product email flows. ⁠ [github.com/resend/resend-…](https://github.com/resend/resend-skills) ⁠ the loop: idea → spec → architecture → build → browser testing → catch failures → measure users → improve the next version. pick the biggest bottleneck in your project and install the skill that attacks it first. save this and build a second brain for your product.
+
+[![Image 2](https://pbs.twimg.com/card_img/2103878142935117825/w_sV7D98?format=webp&name=medium) GitHub - bmad-code-org/BMAD-METHOD: Breakthrough Method for Agile Ai Driven Development](https://t.co/1ldiTYCNY5)[From github.com](https://t.co/1ldiTYCNY5)
+
+[12:45 PM · Sep 26, 2026](https://x.com/RoundtableSpace/status/2103828182541734166)
+
+[60.9K Views](https://x.com/RoundtableSpace/status/2103828182541734166)

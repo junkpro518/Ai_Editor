@@ -1,0 +1,27 @@
+# Shadcn Labs (@shadcnlabs) on X
+
+**المصدر:** https://x.com/shadcnlabs/status/2105527948610834605?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+**قُرئ:** 2026-10-02 00:58
+
+---
+
+Title: Shadcn Labs (@shadcnlabs) on X
+
+URL Source: https://x.com/shadcnlabs/status/2105527948610834605?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+
+Published Time: 2026-10-01T05:19:16.000Z
+
+Markdown Content:
+## Post
+
+[](https://x.com/)
+## Post
+
+## Shadcn Labs on X: "Introducing ogimagecn Build OG images like you build your UI. Powered by Satori. Pick from 20+ ready-to-use image components you can copy, tweak, and make your own. One command to get started. shadcn/ui compatible. 100% Free. Open source."
+
+*   [![Image 1: Avatar](https://pbs.twimg.com/profile_images/2084970342263685120/rnqwys1u_normal.jpg)](https://x.com/shadcnlabs) 
+Introducing ogimagecn Build OG images like you build your UI. Powered by Satori. Pick from 20+ ready-to-use image components you can copy, tweak, and make your own. One command to get started. shadcn/ui compatible. 100% Free. Open source.
+
+[Video 3](blob:https://x.com/525cb5d9-0753-4966-91d0-742aedada9b9)00:10    
+*   [![Image 2: Avatar](https://pbs.twimg.com/profile_images/2084970342263685120/rnqwys1u_normal.jpg)](https://x.com/shadcnlabs) Try it here:   [![Image 3: Avatar](https://pbs.twimg.com/profile_images/2084970342263685120/rnqwys1u_normal.jpg)](https://x.com/shadcnlabs) Give it a ⭐️ on GitHub:    
+*   [![Image 4: @MrBrjan](https://pbs.twimg.com/profile_images/2090322114922647552/ZMbabK0y_normal.jpg)](https://x.com/MrBrjan) what inspired you to choose Satori as the engine for ogimagecn?

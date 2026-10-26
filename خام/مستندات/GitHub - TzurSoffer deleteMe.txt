@@ -1,0 +1,377 @@
+# GitHub - TzurSoffer deleteMe
+
+**المصدر:** https://github.com/TzurSoffer/deleteMe
+**قُرئ:** 2026-09-30 16:48
+
+---
+
+Title: GitHub - TzurSoffer/deleteMe
+
+URL Source: https://github.com/TzurSoffer/deleteMe
+
+Markdown Content:
+[Skip to content](https://github.com/TzurSoffer/deleteMe#start-of-content)
+
+## Navigation Menu
+
+[](https://github.com/)
+
+[Sign in](https://github.com/login?return_to=https%3A%2F%2Fgithub.com%2FTzurSoffer%2FdeleteMe)
+
+Appearance settings
+
+*   
+Platform
+
+    *   
+AI CODE CREATION
+        *   [GitHub Copilot Write better code with AI](https://github.com/features/copilot)
+        *   [GitHub Copilot app Direct agents from issue to merge](https://github.com/features/ai/github-app)
+        *   [MCP Registry Integrate external tools](https://github.com/mcp)
+
+    *   
+DEVELOPER WORKFLOWS
+        *   [Actions Automate any workflow](https://github.com/features/actions)
+        *   [Codespaces Instant dev environments](https://github.com/features/codespaces)
+        *   [Issues Plan and track work](https://github.com/features/issues)
+        *   [Code Review Manage code changes](https://github.com/features/code-review)
+        *   [Code Quality Enforce quality at merge](https://github.com/features/code-quality)
+
+    *   
+APPLICATION SECURITY
+        *   [GitHub Advanced Security Find and fix vulnerabilities](https://github.com/security/advanced-security)
+        *   [Code security Secure your code as you build](https://github.com/security/advanced-security/code-security)
+        *   [Secret protection Stop leaks before they start](https://github.com/security/advanced-security/secret-protection)
+
+    *   
+EXPLORE
+        *   [Why GitHub](https://github.com/why-github)
+        *   [Documentation](https://docs.github.com/)
+        *   [Blog](https://github.blog/)
+        *   [Changelog](https://github.blog/changelog)
+        *   [Marketplace](https://github.com/marketplace)
+
+[View all features](https://github.com/features)
+
+*   
+Solutions
+
+    *   
+BY COMPANY SIZE
+        *   [Enterprises](https://github.com/enterprise)
+        *   [Small and medium teams](https://github.com/team)
+        *   [Startups](https://github.com/enterprise/startups)
+        *   [Nonprofits](https://github.com/solutions/industry/nonprofits)
+
+    *   
+BY USE CASE
+        *   [App Modernization](https://github.com/solutions/use-case/app-modernization)
+        *   [DevSecOps](https://github.com/solutions/use-case/devsecops)
+        *   [DevOps](https://github.com/solutions/use-case/devops)
+        *   [CI/CD](https://github.com/solutions/use-case/ci-cd)
+        *   [View all use cases](https://github.com/solutions/use-case)
+
+    *   
+BY INDUSTRY
+        *   [Healthcare](https://github.com/solutions/industry/healthcare)
+        *   [Financial services](https://github.com/solutions/industry/financial-services)
+        *   [Manufacturing](https://github.com/solutions/industry/manufacturing)
+        *   [Government](https://github.com/solutions/industry/government)
+        *   [View all industries](https://github.com/solutions/industry)
+
+[View all solutions](https://github.com/solutions)
+
+*   
+Resources
+
+    *   
+EXPLORE BY TOPIC
+        *   [AI](https://github.com/resources/articles?topic=ai)
+        *   [Software Development](https://github.com/resources/articles?topic=software-development)
+        *   [DevOps](https://github.com/resources/articles?topic=devops)
+        *   [Security](https://github.com/resources/articles?topic=security)
+        *   [View all topics](https://github.com/resources/articles)
+
+    *   
+EXPLORE BY TYPE
+        *   [Customer stories](https://github.com/customer-stories)
+        *   [Events & webinars](https://github.com/resources/events)
+        *   [Ebooks & reports](https://github.com/resources/whitepapers)
+        *   [Business insights](https://github.com/solutions/executive-insights)
+        *   [GitHub Skills](https://skills.github.com/)
+
+    *   
+SUPPORT & SERVICES
+        *   [Documentation](https://docs.github.com/)
+        *   [Customer support](https://support.github.com/)
+        *   [Community forum](https://github.com/orgs/community/discussions)
+        *   [Trust center](https://github.com/trust-center)
+        *   [Partners](https://github.com/partners)
+
+[View all resources](https://github.com/resources)
+
+*   
+Open Source
+
+    *   
+COMMUNITY
+        *   [GitHub Sponsors Fund open source developers](https://github.com/open-source/sponsors)
+
+    *   
+PROGRAMS
+        *   [Security Lab](https://securitylab.github.com/)
+        *   [Maintainer Community](https://maintainers.github.com/)
+        *   [GitHub Stars](https://stars.github.com/)
+        *   [Archive Program](https://archiveprogram.github.com/)
+
+    *   
+REPOSITORIES
+        *   [Topics](https://github.com/topics)
+        *   [Trending](https://github.com/trending)
+        *   [Collections](https://github.com/collections)
+
+*   
+Enterprise
+
+    *   
+ENTERPRISE SOLUTIONS
+        *   [Enterprise platform AI-powered developer platform](https://github.com/enterprise)
+
+    *   
+AVAILABLE ADD-ONS
+        *   [GitHub Advanced Security Enterprise-grade security features](https://github.com/security/advanced-security)
+        *   [Copilot for Business Enterprise-grade AI features](https://github.com/features/copilot/copilot-business)
+        *   [Premium Support Enterprise-grade 24/7 support](https://github.com/enterprise/premium-support)
+
+*   [Pricing](https://github.com/pricing)
+
+Search/
+
+[Sign in](https://github.com/login?return_to=https%3A%2F%2Fgithub.com%2FTzurSoffer%2FdeleteMe)
+
+[Sign up](https://github.com/signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E&source=header-repo&source_repo=TzurSoffer%2FdeleteMe)
+
+Appearance settings
+
+You signed in with another tab or window. [Reload](https://github.com/TzurSoffer/deleteMe) to refresh your session.You signed out in another tab or window. [Reload](https://github.com/TzurSoffer/deleteMe) to refresh your session.You switched accounts on another tab or window. [Reload](https://github.com/TzurSoffer/deleteMe) to refresh your session.Dismiss alert
+
+{{ message }}
+
+[TzurSoffer](https://github.com/TzurSoffer)/**[deleteMe](https://github.com/TzurSoffer/deleteMe)**Public
+
+*   [Notifications](https://github.com/login?return_to=%2FTzurSoffer%2FdeleteMe)You must be signed in to change notification settings
+*   [Fork 13](https://github.com/login?return_to=%2FTzurSoffer%2FdeleteMe)
+*   [Star 113](https://github.com/login?return_to=%2FTzurSoffer%2FdeleteMe) 
+
+*   [Code](https://github.com/TzurSoffer/deleteMe)
+*   [Issues 0](https://github.com/TzurSoffer/deleteMe/issues)
+*   [Pull requests 0](https://github.com/TzurSoffer/deleteMe/pulls)
+*   [Actions](https://github.com/TzurSoffer/deleteMe/actions)
+*   [Projects](https://github.com/TzurSoffer/deleteMe/projects)
+*   [Security and quality 0](https://github.com/TzurSoffer/deleteMe/security)
+*   [Insights](https://github.com/TzurSoffer/deleteMe/pulse)
+
+Additional navigation options
+
+*   [Code](https://github.com/TzurSoffer/deleteMe)
+*   [Issues](https://github.com/TzurSoffer/deleteMe/issues)
+*   [Pull requests](https://github.com/TzurSoffer/deleteMe/pulls)
+*   [Actions](https://github.com/TzurSoffer/deleteMe/actions)
+*   [Projects](https://github.com/TzurSoffer/deleteMe/projects)
+*   [Security and quality](https://github.com/TzurSoffer/deleteMe/security)
+*   [Insights](https://github.com/TzurSoffer/deleteMe/pulse)
+
+[](https://github.com/TzurSoffer/deleteMe)
+
+main
+
+[**1**Branch](https://github.com/TzurSoffer/deleteMe/branches)[**0**Tags](https://github.com/TzurSoffer/deleteMe/tags)
+
+[](https://github.com/TzurSoffer/deleteMe/branches)[](https://github.com/TzurSoffer/deleteMe/tags)
+
+Go to file
+
+Code
+
+Open more actions menu
+
+## Latest commit
+
+[![Image 2: TzurSoffer](https://avatars.githubusercontent.com/u/103438808?v=4&size=40)](https://github.com/TzurSoffer)[TzurSoffer](https://github.com/TzurSoffer/deleteMe/commits?author=TzurSoffer)
+
+[add toggle for bbox and bind x](https://github.com/TzurSoffer/deleteMe/commit/35fde7350daa3ae77a2433a4d14d51538942563e)
+
+Aug 9, 2026
+
+[35fde73](https://github.com/TzurSoffer/deleteMe/commit/35fde7350daa3ae77a2433a4d14d51538942563e)·Aug 9, 2026
+
+## History
+
+[8 Commits](https://github.com/TzurSoffer/deleteMe/commits/main/)
+
+Open commit details
+
+[](https://github.com/TzurSoffer/deleteMe/commits/main/)8 Commits
+
+## Folders and files
+
+| Name | Name | Last commit message | Last commit date |
+| --- | --- | --- | --- |
+| [.gitignore](https://github.com/TzurSoffer/deleteMe/blob/main/.gitignore ".gitignore") | [.gitignore](https://github.com/TzurSoffer/deleteMe/blob/main/.gitignore ".gitignore") | [initial commit](https://github.com/TzurSoffer/deleteMe/commit/7f6b5cbf8df9ee058b6b91a9e81176d14774ade7 "initial commit") | Aug 7, 2026 |
+| [LICENSE](https://github.com/TzurSoffer/deleteMe/blob/main/LICENSE "LICENSE") | [LICENSE](https://github.com/TzurSoffer/deleteMe/blob/main/LICENSE "LICENSE") | [added README and LICENSE](https://github.com/TzurSoffer/deleteMe/commit/1558b896181e294e3bfd37cdeed5566123f6251c "added README and LICENSE") | Aug 7, 2026 |
+| [README.md](https://github.com/TzurSoffer/deleteMe/blob/main/README.md "README.md") | [README.md](https://github.com/TzurSoffer/deleteMe/blob/main/README.md "README.md") | [Fix pip install failure, debug box artifact, and first-flip debounce (](https://github.com/TzurSoffer/deleteMe/commit/06d24b3106c9386d835e2b0cdfb2303db8017f09 "Fix pip install failure, debug box artifact, and first-flip debounce (#1)")[#1](https://github.com/TzurSoffer/deleteMe/pull/1) | Aug 9, 2026 |
+| [deleteMe.py](https://github.com/TzurSoffer/deleteMe/blob/main/deleteMe.py "deleteMe.py") | [deleteMe.py](https://github.com/TzurSoffer/deleteMe/blob/main/deleteMe.py "deleteMe.py") | [add toggle for bbox and bind x](https://github.com/TzurSoffer/deleteMe/commit/35fde7350daa3ae77a2433a4d14d51538942563e "add toggle for bbox and bind x") | Aug 9, 2026 |
+| [efficientdet_lite0.tflite](https://github.com/TzurSoffer/deleteMe/blob/main/efficientdet_lite0.tflite "efficientdet_lite0.tflite") | [efficientdet_lite0.tflite](https://github.com/TzurSoffer/deleteMe/blob/main/efficientdet_lite0.tflite "efficientdet_lite0.tflite") | [initial commit](https://github.com/TzurSoffer/deleteMe/commit/7f6b5cbf8df9ee058b6b91a9e81176d14774ade7 "initial commit") | Aug 7, 2026 |
+| [hand_landmarker.task](https://github.com/TzurSoffer/deleteMe/blob/main/hand_landmarker.task "hand_landmarker.task") | [hand_landmarker.task](https://github.com/TzurSoffer/deleteMe/blob/main/hand_landmarker.task "hand_landmarker.task") | [initial commit](https://github.com/TzurSoffer/deleteMe/commit/7f6b5cbf8df9ee058b6b91a9e81176d14774ade7 "initial commit") | Aug 7, 2026 |
+| [main.py](https://github.com/TzurSoffer/deleteMe/blob/main/main.py "main.py") | [main.py](https://github.com/TzurSoffer/deleteMe/blob/main/main.py "main.py") | [add toggle for bbox and bind x](https://github.com/TzurSoffer/deleteMe/commit/35fde7350daa3ae77a2433a4d14d51538942563e "add toggle for bbox and bind x") | Aug 9, 2026 |
+| [requirements.txt](https://github.com/TzurSoffer/deleteMe/blob/main/requirements.txt "requirements.txt") | [requirements.txt](https://github.com/TzurSoffer/deleteMe/blob/main/requirements.txt "requirements.txt") | [Fix mediapipe package declaration in requirements.txt](https://github.com/TzurSoffer/deleteMe/commit/ea693351a6fa482044af4b91767c09f5a8ca3ea9 "Fix mediapipe package declaration in requirements.txt \"<\" caused an error when installing requirements") | Aug 7, 2026 |
+| [utils.py](https://github.com/TzurSoffer/deleteMe/blob/main/utils.py "utils.py") | [utils.py](https://github.com/TzurSoffer/deleteMe/blob/main/utils.py "utils.py") | [Fix pip install failure, debug box artifact, and first-flip debounce (](https://github.com/TzurSoffer/deleteMe/commit/06d24b3106c9386d835e2b0cdfb2303db8017f09 "Fix pip install failure, debug box artifact, and first-flip debounce (#1)")[#1](https://github.com/TzurSoffer/deleteMe/pull/1) | Aug 9, 2026 |
+| View all files |
+
+## Repository files navigation
+
+*   [README](https://github.com/TzurSoffer/deleteMe#)
+*   [MIT license](https://github.com/TzurSoffer/deleteMe#)
+
+More items
+
+# DeleteMe
+
+[](https://github.com/TzurSoffer/deleteMe#deleteme)
+
+DeleteMe is a small OpenCV-based webcam app that removes a person from the frame when they close their fist
+
+## Showcase:
+
+[](https://github.com/TzurSoffer/deleteMe#showcase)
+
+[![Image 3: Preview Image](https://camo.githubusercontent.com/e7df3ed3bb50c4be1b7ac5323a10b96aa3d2e62805523863c5d640f2561be861/68747470733a2f2f696d672e796f75747562652e636f6d2f76692f2d6c547077534c5a70656f2f6d617872657364656661756c742e6a7067)](https://www.youtube.com/shorts/-lTpwSLZpeo)
+
+## Requirements
+
+[](https://github.com/TzurSoffer/deleteMe#requirements)
+
+*   Python 3.10+ recommended
+*   Webcam
+*   Windows, macOS, or Linux with camera access
+
+Python packages are listed in [requirements.txt](https://github.com/TzurSoffer/deleteMe/blob/main/requirements.txt).
+
+## Install
+
+[](https://github.com/TzurSoffer/deleteMe#install)
+
+Create and activate a virtual environment, then install the dependencies:
+
+undefinedshell
+pip install -r requirements.txt
+undefined
+
+If you prefer to install manually, the project currently depends on:
+
+*   opencv-python
+*   mediapipe
+
+## Run
+
+[](https://github.com/TzurSoffer/deleteMe#run)
+
+Start the GUI from the project root:
+
+undefinedshell
+python main.py
+undefined
+
+## How to use
+
+[](https://github.com/TzurSoffer/deleteMe#how-to-use)
+
+1.   Launch the app.
+2.   Make sure the camera shows an empty background.
+3.   Click Capture Background.
+4.   Watch the live preview window and move out of frame before the countdown ends.
+5.   Click Start App to begin the main effect loop.
+
+### Controls
+
+[](https://github.com/TzurSoffer/deleteMe#controls)
+
+*   In the background preview window, press `q` or `Esc` to cancel capture.
+*   In the main OpenCV window, press `q` to exit the loop.
+
+## Files
+
+[](https://github.com/TzurSoffer/deleteMe#files)
+
+*   [main.py](https://github.com/TzurSoffer/deleteMe/blob/main/main.py) contains the Tkinter GUI and camera flow.
+*   [deleteMe.py](https://github.com/TzurSoffer/deleteMe/blob/main/deleteMe.py) contains the main effect logic.
+*   [utils.py](https://github.com/TzurSoffer/deleteMe/blob/main/utils.py) contains the person and hand helpers.
+*   `bg.jpg` is the saved background image created by the app at runtime.
+
+## Notes
+
+[](https://github.com/TzurSoffer/deleteMe#notes)
+
+*   The app saves the captured background to `bg.jpg`.
+*   If the camera fails to open, check that no other app is using it.
+*   If the background capture looks wrong, clear the scene again and recapture before starting.
+
+LICENSE This project is hosted under the MIT LICENSE, see license file for more info
+
+## About
+
+No description, website, or topics provided.
+
+### Resources
+
+[Readme](https://github.com/TzurSoffer/deleteMe#readme-ov-file)
+
+[MIT license](https://github.com/TzurSoffer/deleteMe#MIT-1-ov-file)
+
+[Activity](https://github.com/TzurSoffer/deleteMe/activity)
+
+### Stars
+
+**113** stars
+
+### Watchers
+
+**2** watching
+
+### Forks
+
+[**13** forks](https://github.com/TzurSoffer/deleteMe/forks)
+
+[Report repository](https://github.com/contact/report-content?content_url=https%3A%2F%2Fgithub.com%2FTzurSoffer%2FdeleteMe&report=TzurSoffer+%28user%29)
+
+## [Releases](https://github.com/TzurSoffer/deleteMe/releases)
+
+No releases published
+
+## [Contributors](https://github.com/TzurSoffer/deleteMe/graphs/contributors)3(3)
+
+*   [![Image 4: @TzurSoffer](https://avatars.githubusercontent.com/u/103438808?s=64&v=4)](https://github.com/TzurSoffer)[**TzurSoffer**Tzur Soffer](https://github.com/TzurSoffer)
+*   [![Image 5: @6ix0neJ](https://avatars.githubusercontent.com/u/73800122?s=64&v=4)](https://github.com/6ix0neJ)[**6ix0neJ**Jibril Richardson](https://github.com/6ix0neJ)
+*   [![Image 6: @itsramananshul](https://avatars.githubusercontent.com/u/230498435?s=64&v=4)](https://github.com/itsramananshul)[**itsramananshul**Anshul Raman](https://github.com/itsramananshul)
+
+## Languages
+
+*   [Python 100%](https://github.com/TzurSoffer/deleteMe/search?l=python)
+
+## Footer
+
+[](https://github.com/) © 2026 GitHub,Inc. 
+
+### Footer navigation
+
+*   [Terms](https://docs.github.com/site-policy/github-terms/github-terms-of-service)
+*   [Privacy](https://docs.github.com/site-policy/privacy-policies/github-privacy-statement)
+*   [Security](https://github.com/security)
+*   [Status](https://www.githubstatus.com/)
+*   [Community](https://github.community/)
+*   [Docs](https://docs.github.com/)
+*   [Contact](https://support.github.com/?tags=dotcom-footer)
+*    Manage cookies 
+*    Do not share my personal information 
+
+ You can’t perform that action at this time.

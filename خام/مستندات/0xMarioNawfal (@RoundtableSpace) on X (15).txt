@@ -1,0 +1,25 @@
+# 0xMarioNawfal (@RoundtableSpace) on X
+
+**المصدر:** https://x.com/roundtablespace/status/2106651786660737098?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+**قُرئ:** 2026-10-04 13:33
+
+---
+
+Title: 0xMarioNawfal (@RoundtableSpace) on X
+
+URL Source: https://x.com/roundtablespace/status/2106651786660737098?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+
+Published Time: 2026-10-04T07:45:00.000Z
+
+Markdown Content:
+## Post
+
+[](https://x.com/)
+## Post
+
+## 0xMarioNawfal on X: "Video generation just moved onto your gaming PC. FreeVideo runs MiniMax H3 locally on as little as 8GB of VRAM and 16GB of RAM. → ComfyUI integration → LoRAs and custom workflows → adapts its acceleration to whatever hardware you have 100% open-source. Github: https://t.co/78sdex7lCh"
+
+*   [![Image 1: Avatar](https://pbs.twimg.com/profile_images/2012162102283407360/U-fPj6wg_normal.jpg)](https://x.com/RoundtableSpace) 
+Video generation just moved onto your gaming PC. FreeVideo runs MiniMax H3 locally on as little as 8GB of VRAM and 16GB of RAM. → ComfyUI integration → LoRAs and custom workflows → adapts its acceleration to whatever hardware you have 100% open-source. Github: [github.com/FlashML-org/Fr…](http://github.com/FlashML-org/FreeVideo)  
+*   [![Image 2: @itsthedonhashim](https://pbs.twimg.com/profile_images/1970194022321852416/PEEXU5n5_normal.jpg)](https://x.com/itsthedonhashim) [@RoundtableSpace](https://x.com/RoundtableSpace) Cool stuff! One thing to watch for is GPU memory management. If it gets tight, try batching smaller chunks instead of cramming everything at once. It really helps.   
+*   [![Image 3: @immoderately](https://pbs.twimg.com/profile_images/2105848217799659521/vDIGrs7T_normal.jpg)](https://x.com/immoderately) finally, my gpu gets to earn its keep while i place bets and win

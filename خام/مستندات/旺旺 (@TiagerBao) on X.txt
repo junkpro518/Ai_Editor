@@ -1,0 +1,62 @@
+# 旺旺 (@TiagerBao) on X
+
+**المصدر:** https://x.com/tiagerbao/status/2105541066674078011?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+**قُرئ:** 2026-10-02 01:04
+
+---
+
+Title: 旺旺 (@TiagerBao) on X
+
+URL Source: https://x.com/tiagerbao/status/2105541066674078011?s=12&t=ZCUUW3Z_ndyn4Iqtzmj4ng
+
+Published Time: 2026-10-01T06:11:24.000Z
+
+Markdown Content:
+[](https://x.com/)
+
+## Post
+
+[Log in](https://x.com/i/jf/onboarding/web?mode=login&redirect_after_login=%2FTiagerBao%2Fstatus%2F2105541066674078011%3Fs%3D12%26t%3DZCUUW3Z_ndyn4Iqtzmj4ng)[Sign up](https://x.com/i/jf/onboarding/web?mode=signup&redirect_after_login=%2FTiagerBao%2Fstatus%2F2105541066674078011%3Fs%3D12%26t%3DZCUUW3Z_ndyn4Iqtzmj4ng)
+
+[](https://x.com/)
+
+## Post
+
+[Log in](https://x.com/i/jf/onboarding/web?mode=login&redirect_after_login=%2FTiagerBao%2Fstatus%2F2105541066674078011%3Fs%3D12%26t%3DZCUUW3Z_ndyn4Iqtzmj4ng)[Sign up](https://x.com/i/jf/onboarding/web?mode=signup&redirect_after_login=%2FTiagerBao%2Fstatus%2F2105541066674078011%3Fs%3D12%26t%3DZCUUW3Z_ndyn4Iqtzmj4ng)
+
+# 旺旺 on X: "Claude Code 现在连商业广告片怎么做，都有人直接打包成 Skill 了。 项目叫 motion-video-kit。 它不是让 AI 随便生成几个镜头拼起来，而是给 Claude Code 一套完整的视频制作流程。 作者拆了 28 支专业 SaaS Launch Film，整理出： 动效规则、分镜方法、Three.js 3D 模式、音频规范和质量检查。 制作方式也比较实用： AI 生成素材 + HTML/GSAP 动效 + Three.js 3D + 代码控制时间线。 比较特别的是它做了一套 Gauntlet 审片流程： 做视频的 Agent 不给自己打分。 每轮渲染后换一个新的 critic 看成片，列问题 → 修改 → 重新渲染 → 再验证。 一般跑 3～5 轮。 它还要求动画必须 deterministic： 跳到同一帧，就必须得到同样的画面。 所以最后交付的不只是 MP4，还包括： 分镜、源文件、素材生成记录、审片记录和修改结果。 我觉得这个方向挺有意思。 以前给 Claude Code 的 Skill，大多是在教它怎么写代码。 现在开始有人把 导演、动效设计和审片流程 也做成 Skill 了。 GitHub：https://t.co/XeOXsEIWix 如果视频制作流程也能被 Skill 化，以后真正拉开差距的会是模型，还是你手里积累的那套制作方法？ #AI #Agent #ClaudeCode #VideoAI #ThreeJS #AIAgent"
+
+*   [![Image 2: Avatar](https://pbs.twimg.com/profile_images/1840689453582446592/Y77oEhBg_normal.jpg)](https://x.com/TiagerBao)  [旺旺](https://x.com/TiagerBao) [@TiagerBao](https://x.com/TiagerBao)     Show translation Claude Code 现在连商业广告片怎么做，都有人直接打包成 Skill 了。 项目叫 motion-video-kit。 它不是让 AI 随便生成几个镜头拼起来，而是给 Claude Code 一套完整的视频制作流程。 作者拆了 28 支专业 SaaS Launch Film，整理出： 动效规则、分镜方法、Three.js 3D 模式、音频规范和质量检查。 制作方式也比较实用： AI 生成素材 + HTML/GSAP 动效 + Three.js 3D + 代码控制时间线。 比较特别的是它做了一套 Gauntlet 审片流程： 做视频的 Agent 不给自己打分。 每轮渲染后换一个新的 critic 看成片，列问题 → 修改 → 重新渲染 → 再验证。 一般跑 3～5 轮。 它还要求动画必须 deterministic： 跳到同一帧，就必须得到同样的画面。 所以最后交付的不只是 MP4，还包括： 分镜、源文件、素材生成记录、审片记录和修改结果。 我觉得这个方向挺有意思。 以前给 Claude Code 的 Skill，大多是在教它怎么写代码。 现在开始有人把 导演、动效设计和审片流程 也做成 Skill 了。 GitHub：[github.com/echris6/motion…](https://github.com/echris6/motion-video-kit/pulls) 如果视频制作流程也能被 Skill 化，以后真正拉开差距的会是模型，还是你手里积累的那套制作方法？ [#AI](https://x.com/hashtag/AI)[#Agent](https://x.com/hashtag/Agent)[#ClaudeCode](https://x.com/hashtag/ClaudeCode)[#VideoAI](https://x.com/hashtag/VideoAI)[#ThreeJS](https://x.com/hashtag/ThreeJS)[#AIAgent](https://x.com/hashtag/AIAgent) [![Image 3](https://pbs.twimg.com/card_img/2105541026186489856/rPHQAkQH?format=webp&name=medium) Pull requests · echris6/motion-video-kit](https://t.co/XeOXsEIWix)[From github.com](https://t.co/XeOXsEIWix)  [6:11 AM · Oct 1, 2026](https://x.com/TiagerBao/status/2105541066674078011)·[11.7K Views](https://x.com/TiagerBao/status/2105541066674078011)   [5](https://x.com/TiagerBao/status/2105541066674078011) 29 226 342      
+*   [![Image 4: @GKev1n](https://pbs.twimg.com/profile_images/2100717851745394688/wg1dGu-F_normal.jpg)](https://x.com/GKev1n)  [gKev1n](https://x.com/GKev1n) [@GKev1n](https://x.com/GKev1n) [9h](https://x.com/GKev1n/status/2105643798529499218)   强制“deterministic（确定性动画）”这一招太懂前端动效的痛了！以前拿纯生成式视频做片子，抽盲盒抽到崩溃还改不了局部细节；用 GSAP + Three.js 代码控时间轴，跳到同一帧像素级对齐，才真算把工程控制权收回来了😂   [](https://x.com/GKev1n/status/2105643798529499218)  2 161        
+*   [![Image 5: @JacksAISites](https://pbs.twimg.com/profile_images/1998750686897397760/-656IiK9_normal.jpg)](https://x.com/JacksAISites)  [Jack](https://x.com/JacksAISites) [@JacksAISites](https://x.com/JacksAISites) [4h](https://x.com/JacksAISites/status/2105717622532927848)   广告片都Skill化了,卷   [1](https://x.com/JacksAISites/status/2105717622532927848)  1 59        
+*   [![Image 6: @aaugeART](https://pbs.twimg.com/profile_images/1815375148872273920/4fas0WS__normal.jpg)](https://x.com/aaugeART)  [Tan](https://x.com/aaugeART) [@aaugeART](https://x.com/aaugeART) [14h](https://x.com/aaugeART/status/2105563759507075078)   对跨境电商广告很有启发：审片 critic 最好再加“前三秒停留、字幕可读性、落地页承诺一致性”检查；同一素材跑3轮后，对照CVR和退款率，避免只把画面做漂亮。   [1](https://x.com/aaugeART/status/2105563759507075078)  1 300        
+
+## See all the replies
+
+[Continue to X](https://x.com/i/jf/onboarding/web?mode=login&redirect_after_login=%2FTiagerBao%2Fstatus%2F2105541066674078011%3Fs%3D12%26t%3DZCUUW3Z_ndyn4Iqtzmj4ng)
+
+## Log in or sign up for X
+
+See what’s happening and join the conversation
+
+[Continue with phone](https://x.com/i/jf/onboarding/web?mode=signup&redirect_after_login=%2FTiagerBao%2Fstatus%2F2105541066674078011%3Fs%3D12%26t%3DZCUUW3Z_ndyn4Iqtzmj4ng)Continue with Apple
+
+Continue with Google
+
+Continue with Google Continue with Google. Opens in new tab
+
+ or 
+
+[Log in with username or email](https://x.com/i/jf/onboarding/web?mode=login&redirect_after_login=%2FTiagerBao%2Fstatus%2F2105541066674078011%3Fs%3D12%26t%3DZCUUW3Z_ndyn4Iqtzmj4ng)
+
+## Relevant people
+
+[![Image 7: Avatar](https://pbs.twimg.com/profile_images/1840689453582446592/Y77oEhBg_normal.jpg)](https://x.com/TiagerBao)
+
+[旺旺@TiagerBao](https://x.com/TiagerBao)[Follow](https://x.com/i/jf/onboarding/web?mode=login&redirect_after_login=%2FTiagerBao)
+
+一人一码一世界，AI筑道，美股问道 | 独立开发者 ｜开源小模型
+
+[Terms](https://x.com/tos)·[Privacy](https://x.com/privacy)·[Cookies](https://support.x.com/articles/20170514)·[Accessibility](https://help.x.com/resources/accessibility)·[Ads Info](https://business.x.com/en/help/troubleshooting/how-twitter-ads-work.html?ref=web-twc-ao-gbl-adsinfo&utm_source=twc&utm_medium=web&utm_campaign=ao&utm_content=adsinfo)·More© 2026 X Corp.
+
+Scan to get the app![Image 8](blob:http://localhost/fb6222c6668407cdc55252bc620d733e)
