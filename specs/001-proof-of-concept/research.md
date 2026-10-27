@@ -63,7 +63,7 @@ composeFrame(ctx: OffscreenCanvasRenderingContext2D /* بدقة المصدر د�
 
 ## R8. سجل الأوامر الموحد
 
-**القرار:** `contracts/commands.schema.json`: 21 أمراً للميزة 001، كل أمر بمخطط معاملات، `undoable` (لقطة قبل)، `confirm` (تأكيد منفصل: تفريغ، تطبيق مقترح، قبول تحديث نمط، ترقية، تصدير)، `actors`. طبقة تنفيذ واحدة `(project, params) → project'` نقية + تحقق من المخطط قبل وبعد + حفظ ذري. الواجهة تستدعي أوامر فقط. CLI/MCP لاحقاً من نفس السجل (المبدأ VII).
+**القرار:** `contracts/commands.schema.json`: 20 أمراً للميزة 001 (كان 21؛ حُذف `transcript.revertAutoFix` لغياب التصحيح التلقائي في 001، القرار 21)، كل أمر بمخطط معاملات، `undoable` (لقطة قبل)، `confirm` (تأكيد منفصل: تفريغ، تطبيق مقترح، قبول تحديث نمط، ترقية، تصدير)، `actors`. طبقة تنفيذ واحدة `(project, params) → project'` نقية + تحقق من المخطط قبل وبعد + حفظ ذري. الواجهة تستدعي أوامر فقط. CLI/MCP لاحقاً من نفس السجل (المبدأ VII).
 **التحقق:** `ajv` (MIT) لمخططات JSON في وقت التشغيل والاختبار.
 
 ## R9. التخزين والمفاتيح والإفصاح
@@ -102,6 +102,9 @@ composeFrame(ctx: OffscreenCanvasRenderingContext2D /* بدقة المصدر د�
 | ajv | 8.x | MIT | تحقق المخططات | مختار |
 | write-file-atomic | أحدث | ISC | حفظ ذري | مختار |
 | ulid | أحدث | MIT | معرّفات | مختار |
+| json-schema-to-typescript | أحدث | MIT | توليد الأنواع من المخططات (T008) | تطوير فقط |
+| zimg (داخل FFmpeg) | مع البناء | WTFPL | تحويل الألوان HDR→SDR في المسار الاحتياطي (`zscale`) | مختار |
+| FFmpeg BtbN `linux64-lgpl` | وسم مثبّت | LGPLv3 | تشغيل اختبارات التكامل على Linux في CI والتطوير | تطوير/CI فقط، لا يُشحن |
 | vitest | 3.x | MIT | اختبارات | تطوير |
 | Playwright | أحدث | Apache-2.0 | اختبارات الواجهة/التركيب | تطوير |
 | jiwer | أحدث | Apache-2.0 | قياس WER | تطوير فقط |

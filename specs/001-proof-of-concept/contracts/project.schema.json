@@ -121,7 +121,7 @@
           }
         },
         "state": { "enum": ["draft", "reviewed", "applied", "discarded"] },
-        "localOnly": { "type": "boolean", "description": "true إن غاب المزود السحابي فاقتُصر على الصمت والإعادات (FR-003)" }
+        "localOnly": { "type": "boolean", "description": "true إن لم يُستخدم مزود سحابي للتمييز الذكي؛ في 001 الأسباب الأربعة كلها بقواعد محلية فالقيمة true دائماً (FR-003، plan.md §Assumptions)" }
       }
     },
     "correction": {

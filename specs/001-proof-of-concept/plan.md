@@ -8,13 +8,13 @@
 
 ## Summary
 
-تطبيق سطح مكتب (Electron) يستورد مقطع «حديث للكاميرا» ≤15 دقيقة، يستخرج الصوت فقط ويرسله لمزود تفريغ سحابي بمفتاح المستخدم (Deepgram `nova-3` مبدئياً حتى قياس WER)، يولّد مقترح قص مبرَّراً من التفريغ والنمط، يطبّقه بموافقة المستخدم كتايم لاين قابل للتعديل، يعرض كابشن عربياً متزامناً بالكلمة، ويصدّر MP4 يطابق المعاينة. المسار التقني: **دالة تركيب نقية واحدة** `composeFrame` ترسم المعاينة والتصدير في Chromium (WebCodecs + Canvas 2D)؛ FFmpeg LGPL كعملية منفصلة للتحليل والصوت والدمج؛ مستند مشروع JSON واحد بمخططات؛ سجل أوامر موحد بـ21 أمراً؛ تراجع بلقطات كاملة؛ نمط JSON بإصدارات في مكتبة المستخدم. التفاصيل والبدائل في [research.md](research.md).
+تطبيق سطح مكتب (Electron) يستورد مقطع «حديث للكاميرا» ≤15 دقيقة، يستخرج الصوت فقط ويرسله لمزود تفريغ سحابي بمفتاح المستخدم (Deepgram `nova-3` مبدئياً حتى قياس WER)، يولّد مقترح قص مبرَّراً من التفريغ والنمط، يطبّقه بموافقة المستخدم كتايم لاين قابل للتعديل، يعرض كابشن عربياً متزامناً بالكلمة، ويصدّر MP4 يطابق المعاينة. المسار التقني: **دالة تركيب نقية واحدة** `composeFrame` ترسم المعاينة والتصدير في Chromium (WebCodecs + Canvas 2D)؛ FFmpeg LGPL كعملية منفصلة للتحليل والصوت والدمج؛ مستند مشروع JSON واحد بمخططات؛ سجل أوامر موحد بـ20 أمراً؛ تراجع بلقطات كاملة؛ نمط JSON بإصدارات في مكتبة المستخدم. التفاصيل والبدائل في [research.md](research.md).
 
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x (strict) على Node المضمّن في Electron 45.x؛ الواجهة React 19 + Vite (electron-vite).
 
-**Primary Dependencies**: electron (MIT)، electron-builder (MIT)، react (MIT)، mp4box.js (BSD-3، demux لـWebCodecs)، ajv (MIT، تحقق المخططات)، write-file-atomic (ISC)، ulid (MIT). ثنائيات منفصلة: FFmpeg/ffprobe بناء LGPLv3 مشحون داخل التطبيق (BtbN `win64-lgpl` لويندوز؛ بناء ذاتي في CI لماك). خطوط OFL مشحونة (IBM Plex Sans Arabic افتراضياً). خدمات سحابية BYOK: Deepgram (افتراضي مؤقت)، ElevenLabs (بديل). الجرد الكامل بالتراخيص: research.md §R11.
+**Primary Dependencies**: electron (MIT)، electron-builder (MIT)، react (MIT)، mp4box.js (BSD-3، demux لـWebCodecs)، ajv (MIT، تحقق المخططات)، write-file-atomic (ISC)، ulid (MIT)؛ تطوير فقط: json-schema-to-typescript (MIT، توليد الأنواع من المخططات). داخل بناء FFmpeg: zimg (WTFPL، تحويل HDR→SDR في المسار الاحتياطي). ثنائيات منفصلة: FFmpeg/ffprobe بناء LGPLv3 مشحون داخل التطبيق (BtbN `win64-lgpl` لويندوز؛ بناء ذاتي في CI لماك). خطوط OFL مشحونة (IBM Plex Sans Arabic افتراضياً). خدمات سحابية BYOK: Deepgram (افتراضي مؤقت)، ElevenLabs (بديل). الجرد الكامل بالتراخيص: research.md §R11.
 
 **Storage**: ملفات JSON في `app.getPath('userData')`: `projects/<id>/{project.json, snapshots/, cache/}` و`styles/<id>/v<n>.json` و`settings.json`؛ مفاتيح API مشفّرة بـ`safeStorage` في ملف منفصل؛ الوسائط مراجع بمسار + بصمة (لا نسخ، لا كتابة بجانبها).
 
@@ -28,7 +28,7 @@
 
 **Constraints**: الفيديو لا يغادر الجهاز، الصوت فقط للتفريغ بعد إفصاح (FR-017)؛ بلا اتصال: استيراد/معاينة/قص يدوي/كابشن/تراجع/تصدير تعمل؛ لا كود GPL/AGPL مضمّن، FFmpeg LGPL عملية منفصلة، لا x264/x265/libfdk_aac؛ `composeFrame` نقية بدقة المصدر، لا `Date.now`/`Math.random` بلا بذرة/`requestAnimationFrame` في التصدير؛ المشروع ≤15 دقيقة (FR-019)؛ نسبة الأبعاد ثابتة (FR-020)؛ MP4 H.264/AAC بدقة المصدر ≤1080p وCFR (FR-022)؛ واجهة عربية RTL مع تبديل للإنجليزية (FR-018).
 
-**Scale/Scope**: مستخدم واحد، مشروع بمصدر واحد ومسار واحد، نمط افتراضي واحد (+ إصداراته)، 21 أمراً، ~12 شاشة/لوحة (استيراد، تايم لاين، مقترح، مراجعة كلمات، لوحة النمط، اقتراح تحديث النمط، سجل، إعدادات/إفصاح، تصدير). لا شات، لا MCP، لا تنزيل من روابط، لا B-roll، لا إعادة تأطير.
+**Scale/Scope**: مستخدم واحد، مشروع بمصدر واحد ومسار واحد، نمط افتراضي واحد (+ إصداراته)، 20 أمراً، ~12 شاشة/لوحة (استيراد، تايم لاين، مقترح، مراجعة كلمات، لوحة النمط، اقتراح تحديث النمط، سجل، إعدادات/إفصاح، تصدير). لا شات، لا MCP، لا تنزيل من روابط، لا B-roll، لا إعادة تأطير.
 
 ## Constitution Check
 
@@ -42,7 +42,7 @@
 | IV مشروع قابل للتحرير + حتمية | مستند واحد؛ معاينة = تصدير بنفس الدالة؛ `render(t, params)` نقية؛ بذرة | ⚠️ كان مفتوحاً (محرك المعاينة/التصدير) | ✅ R2: `composeFrame` واحدة، Chromium فقط، cues محسوبة مرة؛ R3 فحص ±1 |
 | V محلي أولاً، عربي أولاً | الفيديو محلي؛ الصوت فقط للسحابة بإفصاح؛ وضع محلي لاحق؛ تشكيل عربي مختبر؛ WER مقاس قبل الاعتماد | ⚠️ المزود والمحرك غير محسومين | ✅ R5 (مزود مؤقت + بروتوكول WER إلزامي قبل الإغلاق)، R6 (خط OFL + اختبارات دلالية)، R9 (إفصاح) |
 | VI الترخيص | متساهل فقط؛ GPL نتعلم؛ FFmpeg LGPL منفصل؛ جرد | ⚠️ libass/mediabunny/HyperFrames أسئلة | ✅ R2/R4/R11: libass وmediabunny وHyperFrames-كمحرك مرفوضون؛ openh264 قرار للمالك غير مشحون |
-| VII سجل أوامر موحد | سجل واحد بمخططات؛ أوامر ذرّية قابلة للتحقق والعكس | ✅ `commands.schema.json` (21) | ✅ |
+| VII سجل أوامر موحد | سجل واحد بمخططات؛ أوامر ذرّية قابلة للتحقق والعكس | ✅ `commands.schema.json` (20) | ✅ |
 | VIII البساطة والقياس | أصغر مسار كامل؛ لا تجريدات غير مطلوبة؛ الأرقام تُقاس | ✅ لا PixiJS، لا SQLite، لا monorepo، لا SDKs؛ R10 مهمة قياس أولى | ✅ |
 | القيود التقنية | Electron مرشح أول يُحسم بقياس؛ مفاتيح في مخزن آمن؛ محتوى الفيديو مدخل غير موثوق | ⚠️ | ✅ R1 + R10 فيتو؛ R9 safeStorage (تفسير يحتاج تأكيداً)؛ نص التفريغ لا يدخل أي وسيط إلا عبر مخطط أمر |
 
@@ -80,21 +80,29 @@ src/
 │   └── transcript/          # providers/{deepgram,elevenlabs}.ts (تحويل → العقد)، normalize.ts (عربي)
 ├── main/                    # Electron main: ipc (persist/ffmpeg/secrets/providers فقط — لا أوامر مونتاج)، ffmpeg/{probe,audio,mux,encoders}.ts، storage/، secrets.ts (safeStorage)، providers/http.ts
 ├── preload/                 # contextBridge: invokeCommand, subscribe
-└── renderer/                # React RTL: screens/{Import,Timeline,Proposal,WordReview,StylePanel,StyleUpdate,History,Settings,Export}، player/ (WebCodecs + mp4box)، commands/runtime.ts (يشغّل core/commands هنا)، i18n/{ar,en}.json
+└── renderer/                # React RTL: screens/{Import,Disclosure,Timeline,Proposal,WordReview,StylePanel,StyleUpdate,History,Settings,Export,About}، components/ (Progress…)، player/ (WebCodecs + mp4box)، export/encoder.ts (VideoEncoder)، captions/measure.ts (قياس النص المحقون إلى core)، fonts.ts، commands/runtime.ts (يشغّل core/commands هنا)، i18n/{ar,en}.json
 resources/
 ├── ffmpeg/{darwin-arm64,darwin-x64,win32-x64}/   # LGPL + SHA-256 + LICENSES
 ├── fonts/                   # IBM Plex Sans Arabic وبقية OFL
-└── styles/default-v1.json   # النمط الافتراضي
+├── styles/default-v1.json   # النمط الافتراضي
+└── providers.json           # ملفات تعريف المزودين: النموذج الافتراضي وعتبة الثقة لكل مزود
 tests/
 ├── unit/                    # core: time, commands, proposal, chunking, normalize, style versions
 ├── contract/                # المخططات ضد fixtures + استجابات مزودين مسجّلة (بلا مفاتيح)
 ├── integration/             # ffmpeg probe/audio/mux على عينات صغيرة (Linux CI)
-└── e2e/                     # Playwright-Electron: العربية الدلالية، parity hash، undo×20، offline
+├── e2e/                     # Playwright-Electron: العربية الدلالية، parity hash، undo×20، offline
+└── fixtures/                # عيّنات الاختبار؛ الكبيرة خارج git، README.md بالمصدر والترخيص لكل ملف (القرار 25)
 scripts/
 ├── acceptance/parity.ts     # R3 كاملة + تقرير وصور للمراجع
+├── spike/                   # مهمة القياس R10: measure.ts, export-spike.ts, README.md
+├── gen-types.ts             # توليد src/core/contracts/types.ts من specs/001/contracts
+├── fixtures/fetch.sh        # جلب عيّنات الاختبار الكبيرة بالبصمة (خارج git)
 ├── wer/                     # normalize.py, run.py (jiwer)، تطوير فقط
 └── ffmpeg-build/            # سكربتات بناء ماك LGPL + تثبيت BtbN بالبصمة
-docs/licenses/INVENTORY.md   # جرد التراخيص (المبدأ VI)
+docs/
+├── licenses/INVENTORY.md    # جرد التراخيص (المبدأ VI) + THIRD-PARTY.md المولَّد
+├── security/                # تقارير المراجعة الأمنية لكل مرحلة (phase-2, us1..us4, 001-final)
+└── shortcuts.md             # اختصارات لوحة المفاتيح
 ```
 
 **Structure Decision**: حزمة واحدة مع حدود مجلدات مفروضة بقاعدة ESLint (`src/core` لا يستورد من `electron`/`react`/`src/main`/`src/renderer`). هذا يحقق «المنطق في طبقة مستقلة عن الواجهة» بلا تعقيد monorepo (المبدأ VIII). **أين تُنفَّذ الأوامر:** في **الـrenderer** (عبر `renderer/commands/runtime.ts` الذي يستدعي الدوال النقية في `core/commands`)، لأن اشتقاق الكابشن (fit حجم الخط ومستطيلات الكلمات) يحتاج الخطوط المحمّلة وقياس نص Chromium (OffscreenCanvas `measureText`/`getSelectionRects` أو `Range.getClientRects()`)، وهذه غير موجودة في `main` (Node). دور `main` عبر IPC محصور في: الحفظ الذري واللقطات (persist)، تشغيل FFmpeg/ffprobe، الأسرار (`safeStorage`)، وطلبات المزودين (`fetch` بالمفتاح). الواجهة (React) لا تحوي منطق مونتاج؛ تستدعي الأوامر فقط. `composeFrame` في `core/captions/compose.ts` تُستدعى من `renderer` في المعاينة والتصدير معاً. **قاعدة إبطال الكابشن:** أي أمر يغيّر `transcript` أو `timeline` أو `style.captions` أو `fps` يعيد اشتقاق `captions.cues` حتمياً داخل الأمر نفسه؛ أما الرسم فلا يعيد التجميع أبداً.
@@ -114,7 +122,7 @@ docs/licenses/INVENTORY.md   # جرد التراخيص (المبدأ VI)
 ## Phase 1: Design — مكتمل
 
 - `data-model.md`: 11 كياناً، العلاقات، الحالات، قواعد التحقق.
-- `contracts/`: `project.schema.json`، `style.schema.json`، `transcript.schema.json`، `commands.schema.json` (21 أمراً)، `README.md`.
+- `contracts/`: `project.schema.json`، `style.schema.json`، `transcript.schema.json`، `commands.schema.json` (20 أمراً)، `README.md`.
 - `quickstart.md`: 9 سيناريوهات تحقق تغطي US1–US4 وSC-001..SC-009.
 
 **إعادة فحص الدستور بعد التصميم:** الجدول أعلاه (العمود الأخير) — ✅ كله.
@@ -127,3 +135,11 @@ docs/licenses/INVENTORY.md   # جرد التراخيص (المبدأ VI)
 - كل الأسباب الأربعة محلية في 001: الصمت من فجوات الكلمات؛ الإعادات بتشابه جمل متتالية بعد التطبيع العربي (Jaccard على الكلمات ≥ `repeatsSimilarity`، افتراضي 0.8)؛ الحشو من قائمة افتراضية (يعني، اه، امم، أقصد) في النمط؛ «الجملة المتروكة» بقاعدة محلية (مقطع قصير يليه صمت ثم إعادة بداية مشابهة). التمييز بنموذج لغوي (LLM) ومزوّده BYOK **مؤجل** ولم يُبحث (research.md R12-7)؛ `localOnly=true` يبقى في المخطط لذلك اليوم (FR-003 يسمح).
 - اللقطة المصغّرة للمعاينة تُعرض بـ`drawImage` من OffscreenCanvas بدقة المصدر؛ إن ثبت ثقلها تُقاس قبل أي تغيير (R2).
 - الحد الأدنى الافتراضي لطول اللقطة 500ms؛ عتبة الصمت الافتراضية 700ms؛ حماية حواف الجمل 120ms — قيم في النمط الافتراضي تُراجع بعد الاستخدام.
+- المصادر الأعلى من 1080p تُرفض عند الاستيراد في 001 برسالة تذكر الحد (القرار 24)؛ لا شيء في `composeFrame` أو المخططات يفترض 1080p.
+- الوضع المحلي للتفريغ ميزة لاحقة (القرار 23)؛ `settings.transcription.mode` يبقى في المخطط بقيمة `cloud` فقط في 001.
+- VFR: الإطار رقم `i` على شبكة المشروع الثابتة يُرسم من آخر إطار مصدر طابعه الزمني ≤ `i/fps` (أقرب سابق)؛ لا تكرار صناعي ولا تخطٍّ غير مبرَّر (القرار 13).
+- HDR/10-bit: المسار الرئيسي يعتمد على تحويل Chromium عند رسم `VideoFrame` على canvas SDR إن أثبتته مهمة القياس (T031 S4)؛ وإلا يمر المصدر عبر المسار الاحتياطي rawvideo مع `zscale` في FFmpeg. لا تحويل في `mux.ts` لأن المدمج يستلم فيديو مشفّراً (`-c:v copy`).
+- قياس النص (مستطيلات الكلمات وملاءمة حجم الخط) دالة `measure(text, font, dir) → rects` تُحقن من الـrenderer إلى `core/captions`؛ `core` يبقى بلا DOM (قاعدة ESLint في T003).
+- اسم مجلد اللقطات موحَّد: `projects/<id>/snapshots/<seq>.json` (data-model 1.9).
+- أمر `transcript.revertAutoFix` حُذف من 001 (لا تصحيح تلقائي، القرار 21)؛ السجل 20 أمراً. قيمة `correctedBy: "auto"` تبقى محجوزة في المخطط.
+- مصدر بلا مسار صوت: المدمج يستخدم `-an` ويُصدَّر فيديو بلا صوت (الحالة الحدّية في المواصفة).

@@ -28,7 +28,7 @@
           "confidence": { "oneOf": [ { "type": "number", "minimum": 0, "maximum": 1 }, { "type": "null" } ], "description": "مُطبَّعة 0..1 (ElevenLabs: exp(logprob))؛ null إن المزود لا يعطي ثقة لكل كلمة. علامة «منخفض الثقة» تُحسب عند العرض: confidence < threshold المزود" },
           "lang": { "type": "string" },
           "original": { "type": "string", "description": "النص قبل أي تصحيح" },
-          "correctedBy": { "enum": ["user", "auto"] }
+          "correctedBy": { "enum": ["user", "auto"], "description": "auto محجوزة للتصحيح التلقائي في ميزة لاحقة (القرار 21)؛ لا تُكتب في 001" }
         }
       }
     },

@@ -80,7 +80,8 @@ Style (الرأس)            styles/<styleId>/style.json
 StyleVersion (المحتوى)   styles/<styleId>/versions/<n>.json
 ├─ schemaVersion, styleId, version, date, reason, basedOnCorrections: correctionRef[]
 ├─ cut:      { silence.maxUs, repeats.enabled, repeats.similarity, minClipUs,
-│              protectSentenceEdgesUs, fillers.words[] }           ← كل حقل Rule
+│              protectSentenceEdgesUs, fillers.words[],
+│              repeatedRejectionThreshold (افتراضي 3، FR-011) }    ← كل حقل Rule
 ├─ captions: { enabled, font.family, font.sizePx, position, maxLines,
 │              wordsPerChunk{min,max}, breakAtPauseUs, highlightCurrent,
 │              highlightColor, textColor, bgColor, safeArea, lowConfidenceThreshold }  ← كل حقل Rule
@@ -102,7 +103,7 @@ Rule = { value, mode: "mandatory"|"preference", source: { kind:"default"|"user"|
 
 ### 1.9 History (سجل التعديلات)
 
-`history/<seq>.json = { seq, at, actor:"user"|"agent", command: {name, params}, description, snapshot: Project }`
+`snapshots/<seq>.json = { seq, at, actor:"user"|"agent", command: {name, params}, description, snapshot: Project }`
 
 - لقطة كاملة **قبل** كل أمر (القرار 2). `undo` يستعيد `snapshot[seq]` ويدفع الحالة الحالية إلى مكدس الإعادة. المضغوط (gzip) اختياري لاحقاً.
 - التراجع يستعيد **مستند المشروع فقط** (بما فيه تثبيت `{styleId, version}`)؛ إصدارات النمط في مكتبة المستخدم **لا تُحذف أبداً** بالتراجع، فتبقى نسخة نمط أُنشئت ثم تُرجع عنها في السجل كإصدار غير مستخدم.
@@ -143,3 +144,11 @@ Project 1─* HistoryEntry (snapshot)
 - `proposal.apply` MUST يتحقق أن كل بند غير مستثنى لا يخالف قاعدة `mandatory`؛ المخالف يُعلَّم `blocked` ولا يُطبَّق (FR-009).
 - `export.mp4` MUST يتحقق بعد الكتابة أن `nb_read_frames` (ffprobe `-count_frames`) ضمن ±1 من `Σ(outFrame − inFrame)` وأن مدة الصوت ضمن إطار من مدة الفيديو، وأن `captions.cues` ضمن حدود اللقطات.
 - التفريغ: الكلمات مرتبة، `startUs < endUs`، لا تداخل، `confidence` ∈ [0,1].
+
+## 5. قواعد مضافة من تحليل التناسق (2026-10-27)
+
+- **VFR (القرار 13):** الإطار رقم `i` على شبكة المشروع الثابتة يُرسم من آخر إطار مصدر طابعه الزمني ≤ `i/fps` (أقرب سابق)؛ لا تكرار صناعي ولا تخطٍّ غير مبرَّر. `sourceIsVfr=true` يُعلَّم عند الاستيراد.
+- **قياس النص:** `deriveCues` تستلم دالة `measure(text, font, dir) → rects` محقونة من الـrenderer؛ `core` لا يلمس DOM.
+- **اللقطات:** المجلد `projects/<id>/snapshots/<seq>.json` (توحيد الاسم مع plan.md وtasks.md).
+- **الأوامر:** 20 أمراً؛ `transcript.revertAutoFix` خارج 001 (القرار 21). `Word.correctedBy="auto"` محجوزة ولا تُكتب.
+- **الحدود عند الاستيراد:** ≤15 دقيقة، ≤8GB، ≤1080p (القرار 24)؛ ما يتجاوزها يُرفض قبل أي معالجة برسالة تذكر الحد.

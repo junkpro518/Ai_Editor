@@ -16,14 +16,15 @@
     "basedOnCorrections": { "type": "array", "items": { "type": "string" } },
     "cut": {
       "type": "object", "additionalProperties": false,
-      "required": ["silenceMaxUs", "repeatsEnabled", "repeatsSimilarity", "minClipUs", "protectSentenceEdgesUs", "fillerWords"],
+      "required": ["silenceMaxUs", "repeatsEnabled", "repeatsSimilarity", "minClipUs", "protectSentenceEdgesUs", "fillerWords", "repeatedRejectionThreshold"],
       "properties": {
         "silenceMaxUs": { "$ref": "#/$defs/rule", "description": "صمت أطول من هذا يُقترح حذفه" },
         "repeatsEnabled": { "$ref": "#/$defs/rule" },
         "repeatsSimilarity": { "$ref": "#/$defs/rule", "description": "عتبة التشابه (0..1) لاعتبار جملتين إعادة" },
         "minClipUs": { "$ref": "#/$defs/rule", "description": "الحد الأدنى لطول اللقطة الناتجة" },
         "protectSentenceEdgesUs": { "$ref": "#/$defs/rule", "description": "هامش لا يُقص قبل/بعد الجملة" },
-        "fillerWords": { "$ref": "#/$defs/rule", "description": "قائمة كلمات الحشو (مثل: يعني، اه، امم)" }
+        "fillerWords": { "$ref": "#/$defs/rule", "description": "قائمة كلمات الحشو (مثل: يعني، اه، امم)" },
+        "repeatedRejectionThreshold": { "$ref": "#/$defs/rule", "description": "عدد الاستثناءات بالسبب نفسه في مقترح واحد التي تطلق اقتراح تحديث النمط (FR-011)؛ القيمة عدد صحيح ≥ 2، الافتراضي 3" }
       }
     },
     "captions": {

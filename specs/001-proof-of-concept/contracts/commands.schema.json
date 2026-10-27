@@ -64,9 +64,6 @@
       "params": { "type": "object", "required": ["wordId", "text"], "additionalProperties": false,
         "properties": { "wordId": { "type": "string" }, "text": { "type": "string", "minLength": 1 } } } },
 
-    { "name": "transcript.revertAutoFix", "undoable": true, "confirm": false, "actors": ["user"],
-      "params": { "type": "object", "required": ["wordId"], "additionalProperties": false, "properties": { "wordId": { "type": "string" } } } },
-
     { "name": "style.setField", "undoable": true, "confirm": false, "actors": ["user"],
       "description": "يُنشئ إصدار نمط جديداً في المكتبة (reason=user) ويثبّت المشروع عليه.",
       "params": { "type": "object", "required": ["path", "value"], "additionalProperties": false,
