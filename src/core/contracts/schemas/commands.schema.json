@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai-editor/commands/1",
+  "title": "سجل الأوامر الموحد — أوامر الميزة 001 فقط",
+  "description": "كل أمر: اسم، مخطط معاملات، فاعل (user|agent)، هل يأخذ لقطة قبل التنفيذ (undoable)، وهل يحتاج تأكيداً منفصلاً. الواجهة والـCLI وMCP (لاحقاً) تتولد من هذا الملف.",
+  "type": "object",
+  "required": ["commands"],
+  "properties": {
+    "commands": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/command" }
+    }
+  },
+  "commands": [
+    { "name": "project.import", "undoable": false, "confirm": false, "actors": ["user"],
+      "params": { "type": "object", "required": ["path"], "additionalProperties": false,
+        "properties": { "path": { "type": "string" }, "styleRef": { "$ref": "#/$defs/styleRef" } } },
+      "result": { "type": "object", "properties": { "projectId": { "type": "string" }, "source": {} } },
+      "errors": ["unsupported_format", "too_long", "no_video_stream"] },
+
+    { "name": "transcript.request", "undoable": false, "confirm": true, "actors": ["user"],
+      "description": "يستخرج الصوت فقط ويرسله للمزود المضبوط؛ التأكيد الأول يعرض الإفصاح (FR-017).",
+      "params": { "type": "object", "additionalProperties": false, "properties": { "mode": { "enum": ["cloud", "local"] } } },
+      "errors": ["offline", "no_api_key", "provider_error", "no_audio"] },
+
+    { "name": "proposal.request", "undoable": false, "confirm": false, "actors": ["user", "agent"],
+      "params": { "type": "object", "additionalProperties": false, "properties": {} },
+      "result": { "$ref": "ai-editor/project/1#/$defs/proposal" },
+      "errors": ["no_transcript"] },
+
+    { "name": "proposal.exclude", "undoable": true, "confirm": false, "actors": ["user"],
+      "params": { "type": "object", "required": ["proposalId", "itemIds"], "additionalProperties": false,
+        "properties": { "proposalId": { "type": "string" }, "itemIds": { "type": "array", "items": { "type": "string" }, "minItems": 1 } } } },
+
+    { "name": "proposal.apply", "undoable": true, "confirm": true, "actors": ["user"],
+      "description": "يطبّق البنود غير المستثناة وغير المحظورة كقصّات؛ يسجّل كل استثناء كتصحيح؛ قد يولّد style.updateProposal.",
+      "params": { "type": "object", "required": ["proposalId"], "additionalProperties": false, "properties": { "proposalId": { "type": "string" } } },
+      "errors": ["proposal_not_reviewed"] },
+
+    { "name": "proposal.discard", "undoable": true, "confirm": false, "actors": ["user"],
+      "params": { "type": "object", "required": ["proposalId"], "additionalProperties": false, "properties": { "proposalId": { "type": "string" } } } },
+
+    { "name": "clip.split", "undoable": true, "confirm": false, "actors": ["user", "agent"],
+      "params": { "type": "object", "required": ["clipId", "atFrame"], "additionalProperties": false,
+        "properties": { "clipId": { "type": "string" }, "atFrame": { "type": "integer", "minimum": 0 } } } },
+
+    { "name": "clip.trim", "undoable": true, "confirm": false, "actors": ["user", "agent"],
+      "params": { "type": "object", "required": ["clipId"], "additionalProperties": false,
+        "properties": { "clipId": { "type": "string" }, "inFrame": { "type": "integer" }, "outFrame": { "type": "integer" } } },
+      "warnings": ["below_min_clip", "violates_mandatory_rule"] },
+
+    { "name": "clip.move", "undoable": true, "confirm": false, "actors": ["user", "agent"],
+      "params": { "type": "object", "required": ["clipId", "toIndex"], "additionalProperties": false,
+        "properties": { "clipId": { "type": "string" }, "toIndex": { "type": "integer", "minimum": 0 } } } },
+
+    { "name": "clip.delete", "undoable": true, "confirm": false, "actors": ["user", "agent"],
+      "params": { "type": "object", "required": ["clipId"], "additionalProperties": false, "properties": { "clipId": { "type": "string" } } } },
+
+    { "name": "captions.toggle", "undoable": true, "confirm": false, "actors": ["user"],
+      "params": { "type": "object", "required": ["enabled"], "additionalProperties": false, "properties": { "enabled": { "type": "boolean" } } },
+      "errors": ["no_transcript"] },
+
+    { "name": "transcript.fixWord", "undoable": true, "confirm": false, "actors": ["user"],
+      "params": { "type": "object", "required": ["wordId", "text"], "additionalProperties": false,
+        "properties": { "wordId": { "type": "string" }, "text": { "type": "string", "minLength": 1 } } } },
+
+    { "name": "style.setField", "undoable": true, "confirm": false, "actors": ["user"],
+      "description": "يُنشئ إصدار نمط جديداً في المكتبة (reason=user) ويثبّت المشروع عليه.",
+      "params": { "type": "object", "required": ["path", "value"], "additionalProperties": false,
+        "properties": { "path": { "type": "string", "pattern": "^(cut|captions)\\.[a-zA-Z]+$" }, "value": {}, "mode": { "enum": ["mandatory", "preference"] }, "reason": { "type": "string" } } } },
+
+    { "name": "style.updateProposal.accept", "undoable": true, "confirm": true, "actors": ["user"],
+      "params": { "type": "object", "required": ["proposalId"], "additionalProperties": false, "properties": { "proposalId": { "type": "string" } } } },
+
+    { "name": "style.updateProposal.reject", "undoable": true, "confirm": false, "actors": ["user"],
+      "params": { "type": "object", "required": ["proposalId"], "additionalProperties": false, "properties": { "proposalId": { "type": "string" } } } },
+
+    { "name": "project.upgradeStyle", "undoable": true, "confirm": true, "actors": ["user"],
+      "params": { "type": "object", "required": ["toVersion"], "additionalProperties": false, "properties": { "toVersion": { "type": "integer", "minimum": 1 } } } },
+
+    { "name": "style.rollback", "undoable": true, "confirm": true, "actors": ["user"],
+      "description": "يُنشئ إصداراً جديداً بمحتوى إصدار سابق (لا حذف للتاريخ).",
+      "params": { "type": "object", "required": ["styleId", "toVersion"], "additionalProperties": false, "properties": { "styleId": { "type": "string" }, "toVersion": { "type": "integer" } } } },
+
+    { "name": "history.undo", "undoable": false, "confirm": false, "actors": ["user"], "params": { "type": "object", "additionalProperties": false, "properties": {} } },
+    { "name": "history.redo", "undoable": false, "confirm": false, "actors": ["user"], "params": { "type": "object", "additionalProperties": false, "properties": {} } },
+
+    { "name": "export.mp4", "undoable": false, "confirm": true, "actors": ["user"],
+      "params": { "type": "object", "required": ["outputPath"], "additionalProperties": false, "properties": { "outputPath": { "type": "string" } } },
+      "result": { "type": "object", "properties": { "durationUs": { "type": "integer" }, "frames": { "type": "integer" }, "parityCheck": { "type": "object" } } },
+      "errors": ["encoder_unavailable", "write_failed", "parity_failed"] }
+  ],
+  "$defs": {
+    "styleRef": { "type": "object", "required": ["styleId", "version"], "properties": { "styleId": { "type": "string" }, "version": { "type": "integer" } } },
+    "command": {
+      "type": "object", "required": ["name", "undoable", "confirm", "actors", "params"], "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z]+(\\.[a-zA-Z]+)+$" },
+        "description": { "type": "string" },
+        "undoable": { "type": "boolean", "description": "true = تؤخذ لقطة كاملة من المشروع قبل التنفيذ" },
+        "confirm": { "type": "boolean", "description": "true = تأكيد منفصل (الدستور III: تصدير، إرسال خارجي، تطبيق مقترح، تغيير نمط)" },
+        "actors": { "type": "array", "items": { "enum": ["user", "agent"] } },
+        "params": { "type": "object" },
+        "result": { "type": "object" },
+        "errors": { "type": "array", "items": { "type": "string" } },
+        "warnings": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

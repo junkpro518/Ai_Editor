@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai-editor/project/1",
+  "title": "Project Document (مصدر الحقيقة الوحيد)",
+  "type": "object",
+  "required": ["schemaVersion", "id", "name", "createdAt", "updatedAt", "source", "style", "transcript", "transcriptJob", "timeline", "captions", "proposals", "corrections", "styleUpdateProposals", "seed"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "seed": { "type": "integer" },
+    "source": {
+      "type": "object",
+      "required": ["id", "path", "fileName", "hash", "durationUs", "frameCount", "fps", "width", "height", "hasAudio"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" }, "path": { "type": "string" }, "fileName": { "type": "string" },
+        "hash": { "type": "string", "description": "sha256(أول 64MB + الحجم)" },
+        "durationUs": { "type": "integer", "minimum": 0, "maximum": 900000000, "description": "≤ 15 دقيقة (FR-019)" },
+        "fps": { "$ref": "#/$defs/rational", "description": "معدل المشروع الثابت (CFR)؛ لمصدر VFR = أقرب معدل معياري لـ avg_frame_rate" },
+        "sourceIsVfr": { "type": "boolean" },
+        "frameCount": { "type": "integer", "minimum": 1, "description": "من ffprobe -count_frames عند الاستيراد (nb_frames غير موثوق)؛ على شبكة fps المشروع" },
+        "rotation": { "type": "integer" },
+        "width": { "type": "integer" }, "height": { "type": "integer" },
+        "hasAudio": { "type": "boolean" },
+        "fileSize": { "type": "integer" }, "mtime": { "type": "string" },
+        "container": { "type": "string" }, "videoCodec": { "type": "string" }, "audioCodec": { "type": "string" }
+      }
+    },
+    "style": {
+      "type": "object", "required": ["styleId", "version"], "additionalProperties": false,
+      "properties": { "styleId": { "type": "string" }, "version": { "type": "integer", "minimum": 1 } }
+    },
+    "transcript": { "oneOf": [ { "type": "null" }, { "$ref": "ai-editor/transcript/1" } ] },
+    "transcriptJob": {
+      "type": "object", "required": ["state"], "additionalProperties": false,
+      "properties": {
+        "state": { "enum": ["idle", "extracting_audio", "uploading", "transcribing", "done", "failed"] },
+        "provider": { "type": "string" }, "model": { "type": "string" },
+        "progress": { "type": "number", "minimum": 0, "maximum": 1 },
+        "audioHash": { "type": "string" }, "error": { "type": "string" },
+        "startedAt": { "type": "string" }, "finishedAt": { "type": "string" }
+      }
+    },
+    "timeline": {
+      "type": "object", "required": ["clips"], "additionalProperties": false,
+      "properties": {
+        "clips": {
+          "type": "array",
+          "items": {
+            "type": "object", "required": ["id", "sourceId", "inFrame", "outFrame", "timelineStartFrame"], "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string" }, "sourceId": { "type": "string" },
+              "inFrame": { "type": "integer", "minimum": 0, "description": "رقم إطار صحيح على شبكة fps المشروع" }, "outFrame": { "type": "integer", "minimum": 0, "description": "حصري" },
+              "timelineStartFrame": { "type": "integer", "minimum": 0 },
+              "label": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "captions": {
+      "type": "object", "required": ["enabled", "cues"], "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "cues": {
+          "type": "array",
+          "items": {
+            "type": "object", "required": ["id", "startFrame", "endFrame", "wordIds", "lines", "fontSizePx"], "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string" },
+              "startFrame": { "type": "integer" }, "endFrame": { "type": "integer" },
+              "fontSizePx": { "type": "integer", "description": "ناتج fit محسوب مرة واحدة" },
+              "activeWordRects": { "type": "array", "description": "مستطيلات الكلمات بالبكسل بدقة المصدر، محسوبة مرة واحدة", "items": { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 } },
+              "wordIds": { "type": "array", "items": { "type": "string" } },
+              "lines": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "proposals": { "type": "array", "items": { "$ref": "#/$defs/proposal" } },
+    "corrections": { "type": "array", "items": { "$ref": "#/$defs/correction" } },
+    "styleUpdateProposals": { "type": "array", "items": { "$ref": "#/$defs/styleUpdateProposal" } }
+  },
+  "$defs": {
+    "rational": {
+      "type": "object", "required": ["num", "den"], "additionalProperties": false,
+      "properties": { "num": { "type": "integer", "minimum": 1 }, "den": { "type": "integer", "minimum": 1 } }
+    },
+    "reason": { "enum": ["silence", "repeat", "abandoned", "filler"] },
+    "proposal": {
+      "type": "object", "required": ["id", "createdAt", "styleRef", "items", "totals", "state"], "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" }, "createdAt": { "type": "string" },
+        "styleRef": { "type": "object", "required": ["styleId", "version"], "properties": { "styleId": { "type": "string" }, "version": { "type": "integer" } } },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object", "required": ["id", "startUs", "endUs", "text", "reason", "ruleId", "state"], "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string" },
+              "startUs": { "type": "integer" }, "endUs": { "type": "integer" },
+              "text": { "type": "string" },
+              "reason": { "$ref": "#/$defs/reason" },
+              "ruleId": { "type": "string" },
+              "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+              "state": { "enum": ["proposed", "excluded", "applied", "blocked"] },
+              "blockedBy": { "type": "string" }
+            }
+          }
+        },
+        "totals": {
+          "type": "object", "required": ["byReason", "savedUs"], "additionalProperties": false,
+          "properties": {
+            "byReason": { "type": "object", "required": ["silence", "repeat", "abandoned", "filler"], "additionalProperties": { "type": "integer" } },
+            "savedUs": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "state": { "enum": ["draft", "reviewed", "applied", "discarded"] },
+        "localOnly": { "type": "boolean", "description": "true إن لم يُستخدم مزود سحابي للتمييز الذكي؛ في 001 الأسباب الأربعة كلها بقواعد محلية فالقيمة true دائماً (FR-003، plan.md §Assumptions)" }
+      }
+    },
+    "correction": {
+      "type": "object", "required": ["id", "at", "actor", "kind", "quote"], "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" }, "at": { "type": "string" }, "actor": { "const": "user" },
+        "kind": { "enum": ["exclude_item", "exclude_all", "manual_edit", "word_fix"] },
+        "proposalId": { "type": "string" }, "itemId": { "type": "string" },
+        "ruleId": { "type": "string" }, "reason": { "$ref": "#/$defs/reason" },
+        "quote": { "type": "string" },
+        "before": {}, "after": {},
+        "violates": { "type": "string", "description": "ruleId لقاعدة إلزامية كسرها تعديل يدوي (يُسمح مع تحذير)" }
+      }
+    },
+    "styleUpdateProposal": {
+      "type": "object", "required": ["id", "createdAt", "styleRef", "trigger", "diff", "newPrecedents", "state"], "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" }, "createdAt": { "type": "string" },
+        "styleRef": { "type": "object", "required": ["styleId", "version"], "properties": { "styleId": { "type": "string" }, "version": { "type": "integer" } } },
+        "trigger": {
+          "type": "object", "required": ["kind", "correctionIds"], "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["repeated_rejection"] },
+            "reason": { "$ref": "#/$defs/reason" },
+            "count": { "type": "integer" },
+            "correctionIds": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "diff": { "type": "array", "items": { "type": "object", "required": ["path", "from", "to"], "properties": { "path": { "type": "string" }, "from": {}, "to": {} } } },
+        "newPrecedents": { "type": "array", "items": { "type": "object" } },
+        "state": { "enum": ["pending", "accepted", "rejected"] },
+        "decidedAt": { "type": "string" }
+      }
+    }
+  }
+}

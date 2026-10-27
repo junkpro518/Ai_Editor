@@ -1,0 +1,66 @@
+{
+  "name": "ai-editor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "محرر مونتاج ذكي قائم على أنماط قابلة للتعلّم — الميزة 001: إثبات تقني",
+  "type": "module",
+  "main": "./out/main/index.js",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.34.9",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "dist": "electron-vite build && electron-builder",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "gen:types": "tsx scripts/gen-types.ts",
+    "ffmpeg:fetch": "bash scripts/ffmpeg-build/fetch-win.sh",
+    "ffmpeg:build-mac": "bash scripts/ffmpeg-build/build-mac.sh",
+    "acceptance:parity": "tsx scripts/acceptance/parity.ts",
+    "fixtures:fetch": "bash scripts/fixtures/fetch.sh",
+    "fixtures:generate": "bash scripts/fixtures/generate.sh",
+    "spike": "tsx scripts/spike/measure.ts"
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "mp4box": "2.5.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "ulid": "3.0.2",
+    "write-file-atomic": "8.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "26.6.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/write-file-atomic": "4.0.3",
+    "@vitejs/plugin-react": "6.1.2",
+    "electron": "45.1.0",
+    "electron-builder": "26.18.1",
+    "electron-vite": "6.0.0",
+    "eslint": "10.13.0",
+    "json-schema-to-typescript": "16.0.0",
+    "prettier": "3.9.10",
+    "tsx": "4.21.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.1",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild"
+    ]
+  }
+}

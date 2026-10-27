@@ -9,3 +9,21 @@ __pycache__/
 *.pyc
 .next/
 dist/
+
+# --- Ai_Editor (001) ---
+out/
+dist/
+release/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+# ثنائيات FFmpeg تُجلب بالسكربت (بصمة SHA-256 في scripts/ffmpeg-build/)
+resources/ffmpeg/*/
+!resources/ffmpeg/README.md
+# عيّنات الاختبار الكبيرة تُجلب/تُولَّد بالسكربت (tests/fixtures/README.md)
+tests/fixtures/*.mp4
+tests/fixtures/*.mov
+tests/fixtures/*.webm
+tests/fixtures/*.wav
+tests/fixtures/wer/audio/

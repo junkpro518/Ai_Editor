@@ -1,0 +1,66 @@
+# CI للميزة 001 (T009). بلا مفاتيح API: اختبارات المزودين تعمل باستجابات مسجّلة.
+name: ci
+
+on:
+  push:
+    branches: [main, '[0-9][0-9][0-9]-*']
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  PNPM_VERSION: 10.34.9
+
+jobs:
+  linux:
+    name: lint + unit + contract + integration (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: FFmpeg LGPL (linux64، للاختبارات فقط — لا يُشحن)
+        run: bash scripts/ffmpeg-build/fetch-win.sh linux
+      - name: عيّنات الاختبار المولَّدة (بلا تسجيلات بشرية)
+        run: bash scripts/fixtures/generate.sh
+      - run: pnpm gen:types
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+
+  macos:
+    name: build FFmpeg LGPL + e2e + parity (macOS)
+    runs-on: macos-latest
+    needs: linux
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: بناء FFmpeg LGPL لماك (T006) مع تخزين مؤقت
+        id: ffmpeg-cache
+        uses: actions/cache@v4
+        with:
+          path: resources/ffmpeg/darwin-arm64
+          key: ffmpeg-darwin-arm64-${{ hashFiles('scripts/ffmpeg-build/build-mac.sh') }}
+      - if: steps.ffmpeg-cache.outputs.cache-hit != 'true'
+        run: bash scripts/ffmpeg-build/build-mac.sh
+      - run: bash scripts/fixtures/generate.sh
+      - run: pnpm gen:types
+      - run: pnpm build
+      - run: pnpm test:e2e
+      - name: تقرير التطابق (parity) كأثر
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-and-parity
+          path: |
+            out/playwright-report
+            out/parity
+          if-no-files-found: ignore

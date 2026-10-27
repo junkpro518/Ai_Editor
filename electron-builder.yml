@@ -1,0 +1,46 @@
+# تغليف الميزة 001 (T010). التوزيع الآن macOS فقط (القرار 16)؛ هدف Windows معرَّف بلا توقيع.
+appId: dev.aieditor.app
+productName: AiEditor
+directories:
+  output: release
+  buildResources: build
+files:
+  - out/**
+  - package.json
+extraResources:
+  # ثنائيات FFmpeg LGPL لكل منصة (عملية منفصلة؛ الدستور VI). linux-x64 للتطوير وCI فقط ولا يُشحن.
+  - from: resources/ffmpeg/${os}-${arch}
+    to: ffmpeg
+    filter: ['**/*', '!**/*.md']
+  - from: resources/fonts
+    to: fonts
+  - from: resources/styles
+    to: styles
+  - from: docs/licenses
+    to: licenses
+asar: true
+asarUnpack:
+  - resources/ffmpeg/**
+mac:
+  category: public.app-category.video
+  target:
+    - target: dmg
+      arch: [arm64, x64]
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  # التوقيع والـnotarization يحتاجان حساب مطوّر المالك (T033، تجربة جافة أولاً)
+  notarize: false
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  # التوقيع مؤجل حتى يُقرَّر الاسم والبلد (القرار 16)
+  signAndEditExecutable: false
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+linux:
+  # غير مستهدف للتوزيع؛ للتطوير فقط
+  target: [dir]

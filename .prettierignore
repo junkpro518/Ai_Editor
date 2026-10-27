@@ -1,0 +1,15 @@
+node_modules/
+out/
+dist/
+release/
+coverage/
+resources/ffmpeg/
+tests/fixtures/
+pnpm-lock.yaml
+src/core/contracts/types.ts
+خام/
+specs/
+docs/
+1/
+2/
+3/

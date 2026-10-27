@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai-editor/style-version/1",
+  "title": "StyleVersion",
+  "type": "object",
+  "required": ["schemaVersion", "styleId", "version", "date", "reason", "cut", "captions", "precedents", "styleGuide"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "styleId": { "type": "string", "minLength": 1 },
+    "name": { "type": "string" },
+    "version": { "type": "integer", "minimum": 1 },
+    "date": { "type": "string", "format": "date-time" },
+    "reason": { "type": "string", "minLength": 1 },
+    "basedOn": { "$ref": "#/$defs/styleRef" },
+    "basedOnCorrections": { "type": "array", "items": { "type": "string" } },
+    "cut": {
+      "type": "object", "additionalProperties": false,
+      "required": ["silenceMaxUs", "repeatsEnabled", "repeatsSimilarity", "minClipUs", "protectSentenceEdgesUs", "fillerWords", "repeatedRejectionThreshold"],
+      "properties": {
+        "silenceMaxUs": { "$ref": "#/$defs/rule", "description": "صمت أطول من هذا يُقترح حذفه" },
+        "repeatsEnabled": { "$ref": "#/$defs/rule" },
+        "repeatsSimilarity": { "$ref": "#/$defs/rule", "description": "عتبة التشابه (0..1) لاعتبار جملتين إعادة" },
+        "minClipUs": { "$ref": "#/$defs/rule", "description": "الحد الأدنى لطول اللقطة الناتجة" },
+        "protectSentenceEdgesUs": { "$ref": "#/$defs/rule", "description": "هامش لا يُقص قبل/بعد الجملة" },
+        "fillerWords": { "$ref": "#/$defs/rule", "description": "قائمة كلمات الحشو (مثل: يعني، اه، امم)" },
+        "repeatedRejectionThreshold": { "$ref": "#/$defs/rule", "description": "عدد الاستثناءات بالسبب نفسه في مقترح واحد التي تطلق اقتراح تحديث النمط (FR-011)؛ القيمة عدد صحيح ≥ 2، الافتراضي 3" }
+      }
+    },
+    "captions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["enabled", "fontFamily", "fontSizePx", "position", "maxLines", "wordsPerChunk", "breakAtPauseUs", "highlightCurrent", "textColor", "highlightColor", "bgColor", "safeAreaPct", "flagLowConfidence"],
+      "properties": {
+        "enabled": { "$ref": "#/$defs/rule" },
+        "fontFamily": { "$ref": "#/$defs/rule" },
+        "fontSizePx": { "$ref": "#/$defs/rule" },
+        "position": { "$ref": "#/$defs/rule", "description": "bottom | center | top" },
+        "maxLines": { "$ref": "#/$defs/rule" },
+        "wordsPerChunk": { "$ref": "#/$defs/rule", "description": "{min,max}" },
+        "breakAtPauseUs": { "$ref": "#/$defs/rule" },
+        "highlightCurrent": { "$ref": "#/$defs/rule" },
+        "textColor": { "$ref": "#/$defs/rule" },
+        "highlightColor": { "$ref": "#/$defs/rule" },
+        "bgColor": { "$ref": "#/$defs/rule" },
+        "safeAreaPct": { "$ref": "#/$defs/rule" },
+        "flagLowConfidence": { "$ref": "#/$defs/rule", "description": "عرض تعليم الكلمات منخفضة الثقة؛ العتبة نفسها في ملف تعريف المزود لا في النمط" }
+      }
+    },
+    "precedents": { "type": "array", "items": { "$ref": "#/$defs/precedent" } },
+    "styleGuide": { "type": "string" }
+  },
+  "$defs": {
+    "styleRef": {
+      "type": "object", "required": ["styleId", "version"], "additionalProperties": false,
+      "properties": { "styleId": { "type": "string" }, "version": { "type": "integer", "minimum": 1 } }
+    },
+    "source": {
+      "type": "object", "required": ["kind", "at"], "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["default", "user", "learned", "imported"] },
+        "ref": { "type": "string", "description": "معرّف التصحيح/المقطع/الدورة الذي أنتج القيمة" },
+        "at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "rule": {
+      "type": "object", "required": ["value", "mode", "source"], "additionalProperties": false,
+      "properties": {
+        "value": {},
+        "mode": { "enum": ["mandatory", "preference"] },
+        "source": { "$ref": "#/$defs/source" },
+        "note": { "type": "string" }
+      }
+    },
+    "precedent": {
+      "type": "object", "required": ["id", "ruleId", "rule", "quote", "check", "source", "addedInVersion"], "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "ruleId": { "type": "string", "description": "مسار الحقل مثل cut.silenceMaxUs" },
+        "rule": { "type": "string", "description": "القاعدة بجملة واحدة" },
+        "quote": { "type": "string", "description": "تصحيح المستخدم حرفياً" },
+        "check": { "type": "string", "description": "سؤال فحص ذاتي يطرحه الوكيل قبل الاقتراح" },
+        "source": { "$ref": "#/$defs/source" },
+        "addedInVersion": { "type": "integer" }
+      }
+    }
+  }
+}

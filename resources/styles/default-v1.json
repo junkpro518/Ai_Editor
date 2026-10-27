@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "styleId": "default",
+  "name": "الافتراضي — حديث للكاميرا",
+  "version": 1,
+  "date": "2026-10-28T00:00:00.000Z",
+  "reason": "default",
+  "cut": {
+    "silenceMaxUs": { "value": 700000, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" }, "note": "صمت أطول من 0.7 ثانية يُقترح حذفه (spec §Assumptions)" },
+    "repeatsEnabled": { "value": true, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "repeatsSimilarity": { "value": 0.8, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" }, "note": "Jaccard على الكلمات المطبَّعة لجملتين متتاليتين (plan §Assumptions)" },
+    "minClipUs": { "value": 500000, "mode": "mandatory", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" }, "note": "لا لقطة ناتجة أقصر من 0.5 ثانية؛ التعديل اليدوي المخالف يُسمح مع تحذير (FR-009)" },
+    "protectSentenceEdgesUs": { "value": 120000, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "fillerWords": { "value": ["يعني", "اه", "آه", "امم", "أمم", "اممم", "ايه", "إيه", "يعنى"], "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" }, "note": "كلمة كاملة فقط بعد التطبيع" },
+    "repeatedRejectionThreshold": { "value": 3, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" }, "note": "FR-011: ≥3 استثناءات بالسبب نفسه → اقتراح تحديث النمط" }
+  },
+  "captions": {
+    "enabled": { "value": true, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "fontFamily": { "value": "IBM Plex Sans Arabic", "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "fontSizePx": { "value": 78, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" }, "note": "حجم الأساس لـ1080p؛ يُقاس نسبياً لدقة المصدر" },
+    "position": { "value": "bottom", "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "maxLines": { "value": 2, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "wordsPerChunk": { "value": { "min": 3, "max": 5 }, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "breakAtPauseUs": { "value": 150000, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "highlightCurrent": { "value": true, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "textColor": { "value": "#FFFFFF", "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "highlightColor": { "value": "#FFD600", "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "bgColor": { "value": "rgba(0,0,0,0.55)", "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } },
+    "safeAreaPct": { "value": 80, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" }, "note": "الكابشن داخل 80% من عرض الصورة" },
+    "flagLowConfidence": { "value": true, "mode": "preference", "source": { "kind": "default", "at": "2026-10-28T00:00:00.000Z" } }
+  },
+  "precedents": [],
+  "styleGuide": "حديث للكاميرا بالعربية (فصيح/خليجي مخلوط بالإنجليزية). احذف الصمت الطويل والإعادات والحشو، واحمِ بدايات الجمل ونهاياتها. الكابشن كلمة-بكلمة أسفل الصورة بخط واضح وكلمة حالية مميزة."
+}
