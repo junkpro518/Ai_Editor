@@ -46,7 +46,7 @@
 | VIII البساطة والقياس | أصغر مسار كامل؛ لا تجريدات غير مطلوبة؛ الأرقام تُقاس | ✅ لا PixiJS، لا SQLite، لا monorepo، لا SDKs؛ R10 مهمة قياس أولى | ✅ |
 | القيود التقنية | Electron مرشح أول يُحسم بقياس؛ مفاتيح في مخزن آمن؛ محتوى الفيديو مدخل غير موثوق | ⚠️ | ✅ R1 + R10 فيتو؛ R9 safeStorage (تفسير يحتاج تأكيداً)؛ نص التفريغ لا يدخل أي وسيط إلا عبر مخطط أمر |
 
-**النتيجة:** لا مخالفات. ثلاثة تفسيرات تحتاج تأكيد المالك (research.md §R12: safeStorage، VFR، openh264) ولا تمنع بدء التنفيذ.
+**النتيجة:** لا مخالفات. بند «Complexity Tracking» أدناه تبرير استباقي لوحدتي زمن، لا مخالفة. ثلاثة تفسيرات تحتاج تأكيد المالك (research.md §R12: safeStorage، VFR، openh264) ولا تمنع بدء التنفيذ.
 
 ## Project Structure
 
@@ -78,9 +78,9 @@ src/
 │   ├── style/               # library.ts (إصدارات)، rules.ts (mandatory/preference)، learn.ts (StyleUpdateProposal)
 │   ├── history/             # snapshots, undo/redo
 │   └── transcript/          # providers/{deepgram,elevenlabs}.ts (تحويل → العقد)، normalize.ts (عربي)
-├── main/                    # Electron main: ipc (أوامر فقط)، ffmpeg/{probe,audio,mux,encoders}.ts، storage/، secrets.ts (safeStorage)، providers/http.ts
+├── main/                    # Electron main: ipc (persist/ffmpeg/secrets/providers فقط — لا أوامر مونتاج)، ffmpeg/{probe,audio,mux,encoders}.ts، storage/، secrets.ts (safeStorage)، providers/http.ts
 ├── preload/                 # contextBridge: invokeCommand, subscribe
-└── renderer/                # React RTL: screens/{Import,Timeline,Proposal,WordReview,StylePanel,StyleUpdate,History,Settings,Export}، player/ (WebCodecs + mp4box)، i18n/{ar,en}.json
+└── renderer/                # React RTL: screens/{Import,Timeline,Proposal,WordReview,StylePanel,StyleUpdate,History,Settings,Export}، player/ (WebCodecs + mp4box)، commands/runtime.ts (يشغّل core/commands هنا)، i18n/{ar,en}.json
 resources/
 ├── ffmpeg/{darwin-arm64,darwin-x64,win32-x64}/   # LGPL + SHA-256 + LICENSES
 ├── fonts/                   # IBM Plex Sans Arabic وبقية OFL
@@ -97,7 +97,7 @@ scripts/
 docs/licenses/INVENTORY.md   # جرد التراخيص (المبدأ VI)
 ```
 
-**Structure Decision**: حزمة واحدة مع حدود مجلدات مفروضة بقاعدة ESLint (`src/core` لا يستورد من `electron`/`react`/`src/main`/`src/renderer`). هذا يحقق «المنطق في طبقة مستقلة عن الواجهة» بلا تعقيد monorepo (المبدأ VIII). كل تنفيذ أمر دالة نقية في `core/commands` تستدعيها `main` عبر IPC؛ الواجهة لا تحوي منطق مونتاج. `composeFrame` في `core/captions/compose.ts` تُستدعى من `renderer` (معاينة وتصدير معاً).
+**Structure Decision**: حزمة واحدة مع حدود مجلدات مفروضة بقاعدة ESLint (`src/core` لا يستورد من `electron`/`react`/`src/main`/`src/renderer`). هذا يحقق «المنطق في طبقة مستقلة عن الواجهة» بلا تعقيد monorepo (المبدأ VIII). **أين تُنفَّذ الأوامر:** في **الـrenderer** (عبر `renderer/commands/runtime.ts` الذي يستدعي الدوال النقية في `core/commands`)، لأن اشتقاق الكابشن (fit حجم الخط ومستطيلات الكلمات) يحتاج الخطوط المحمّلة وقياس نص Chromium (OffscreenCanvas `measureText`/`getSelectionRects` أو `Range.getClientRects()`)، وهذه غير موجودة في `main` (Node). دور `main` عبر IPC محصور في: الحفظ الذري واللقطات (persist)، تشغيل FFmpeg/ffprobe، الأسرار (`safeStorage`)، وطلبات المزودين (`fetch` بالمفتاح). الواجهة (React) لا تحوي منطق مونتاج؛ تستدعي الأوامر فقط. `composeFrame` في `core/captions/compose.ts` تُستدعى من `renderer` في المعاينة والتصدير معاً. **قاعدة إبطال الكابشن:** أي أمر يغيّر `transcript` أو `timeline` أو `style.captions` أو `fps` يعيد اشتقاق `captions.cues` حتمياً داخل الأمر نفسه؛ أما الرسم فلا يعيد التجميع أبداً.
 
 ## Complexity Tracking
 
@@ -124,6 +124,6 @@ docs/licenses/INVENTORY.md   # جرد التراخيص (المبدأ VI)
 - VFR: معدل المشروع = أقرب معدل معياري لـ`avg_frame_rate`؛ يُعلَّم `sourceIsVfr` (R12-1).
 - عند غياب مشفّر H.264 عتادي وبرمجي: التصدير يفشل برسالة واضحة تذكر السبب (R12-2)، حتى يقرر المالك.
 - الخط الافتراضي IBM Plex Sans Arabic بحجم أساس 78px لـ1080p، 3–5 كلمات للمجموعة، كسر عند وقفة ≥150ms؛ كلها حقول في النمط الافتراضي وقابلة للتعديل.
-- كشف الإعادات محلياً: تشابه جمل متتالية بعد التطبيع العربي (Jaccard على الكلمات ≥ `repeatsSimilarity`، افتراضي 0.8)؛ الحشو من قائمة افتراضية (يعني، اه، امم، أقصد) قابلة للتعديل في النمط؛ «الجملة المتروكة» تحتاج المزود السحابي (نموذج نصي عبر نفس المفتاح إن وُجد) وإلا تُحذف من الأسباب مع `localOnly=true` (FR-003).
+- كل الأسباب الأربعة محلية في 001: الصمت من فجوات الكلمات؛ الإعادات بتشابه جمل متتالية بعد التطبيع العربي (Jaccard على الكلمات ≥ `repeatsSimilarity`، افتراضي 0.8)؛ الحشو من قائمة افتراضية (يعني، اه، امم، أقصد) في النمط؛ «الجملة المتروكة» بقاعدة محلية (مقطع قصير يليه صمت ثم إعادة بداية مشابهة). التمييز بنموذج لغوي (LLM) ومزوّده BYOK **مؤجل** ولم يُبحث (research.md R12-7)؛ `localOnly=true` يبقى في المخطط لذلك اليوم (FR-003 يسمح).
 - اللقطة المصغّرة للمعاينة تُعرض بـ`drawImage` من OffscreenCanvas بدقة المصدر؛ إن ثبت ثقلها تُقاس قبل أي تغيير (R2).
 - الحد الأدنى الافتراضي لطول اللقطة 500ms؛ عتبة الصمت الافتراضية 700ms؛ حماية حواف الجمل 120ms — قيم في النمط الافتراضي تُراجع بعد الاستخدام.

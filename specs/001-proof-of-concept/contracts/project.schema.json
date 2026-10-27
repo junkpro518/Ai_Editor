@@ -14,7 +14,7 @@
     "seed": { "type": "integer" },
     "source": {
       "type": "object",
-      "required": ["id", "path", "fileName", "hash", "durationUs", "fps", "width", "height", "hasAudio"],
+      "required": ["id", "path", "fileName", "hash", "durationUs", "frameCount", "fps", "width", "height", "hasAudio"],
       "additionalProperties": false,
       "properties": {
         "id": { "type": "string" }, "path": { "type": "string" }, "fileName": { "type": "string" },
@@ -22,6 +22,7 @@
         "durationUs": { "type": "integer", "minimum": 0, "maximum": 900000000, "description": "≤ 15 دقيقة (FR-019)" },
         "fps": { "$ref": "#/$defs/rational", "description": "معدل المشروع الثابت (CFR)؛ لمصدر VFR = أقرب معدل معياري لـ avg_frame_rate" },
         "sourceIsVfr": { "type": "boolean" },
+        "frameCount": { "type": "integer", "minimum": 1, "description": "من ffprobe -count_frames عند الاستيراد (nb_frames غير موثوق)؛ على شبكة fps المشروع" },
         "rotation": { "type": "integer" },
         "width": { "type": "integer" }, "height": { "type": "integer" },
         "hasAudio": { "type": "boolean" },

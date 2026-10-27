@@ -37,7 +37,7 @@
 
 ### 1.2 MediaSource
 
-`{ id, path, fileName, hash (SHA-256 لأول 64MB + الحجم), fileSize, mtime, durationUs, fps:{num,den}, sourceIsVfr, rotation, width, height, hasAudio, container, videoCodec, audioCodec }` — من `ffprobe` (`-show_streams -show_format`، الدوران من side data). الوسائط بمسار مطلق + بصمة لإعادة الربط إن انتقل الملف؛ لا نكتب شيئاً بجانب الوسائط. يُرفض إن `durationUs > 15*60*1e6` قبل أي معالجة (FR-019).
+`{ id, path, fileName, hash (SHA-256 لأول 64MB + الحجم), fileSize, mtime, durationUs, frameCount (من `-count_frames`), fps:{num,den}, sourceIsVfr, rotation, width, height, hasAudio, container, videoCodec, audioCodec }` — من `ffprobe` (`-show_streams -show_format`، الدوران من side data). الوسائط بمسار مطلق + بصمة لإعادة الربط إن انتقل الملف؛ لا نكتب شيئاً بجانب الوسائط. يُرفض إن `durationUs > 15*60*1e6` قبل أي معالجة (FR-019).
 
 ### 1.3 Clip (لقطة)
 
@@ -105,10 +105,11 @@ Rule = { value, mode: "mandatory"|"preference", source: { kind:"default"|"user"|
 `history/<seq>.json = { seq, at, actor:"user"|"agent", command: {name, params}, description, snapshot: Project }`
 
 - لقطة كاملة **قبل** كل أمر (القرار 2). `undo` يستعيد `snapshot[seq]` ويدفع الحالة الحالية إلى مكدس الإعادة. المضغوط (gzip) اختياري لاحقاً.
+- التراجع يستعيد **مستند المشروع فقط** (بما فيه تثبيت `{styleId, version}`)؛ إصدارات النمط في مكتبة المستخدم **لا تُحذف أبداً** بالتراجع، فتبقى نسخة نمط أُنشئت ثم تُرجع عنها في السجل كإصدار غير مستخدم.
 
 ### 1.10 CaptionCue (مشتق)
 
-`{ id, startFrame, endFrame, wordIds[], lines: string[], fontSizePx, activeWordRects[] }` — يُشتق بدالة نقية `deriveCues(transcript, timeline, style.captions, fps)` **مرة واحدة** ويُخزَّن في المشروع: التجميع وحجم الخط (fit) ومستطيلات الكلمات تُحسب مرة ولا تُعاد في الرسم، ليكون التصدير حتمياً ومطابقاً للمعاينة (بحث B §3).
+`{ id, startFrame, endFrame, wordIds[], lines: string[], fontSizePx, activeWordRects[] }` — يُشتق بدالة نقية `deriveCues(transcript, timeline, style.captions, fps)` ويُخزَّن في المشروع: التجميع وحجم الخط (fit) ومستطيلات الكلمات تُحسب داخل الأمر ولا تُعاد في الرسم، ليكون التصدير حتمياً ومطابقاً للمعاينة (بحث B §3). **قاعدة الإبطال:** كل أمر يغيّر `transcript` أو `timeline` أو `style.captions` أو `fps` (مثل `transcript.fixWord`، `clip.*`، `proposal.apply`، `style.setField(captions.*)`، `project.upgradeStyle`) يعيد الاشتقاق حتمياً ضمن تنفيذه؛ الاشتقاق يحتاج الخطوط المحمّلة وقياس النص، لذا تُنفَّذ الأوامر في الـrenderer (plan.md: Structure Decision).
 
 ### 1.11 Settings (خارج المشروع)
 
