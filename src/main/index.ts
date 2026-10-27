@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { app, BrowserWindow, safeStorage } from 'electron';
 import { createProjectStore } from './storage/projects';
 import { createStyleStore } from './storage/styles';
@@ -28,6 +28,12 @@ const rendererIndex = fileURLToPath(new URL('../renderer/index.html', import.met
 
 let win: BrowserWindow | null = null;
 
+const devUrl = process.env['ELECTRON_RENDERER_URL'];
+const trustedOrigin = devUrl && !app.isPackaged ? devUrl : pathToFileURL(rendererIndex).href;
+function isTrustedUrl(url: string): boolean {
+  return url.startsWith(trustedOrigin);
+}
+
 function createWindow(): void {
   win = new BrowserWindow({
     width: 1280,
@@ -36,11 +42,19 @@ function createWindow(): void {
     show: false,
     webPreferences: { preload: preloadPath, contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
+  // لا نوافذ جديدة ولا تنقّل خارج صفحة الواجهة (إسقاط ملف HTML على النافذة = تنقّل في Chromium)
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  win.webContents.on('will-navigate', (e, url) => {
+    if (!isTrustedUrl(url)) e.preventDefault();
+  });
+  // حارس احتياطي: إن اكتمل تنقّل إلى عنوان غير موثوق لأي سبب، نعيد تحميل الواجهة
+  win.webContents.on('did-navigate', (_e, url) => {
+    if (!isTrustedUrl(url) && url !== 'about:blank') void win?.loadFile(rendererIndex);
+  });
   win.once('ready-to-show', () => win?.show());
   win.on('closed', () => {
     win = null;
   });
-  const devUrl = process.env['ELECTRON_RENDERER_URL'];
   if (devUrl && !app.isPackaged) void win.loadURL(devUrl);
   else void win.loadFile(rendererIndex);
 }
@@ -53,6 +67,7 @@ app.whenReady().then(async () => {
   let bins: FfmpegBins | null = null;
   registerIpc({
     window: () => win,
+    isTrustedSender: isTrustedUrl,
     projects: createProjectStore(root),
     styles,
     settings: createSettingsStore(root),

@@ -4,7 +4,9 @@
 # المخرجات: resources/ffmpeg/darwin-<arch>/{ffmpeg,ffprobe,LICENSES/,BUILD-INFO.txt}
 set -euo pipefail
 
-FFMPEG_TAG="${FFMPEG_TAG:-n8.1.3}"          # نفس فرع BtbN المستخدم لويندوز (scripts/ffmpeg-build/fetch-win.sh)
+# shellcheck disable=SC1091
+source "$(cd "$(dirname "$0")" && pwd)/ffmpeg.lock"   # FFMPEG_MAC_TAG + FFMPEG_MAC_COMMIT
+FFMPEG_TAG="${FFMPEG_TAG:-$FFMPEG_MAC_TAG}"          # نفس فرع BtbN المستخدم لويندوز
 ARCH="$(uname -m)"                           # arm64 | x86_64
 case "$ARCH" in arm64) OUT_ARCH=arm64 ;; x86_64) OUT_ARCH=x64 ;; *) echo "arch غير مدعوم: $ARCH" >&2; exit 1 ;; esac
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -29,6 +31,8 @@ if [[ ! -d ffmpeg ]]; then
   git clone --depth 1 --branch "$FFMPEG_TAG" https://git.ffmpeg.org/ffmpeg.git ffmpeg
 fi
 cd ffmpeg
+# الوسم قابل للتغيير نظرياً؛ نثبّت commit الوسم المسجَّل في ffmpeg.lock
+[[ "$(git rev-parse HEAD)" == "$FFMPEG_MAC_COMMIT" ]] || { echo "خطأ: commit الوسم $FFMPEG_TAG لا يطابق ffmpeg.lock ($FFMPEG_MAC_COMMIT)" >&2; exit 1; }
 
 # --enable-version3 → LGPLv3 (يسمح بـ opus/zimg). ممنوع: --enable-gpl، --enable-nonfree.
 ./configure \

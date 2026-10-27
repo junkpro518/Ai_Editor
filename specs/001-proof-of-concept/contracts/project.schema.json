@@ -7,7 +7,7 @@
   "additionalProperties": false,
   "properties": {
     "schemaVersion": { "const": 1 },
-    "id": { "type": "string" },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9_-]{1,64}$" },
     "name": { "type": "string" },
     "createdAt": { "type": "string", "format": "date-time" },
     "updatedAt": { "type": "string", "format": "date-time" },
@@ -32,7 +32,7 @@
     },
     "style": {
       "type": "object", "required": ["styleId", "version"], "additionalProperties": false,
-      "properties": { "styleId": { "type": "string" }, "version": { "type": "integer", "minimum": 1 } }
+      "properties": { "styleId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{1,64}$" }, "version": { "type": "integer", "minimum": 1 } }
     },
     "transcript": { "oneOf": [ { "type": "null" }, { "$ref": "ai-editor/transcript/1" } ] },
     "transcriptJob": {

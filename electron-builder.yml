@@ -5,7 +5,9 @@ directories:
   output: release
   buildResources: build
 files:
-  - out/**
+  - out/main/**
+  - out/preload/**
+  - out/renderer/**
   - package.json
 extraResources:
   # ثنائيات FFmpeg LGPL لكل منصة (عملية منفصلة؛ الدستور VI). linux-x64 للتطوير وCI فقط ولا يُشحن.

@@ -133,6 +133,15 @@ describe('سجل الأوامر الموحد', () => {
     expect(codeOf(() => execute(makeProject(), 'history.redo', {}, makeCtx(), user()))).toBe('nothing_to_redo');
   });
 
+  it('تراجع إلى لقطة فاسدة من القرص يرمي ContractError (مراجعة phase-2 #4)', () => {
+    const history = History.fromJSON({
+      undo: [{ seq: 1, at: FIXED_NOW, actor: 'user', command: { name: 'clip.split', params: {} }, description: 'x', snapshot: {} as ProjectDocument }],
+      redo: [],
+      nextSeq: 2,
+    });
+    expect(() => execute(makeProject(), 'history.undo', {}, makeCtx(), { actor: 'user', history })).toThrow(ContractError);
+  });
+
   it('CommandError يحمل code ورسالة عربية', () => {
     const e = new CommandError('x', 'رسالة');
     expect(e).toBeInstanceOf(Error);

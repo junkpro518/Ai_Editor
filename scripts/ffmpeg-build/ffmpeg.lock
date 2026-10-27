@@ -2,6 +2,9 @@
 # التحديث: غيّر الوسم، نزّل الأصلين، احسب sha256sum، وسجّل التاريخ هنا.
 BTBN_TAG="autobuild-2026-10-27-18-38"
 FFMPEG_VERSION="n8.1.3-24-g92611900bb"
+# وسم المصدر لبناء ماك (scripts/ffmpeg-build/build-mac.sh) وcommit الوسم المُتحقق منه (git ls-remote 2026-10-28)
+FFMPEG_MAC_TAG="n8.1.3"
+FFMPEG_MAC_COMMIT="1041abdc962f4cc4f394aa8de9dc5236c0c3b9e7"
 WIN_ASSET="ffmpeg-n8.1.3-24-g92611900bb-win64-lgpl-8.1.zip"
 WIN_SHA256="4b999c5b938ee20dc1bd7be68cb09381ac425520e363a58b67e787402cb96022"
 LINUX_ASSET="ffmpeg-n8.1.3-24-g92611900bb-linux64-lgpl-8.1.tar.xz"

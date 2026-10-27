@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 import type { ElectronApplication, Page } from '@playwright/test';
 import { fixture, launchApp } from './helpers/launch';
+import { writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 // دخان T024–T029: القشرة RTL بالعربية، الاستيراد ≤5 ثوانٍ (FR-001)، والرفض برسالة عربية (FR-019).
 let app: ElectronApplication;
@@ -82,3 +86,20 @@ test('media:// يخدم مصدر المشروع المسجّل فقط مع Range
   expect(r.ftyp).toBe('ftyp');
   expect(r.unknown).toBe(404);
 });
+
+test('التنقل إلى ملف HTML خارجي ممنوع ولا نوافذ جديدة (مراجعة phase-2 #2)', async () => {
+  // يحاكي إسقاط ملف HTML خبيث على النافذة: تنقّل renderer إلى file:// آخر
+  const evil = join(tmpdir(), `ai-editor-evil-${process.pid}.html`);
+  writeFileSync(evil, '<html><body><script>document.title="pwned"</script></body></html>');
+  const before = page.url();
+  await page.evaluate((u) => {
+    location.href = u;
+  }, pathToFileURL(evil).href);
+  await page.waitForTimeout(700);
+  expect(page.url()).toBe(before);
+  expect(await page.title()).not.toBe('pwned');
+  expect(await page.evaluate(() => window.open('https://example.com') === null)).toBe(true);
+  expect(app.windows().length).toBe(1);
+  expect(await page.evaluate(() => typeof window.__test)).toBe('object');
+});
+

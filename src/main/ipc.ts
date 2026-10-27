@@ -15,6 +15,8 @@ import { detectEncoders } from './ffmpeg/encoders';
 import { registerMediaSource } from './protocol';
 
 export interface IpcDeps {
+  /** هل عنوان الإطار المرسِل هو صفحة الواجهة المحمَّلة (index.html أو خادم التطوير)؟ */
+  isTrustedSender: (frameUrl: string) => boolean;
   window: () => BrowserWindow | null;
   projects: ProjectStore;
   styles: StyleStore;
@@ -75,8 +77,10 @@ export function registerIpc(deps: IpcDeps): void {
   const probedPaths = new Set<string>();
 
   function handle<T>(channel: string, fn: (...args: unknown[]) => Promise<T> | T): void {
-    ipcMain.handle(channel, async (_event, ...args: unknown[]): Promise<Envelope<T>> => {
+    ipcMain.handle(channel, async (event, ...args: unknown[]): Promise<Envelope<T>> => {
       try {
+        // دفاع في العمق: لا يُقبل طلب إلا من صفحة الواجهة نفسها (لا من صفحة انزلق إليها التنقل)
+        if (!deps.isTrustedSender(event.senderFrame?.url ?? '')) throw new ArgError('مصدر الطلب غير موثوق');
         return { ok: true, value: await fn(...args) };
       } catch (e) {
         return { ok: false, error: toIpcError(e) };
@@ -128,6 +132,7 @@ export function registerIpc(deps: IpcDeps): void {
   handle('project:save', async (d) => {
     const doc = obj(d, 'project');
     validateProject(doc);
+    id(doc.id, 'project.id'); // يصير اسم مجلد (مراجعة phase-2 #1)
     allowSourcePath(doc);
     await deps.projects.save(doc);
     registerMediaSource(doc.id, doc.source.path);
@@ -144,6 +149,7 @@ export function registerIpc(deps: IpcDeps): void {
   handle('project:writeSnapshot', (i, e) => {
     const entry = obj(e, 'entry');
     int(entry['seq'], 'entry.seq');
+    validateProject(entry['snapshot']); // اللقطة تُدقَّق قبل أن تُكتب وتُستعاد (مراجعة phase-2 #4)
     return deps.projects.writeSnapshot(id(i, 'id'), entry as unknown as HistoryEntry);
   });
   handle('project:readSnapshots', (i) => deps.projects.readSnapshots(id(i, 'id')));
@@ -151,7 +157,11 @@ export function registerIpc(deps: IpcDeps): void {
   handle('style:ensureDefault', () => deps.styles.ensureDefault(deps.defaultStylePath));
   handle('style:loadVersion', (s, v) => deps.styles.loadVersion(id(s, 'styleId'), int(v, 'version')));
   handle('style:listVersions', (s) => deps.styles.listVersions(id(s, 'styleId')));
-  handle('style:saveVersion', (sv) => deps.styles.saveVersion(obj(sv, 'style') as unknown as StyleVersion));
+  handle('style:saveVersion', (sv) => {
+    const style = obj(sv, 'style');
+    id(style['styleId'], 'style.styleId'); // يصير اسم مجلد (مراجعة phase-2 #3)
+    return deps.styles.saveVersion(style as unknown as StyleVersion);
+  });
 
   handle('settings:load', () => deps.settings.load());
   handle('settings:save', (p) => deps.settings.save(obj(p, 'patch') as SettingsPatch));

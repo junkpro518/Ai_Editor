@@ -56,13 +56,13 @@ export function createSecrets(deps: { safeStorage: SafeStorageLike; filePath: st
     try {
       raw = await fs.readFile(filePath, 'utf8');
     } catch (e) {
-      if ((e as { code?: string }).code === 'ENOENT') return { version: 1, entries: {} };
+      if ((e as { code?: string }).code === 'ENOENT') return { version: 1, entries: Object.create(null) };
       throw e;
     }
     try {
       const doc = JSON.parse(raw) as Partial<SecretsFile>;
       if (doc.version !== 1 || typeof doc.entries !== 'object' || doc.entries === null) throw new Error('bad shape');
-      return { version: 1, entries: doc.entries };
+      return { version: 1, entries: Object.assign(Object.create(null), doc.entries) };
     } catch {
       throw new SecretsError('secrets_unreadable', 'ملف الأسرار تالف.');
     }

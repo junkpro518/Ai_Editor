@@ -84,7 +84,7 @@ description: "Task list for feature 001 — إثبات تقني: مونتاج م
 
 ### Security review
 
-- [ ] T035 مراجعة أمنية (مهارة `security-audit`، وضع التوجيه) لكود المرحلتين 1–2: حدود IPC، spawn بلا shell، `file:` + whitelist، الأسرار، `protocol.handle` للقراءة فقط؛ إصلاح النتائج المؤكدة وتسجيل «لا نتائج» إن لم توجد في `docs/security/phase-2.md`
+- [X] T035 مراجعة أمنية (مهارة `security-audit`، وضع التوجيه) لكود المرحلتين 1–2: حدود IPC، spawn بلا shell، `file:` + whitelist، الأسرار، `protocol.handle` للقراءة فقط؛ إصلاح النتائج المؤكدة وتسجيل «لا نتائج» إن لم توجد في `docs/security/phase-2.md`
 
 **Checkpoint**: الأساس جاهز وقرار «استمرار» مسجَّل في measurements.md
 

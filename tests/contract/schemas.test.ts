@@ -161,6 +161,11 @@ describe('commands.schema', () => {
   it('خاصية غير معروفة تُرفض', () => {
     expectContractError(() => validateCommandParams('clip.delete', { clipId: 'c1', extra: true }), 'schema');
   });
+  it('معرّف المشروع بفاصل مسار يُرفض (مراجعة phase-2 #1)', () => {
+    const doc = structuredClone(projectFixture) as Record<string, unknown>;
+    doc['id'] = '../../x';
+    expectContractError(() => validateProject(doc), 'schema', 'id');
+  });
   it('اسم أمر غير معروف يُرفض', () => {
     expect(() => getCommandSpec('nope.nope' as never)).toThrow(ContractError);
   });

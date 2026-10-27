@@ -38,11 +38,13 @@ export function execute<N extends CommandName>(
   if (name === 'history.undo') {
     const r = opts.history.undo(project);
     if (!r) throw new CommandError('nothing_to_undo', 'لا يوجد ما يُتراجع عنه');
+    validateProject(r.project); // لقطة من القرص قد تكون معدَّلة يدوياً (مراجعة phase-2 #4)
     return { project: r.project, description: `تراجع: ${r.entry.description}`, entry: r.entry };
   }
   if (name === 'history.redo') {
     const r = opts.history.redo(project);
     if (!r) throw new CommandError('nothing_to_redo', 'لا يوجد ما يُعاد');
+    validateProject(r.project);
     return { project: r.project, description: `إعادة: ${r.entry.description}`, entry: r.entry };
   }
 

@@ -136,11 +136,18 @@ export function runFfmpeg(bin: string, args: string[], opts: RunOptions = {}): P
   });
 }
 
-export function runFfprobe(bin: string, args: string[]): Promise<string> {
+export function runFfprobe(bin: string, args: string[], opts: { timeoutMs?: number } = {}): Promise<string> {
   return new Promise((resolve, reject) => {
     const proc = spawn(bin, ['-hide_banner', '-loglevel', 'error', ...args], { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
     let stdout = '';
     let stderr = '';
+    // ملف مُعدّ قد يعلّق ffprobe (خاصة -count_frames)؛ مهلة افتراضية دقيقتان
+    const timeoutMs = opts.timeoutMs ?? 120_000;
+    const timer = setTimeout(() => {
+      proc.kill('SIGKILL');
+      reject(new FfmpegError('timeout', `تجاوز ffprobe المهلة (${timeoutMs} ms)`));
+    }, timeoutMs);
+    proc.on('close', () => clearTimeout(timer));
     proc.stdout.setEncoding('utf8');
     proc.stdout.on('data', (c: string) => (stdout += c));
     proc.stderr.setEncoding('utf8');
