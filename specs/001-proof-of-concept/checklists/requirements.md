@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain — **2 markers (FR-019 المدة القصوى، FR-020 إعادة التأطير العمودي) بانتظار جواب المالك**
+- [x] No [NEEDS CLARIFICATION] markers remain (FR-019 و FR-020 حُسما بقرار المالك 2026-10-27)
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
