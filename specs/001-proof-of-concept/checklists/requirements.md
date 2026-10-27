@@ -1,0 +1,35 @@
+# Specification Quality Checklist: إثبات تقني — مونتاج مقطع خام واحد بنمط واحد
+
+**Purpose**: Validate specification completeness and quality before proceeding to planning
+**Created**: 2026-10-27
+**Feature**: [spec.md](../spec.md)
+
+## Content Quality
+
+- [x] No implementation details (languages, frameworks, APIs)
+- [x] Focused on user value and business needs
+- [x] Written for non-technical stakeholders
+- [x] All mandatory sections completed
+
+## Requirement Completeness
+
+- [ ] No [NEEDS CLARIFICATION] markers remain — **2 markers (FR-019 المدة القصوى، FR-020 إعادة التأطير العمودي) بانتظار جواب المالك**
+- [x] Requirements are testable and unambiguous
+- [x] Success criteria are measurable
+- [x] Success criteria are technology-agnostic (no implementation details)
+- [x] All acceptance scenarios are defined
+- [x] Edge cases are identified
+- [x] Scope is clearly bounded
+- [x] Dependencies and assumptions identified
+
+## Feature Readiness
+
+- [x] All functional requirements have clear acceptance criteria
+- [x] User scenarios cover primary flows
+- [x] Feature meets measurable outcomes defined in Success Criteria
+- [x] No implementation details leak into specification
+
+## Notes
+
+- Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
+- ملاحظة: SC-003 يذكر «نسبة خطأ الكلمات» كمقياس لا كتقنية؛ FR-017 يذكر «مزوداً خارجياً» دون تسمية.
