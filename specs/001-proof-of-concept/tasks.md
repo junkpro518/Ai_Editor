@@ -77,10 +77,16 @@ description: "Task list for feature 001 — إثبات تقني: مونتاج م
 
 ### Spike R10 (بوابة فيتو — research.md R10، القرار 15)
 
-- [ ] T031 `scripts/spike/measure.ts` + `scripts/spike/README.md`: S1 حجم المثبّت، S2 الإقلاع والذاكرة، S3 ذاكرة المعاينة لـ15 دقيقة 1080p، S4 `VideoDecoder.isConfigSupported` (H.264، HEVC آيفون، HDR 10-bit، VFR) **وهل رسم `VideoFrame` من مصدر HDR على canvas SDR يحوّل الألوان تلقائياً** (يحدد مسار HDR في T050/T086)، S5 `VideoEncoder.isConfigSupported('avc1.640028')` عتادي/برمجي، S8 زمن `-count_frames`، S11 رسم نص عربي مختلط ومقارنة
-- [ ] T032 تجربة التصدير الأولية (S9/S10) في `scripts/spike/export-spike.ts`: مقطع 2 دقيقة 1080p30 → decode → `composeFrame` (بكابشن تجريبي عربي ثابت) → `VideoEncoder` → Annex-B عبر stdin إلى FFmpeg `-c:v copy -c:a aac` → قياس السرعة (≥1.0× الزمن الحقيقي) وفحص ±1 إطار؛ وإن غاب مشفّر Chromium: المسار الاحتياطي rawvideo → مشفّر FFmpeg عتادي
-- [ ] T033 S6/S7/S12 على ماك: بناء FFmpeg LGPL في CI (T006)، قائمة المشفّرات الفعلية + ترميز تجريبي، تجربة توقيع + notarization جافة لحزمة فيها ffmpeg
-- [ ] T034 تسجيل النتائج في `specs/001-proof-of-concept/measurements.md` مع قرار **استمرار / فيتو** لكل عتبة (القرار 15) وتاريخ، وتثبيت عتبة PSNR/SSIM الأولية لفحص التطابق (FR-014)؛ عند أي فيتو: التوقف والعودة للمالك قبل المرحلة 3
+- [X] T031 `scripts/spike/measure.ts` + `scripts/spike/README.md`: S1 حجم المثبّت، S2 الإقلاع والذاكرة، S3 ذاكرة المعاينة لـ15 دقيقة 1080p، S4 `VideoDecoder.isConfigSupported` (H.264، HEVC آيفون، HDR 10-bit، VFR) **وهل رسم `VideoFrame` من مصدر HDR على canvas SDR يحوّل الألوان تلقائياً** (يحدد مسار HDR في T050/T086)، S5 `VideoEncoder.isConfigSupported('avc1.640028')` عتادي/برمجي، S8 زمن `-count_frames`، S11 رسم نص عربي مختلط ومقارنة
+- [X] T032 تجربة التصدير الأولية (S9/S10) في `scripts/spike/export-spike.ts`: مقطع 2 دقيقة 1080p30 → decode → `composeFrame` (بكابشن تجريبي عربي ثابت) → `VideoEncoder` → Annex-B عبر stdin إلى FFmpeg `-c:v copy -c:a aac` → قياس السرعة (≥1.0× الزمن الحقيقي) وفحص ±1 إطار؛ وإن غاب مشفّر Chromium: المسار الاحتياطي rawvideo → مشفّر FFmpeg عتادي
+- [ ] T033 *(يحتاج ماك المالك؛ الأوامر في scripts/spike/README.md)* S6/S7/S12 على ماك: بناء FFmpeg LGPL في CI (T006)، قائمة المشفّرات الفعلية + ترميز تجريبي، تجربة توقيع + notarization جافة لحزمة فيها ffmpeg
+- [X] T034 تسجيل النتائج في `specs/001-proof-of-concept/measurements.md` مع قرار **استمرار / فيتو** لكل عتبة (القرار 15) وتاريخ، وتثبيت عتبة PSNR/SSIM الأولية لفحص التطابق (FR-014)؛ عند أي فيتو: التوقف والعودة للمالك قبل المرحلة 3
+
+### متابعات من مهمة القياس (أُضيفت 2026-10-28 بعد T034)
+
+- [ ] T096 استبدال `-count_frames` في `src/main/ffmpeg/probe.ts` بعدّ سريع: `-count_packets` (`nb_read_packets` للمسار v:0) أو جدول عينات mp4box، مع إبقاء `-count_frames` لفحص التطابق بعد التصدير فقط (T042)؛ تحديث `tests/integration/ffmpeg.test.ts` والقياس S8 في `measurements.md`. السبب: 94 ثانية لمقطع 15 دقيقة (×3 عتبة R10 S8) وتعطيل FR-001 (≤5 ثوانٍ)
+- [ ] T097 تحقيق نمو ذاكرة الـrenderer (418→1000 MB خلال 60 بحثاً) في `src/renderer/player/decoder.ts`: إغلاق كل `VideoFrame`، حجم طابور الفك، إعادة الاستخدام؛ قياس قبل/بعد في `measurements.md` S3 قبل قياس الماك
+- [ ] T098 في T050: اختيار مستوى H.264 من الدقة (L4.0 لـ1080p؛ `isConfigSupported` يرفض L3.1 عند 1080p)، وضبط نطاق الألوان في الدمج (ناتج Chromium `yuvj420p` full-range) أو التحقق من تشغيله الصحيح على Safari/Chrome/جوال (R3 الطبقة 4)
 
 ### Security review
 
