@@ -1,0 +1,59 @@
+/* eslint-disable no-restricted-imports -- أنواع فقط: توصيف window.api المشترك بين preload والواجهة (T024)؛ لا كود من main يصل الواجهة */
+import type { ProjectDocument, StyleVersion } from '../core/contracts/types';
+import type { ProbeLike as ProbeResult } from '../core/commands/types';
+import type { HistoryEntry } from '../core/history/snapshots';
+import type { Settings, SettingsPatch } from '../main/storage/settings';
+import type { EncoderReport } from '../main/ffmpeg/encoders';
+
+declare global {
+  interface IpcError {
+    code: string;
+    message: string;
+  }
+
+  interface Api {
+    project: {
+      pickVideoFile(): Promise<string | null>;
+      probe(path: string): Promise<ProbeResult>;
+      probeFile(file: File): Promise<ProbeResult>;
+      save(doc: ProjectDocument): Promise<void>;
+      load(id: string): Promise<ProjectDocument>;
+      list(): Promise<Array<{ id: string; name: string; updatedAt: string }>>;
+      writeSnapshot(id: string, entry: HistoryEntry): Promise<void>;
+      readSnapshots(id: string): Promise<HistoryEntry[]>;
+    };
+    style: {
+      ensureDefault(): Promise<StyleVersion>;
+      loadVersion(styleId: string, version: number): Promise<StyleVersion>;
+      listVersions(styleId: string): Promise<Array<{ version: number; date: string; reason: string }>>;
+      saveVersion(sv: StyleVersion): Promise<void>;
+    };
+    settings: { load(): Promise<Settings>; save(patch: SettingsPatch): Promise<Settings> };
+    secrets: {
+      available(): Promise<{ ok: boolean; reason?: string }>;
+      list(): Promise<Array<{ name: string; last4: string; createdAt: string }>>;
+      set(name: string, value: string): Promise<void>;
+      delete(name: string): Promise<void>;
+    };
+    ffmpeg: { encoders(): Promise<EncoderReport> };
+    media: { urlFor(projectId: string): string };
+    app: { version(): Promise<string>; platform: string; isTest: boolean };
+  }
+
+  interface TestHooks {
+    importPath(
+      path: string,
+    ): Promise<{ ok: true; projectId: string } | { ok: false; code: string; message: string }>;
+    state(): unknown;
+  }
+
+  interface Window {
+    api: Api;
+    /** خطافات الاختبار؛ تُعرَّف فقط عندما api.app.isTest */
+    __test?: TestHooks;
+    /** معاينة الوكيل F (T028)؛ قد لا تكون موجودة */
+    __preview?: { show(projectId: string, frameIndex: number): void };
+  }
+}
+
+export {};

@@ -10,7 +10,8 @@ export default defineConfig({
   },
   preload: {
     plugins: [externalizeDepsPlugin()],
-    build: { rollupOptions: { input: 'src/preload/index.ts' } },
+    // CJS حتى يعمل مع sandbox: true (الـsandbox يرفض ESM في preload)
+    build: { rollupOptions: { input: 'src/preload/index.ts', output: { format: 'cjs' } } },
   },
   renderer: {
     plugins: [react()],

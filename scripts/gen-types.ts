@@ -2,6 +2,9 @@
 // المخططات مترابطة بـ $id (project → transcript، commands → project#/$defs/proposal)،
 // لذا نحلّها بأنفسنا عبر $refOptions.resolve ونعطي كل مخطط عنواناً ثابتاً.
 import { compile } from 'json-schema-to-typescript';
+import Ajv2020 from 'ajv/dist/2020.js';
+import addFormats from 'ajv-formats';
+import standaloneCode from 'ajv/dist/standalone/index.js';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -138,3 +141,28 @@ for (const n of ['project', 'style', 'transcript', 'commands']) {
 }
 await writeFile(OUT, header + body, 'utf8');
 console.log(`كُتب ${path.relative(ROOT, OUT)} (${body.length} حرفاً، ${list.length} أمراً)`);
+
+// ---- مدقّقات مُترجمة مسبقاً (بلا new Function وقت التشغيل → CSP بلا 'unsafe-eval') ----
+const ajv = new Ajv2020({ allErrors: true, strict: false, code: { source: true, esm: true, lines: true } });
+addFormats(ajv);
+ajv.addSchema(inlineRefs(project) as Json, 'project');
+ajv.addSchema({ ...style }, 'style');
+ajv.addSchema({ ...transcript }, 'transcript');
+const exportMap: Record<string, string> = { validateProject: 'project', validateStyle: 'style', validateTranscript: 'transcript' };
+for (const c of list) {
+  const key = 'cmd_' + c.name.replace(/\./g, '_');
+  ajv.addSchema({ ...(inlineRefs(c.params) as Json), $defs: commands.$defs }, key);
+  exportMap[key] = key;
+}
+const js = standaloneCode(ajv, exportMap);
+const VALIDATORS_JS = path.join(ROOT, 'src/core/contracts/validators.generated.js');
+await writeFile(VALIDATORS_JS, '/* eslint-disable */\n// مولَّد آلياً (pnpm gen:types) — ajv standalone، لا تعدّل يدوياً.\n' + js, 'utf8');
+const dts = `/* مولَّد آلياً (pnpm gen:types) — لا تعدّل يدوياً */
+import type { ValidateFunction } from 'ajv';
+export const validateProject: ValidateFunction;
+export const validateStyle: ValidateFunction;
+export const validateTranscript: ValidateFunction;
+${Object.keys(exportMap).filter((k) => k.startsWith('cmd_')).map((k) => `export const ${k}: ValidateFunction;`).join('\n')}
+`;
+await writeFile(VALIDATORS_JS.replace(/\.js$/, '.d.ts'), dts, 'utf8');
+console.log(`كُتب src/core/contracts/validators.generated.js (${js.length} حرفاً)`);

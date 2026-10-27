@@ -7,11 +7,16 @@ export type MeasureFn = (
   dir: 'rtl' | 'ltr',
 ) => { width: number; height: number; wordRects: Array<[number, number, number, number]> };
 
+/** ناتج ffprobe كما يراه core (بلا id)؛ يُحقن من renderer بعد api.project.probe — core لا يعرف main. */
+export type ProbeLike = Omit<ProjectDocument['source'], 'id'>;
+
 export interface CommandContext {
   style: StyleVersion;
   now: () => string;
   newId: () => string;
   measure?: MeasureFn;
+  /** مطلوب لـ project.import فقط */
+  probe?: ProbeLike;
 }
 
 /** أثر جانبي يطلبه الأمر من الطبقة الخارجية؛ الأمر نفسه يبقى نقياً. */

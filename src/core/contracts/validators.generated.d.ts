@@ -1,0 +1,25 @@
+/* مولَّد آلياً (pnpm gen:types) — لا تعدّل يدوياً */
+import type { ValidateFunction } from 'ajv';
+export const validateProject: ValidateFunction;
+export const validateStyle: ValidateFunction;
+export const validateTranscript: ValidateFunction;
+export const cmd_project_import: ValidateFunction;
+export const cmd_transcript_request: ValidateFunction;
+export const cmd_proposal_request: ValidateFunction;
+export const cmd_proposal_exclude: ValidateFunction;
+export const cmd_proposal_apply: ValidateFunction;
+export const cmd_proposal_discard: ValidateFunction;
+export const cmd_clip_split: ValidateFunction;
+export const cmd_clip_trim: ValidateFunction;
+export const cmd_clip_move: ValidateFunction;
+export const cmd_clip_delete: ValidateFunction;
+export const cmd_captions_toggle: ValidateFunction;
+export const cmd_transcript_fixWord: ValidateFunction;
+export const cmd_style_setField: ValidateFunction;
+export const cmd_style_updateProposal_accept: ValidateFunction;
+export const cmd_style_updateProposal_reject: ValidateFunction;
+export const cmd_project_upgradeStyle: ValidateFunction;
+export const cmd_style_rollback: ValidateFunction;
+export const cmd_history_undo: ValidateFunction;
+export const cmd_history_redo: ValidateFunction;
+export const cmd_export_mp4: ValidateFunction;

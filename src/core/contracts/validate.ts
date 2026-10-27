@@ -1,12 +1,8 @@
 // التحقق من العقود وقت التشغيل (T018): Ajv 2020 + formats على نسخة المخططات داخل المصدر،
 // ثم القيود البنيوية التي لا يعبّر عنها JSON Schema (data-model §1.3، §4).
-import Ajv2020 from 'ajv/dist/2020.js';
 import type { ErrorObject, ValidateFunction } from 'ajv';
-import addFormats from 'ajv-formats';
-import projectSchema from './schemas/project.schema.json';
-import styleSchema from './schemas/style.schema.json';
-import transcriptSchema from './schemas/transcript.schema.json';
 import commandsSchema from './schemas/commands.schema.json';
+import * as generated from './validators.generated.js';
 import type { CommandName, CommandSpec, ProjectDocument, StyleVersion, Transcript } from './types';
 import { expectedFrames } from '../time';
 
@@ -21,37 +17,18 @@ export class ContractError extends Error {
   }
 }
 
-type Json = Record<string, unknown>;
-
-// المعرّفات في المخططات نسبية (ai-editor/<x>/1) فيحلّها Ajv إلى ai-editor/project/ai-editor/transcript/1 ويفشل؛
-// لذا نُدمج مرجع التفريغ في مكانه كما يفعل scripts/gen-types.ts بدل تغيير العقود.
-function inlineTranscriptRef(node: unknown): unknown {
-  if (Array.isArray(node)) return node.map(inlineTranscriptRef);
-  if (node && typeof node === 'object') {
-    const o = node as Json;
-    if (o['$ref'] === transcriptSchema.$id) {
-      const { $schema: _s, $id: _i, ...rest } = transcriptSchema;
-      return rest;
-    }
-    const out: Json = {};
-    for (const [k, v] of Object.entries(o)) out[k] = inlineTranscriptRef(v);
-    return out;
-  }
-  return node;
-}
-
-const ajv = new Ajv2020({ allErrors: true, strict: false });
-addFormats(ajv);
-
-const projectValidator = ajv.compile(inlineTranscriptRef(projectSchema) as Json);
-const styleValidator = ajv.compile(styleSchema);
-const transcriptValidator = ajv.compile(transcriptSchema);
+// المدقّقات مُترجمة مسبقاً في validators.generated.js (ajv standalone) حتى لا تحتاج الواجهة 'unsafe-eval'.
+const projectValidator: ValidateFunction = generated.validateProject;
+const styleValidator: ValidateFunction = generated.validateStyle;
+const transcriptValidator: ValidateFunction = generated.validateTranscript;
 
 export const commandSpecs: readonly CommandSpec[] = commandsSchema.commands as unknown as CommandSpec[];
 
-// معاملات كل أمر تُترجم مرة واحدة؛ قد تشير إلى #/$defs في جذر commands.schema.json
 const paramValidators = new Map<CommandName, ValidateFunction>(
-  commandSpecs.map((spec) => [spec.name, ajv.compile({ ...spec.params, $defs: commandsSchema.$defs })]),
+  commandSpecs.map((spec) => {
+    const key = ('cmd_' + spec.name.replace(/\./g, '_')) as keyof typeof generated;
+    return [spec.name, generated[key] as ValidateFunction];
+  }),
 );
 
 function formatErrors(errors: ErrorObject[] | null | undefined): string[] {
