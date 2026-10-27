@@ -196,4 +196,5 @@ Before adding skills or tools to this project, read `TOOLBOX.md`: pick only what
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
+at specs/001-proof-of-concept/plan.md
 <!-- SPECKIT END -->

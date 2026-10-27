@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai-editor/transcript/1",
+  "title": "Transcript (عقد موحد لكل مزودي التفريغ، سحابي أو محلي)",
+  "type": "object",
+  "required": ["schemaVersion", "provider", "model", "modelParams", "language", "durationUs", "audioSha256", "words", "createdAt"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "provider": { "type": "string", "description": "openai | groq | deepgram | elevenlabs | local-whisper ..." },
+    "model": { "type": "string" },
+    "modelParams": { "type": "object", "description": "language, mip_opt_out, ... كما أُرسلت" },
+    "audioSha256": { "type": "string", "description": "بصمة ملف الصوت المرسَل" },
+    "language": { "type": "string", "description": "BCP-47، مثل ar" },
+    "durationUs": { "type": "integer", "minimum": 0 },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "words": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "text", "startUs", "endUs", "confidence"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string", "minLength": 1 },
+          "startUs": { "type": "integer", "minimum": 0 },
+          "endUs": { "type": "integer", "minimum": 0 },
+          "confidence": { "oneOf": [ { "type": "number", "minimum": 0, "maximum": 1 }, { "type": "null" } ], "description": "مُطبَّعة 0..1 (ElevenLabs: exp(logprob))؛ null إن المزود لا يعطي ثقة لكل كلمة. علامة «منخفض الثقة» تُحسب عند العرض: confidence < threshold المزود" },
+          "lang": { "type": "string" },
+          "original": { "type": "string", "description": "النص قبل أي تصحيح" },
+          "correctedBy": { "enum": ["user", "auto"] }
+        }
+      }
+    },
+    "segments": {
+      "type": "array",
+      "items": {
+        "type": "object", "required": ["startUs", "endUs", "wordIds"], "additionalProperties": false,
+        "properties": {
+          "startUs": { "type": "integer" }, "endUs": { "type": "integer" },
+          "wordIds": { "type": "array", "items": { "type": "string" } },
+          "text": { "type": "string" }
+        }
+      }
+    },
+    "rawRef": { "type": "string", "description": "مسار استجابة المزود الخام داخل مجلد المشروع للمراجعة" }
+  }
+}
