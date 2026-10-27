@@ -16,7 +16,7 @@ const coreForbidden = [
 
 export default tseslint.config(
   {
-    ignores: ['node_modules/**', 'out/**', 'dist/**', 'release/**', 'coverage/**', 'resources/**', 'tests/fixtures/**', '**/*.min.js', 'src/core/contracts/types.ts'],
+    ignores: ['node_modules/**', 'out/**', 'dist/**', 'release/**', 'coverage/**', 'resources/**', 'tests/fixtures/**', '**/*.min.js', 'src/core/contracts/types.ts', '.claude/**', '.specify/**', 'خام/**', 'specs/**', '1/**', '2/**', '3/**'],
   },
   ...tseslint.configs.recommended,
   {

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "01JTESTPROJECT0000000000001",
+  "name": "مشروع اختبار",
+  "createdAt": "2026-10-28T10:00:00.000Z",
+  "updatedAt": "2026-10-28T10:00:00.000Z",
+  "seed": 42,
+  "source": {
+    "id": "src-1",
+    "path": "/videos/tiny-ntsc-5s.mp4",
+    "fileName": "tiny-ntsc-5s.mp4",
+    "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "durationUs": 5005000,
+    "fps": { "num": 30000, "den": 1001 },
+    "sourceIsVfr": false,
+    "frameCount": 150,
+    "rotation": 0,
+    "width": 1280,
+    "height": 720,
+    "hasAudio": true
+  },
+  "style": { "styleId": "default", "version": 1 },
+  "transcript": null,
+  "transcriptJob": { "state": "idle" },
+  "timeline": {
+    "clips": [{ "id": "c1", "sourceId": "src-1", "inFrame": 0, "outFrame": 150, "timelineStartFrame": 0 }]
+  },
+  "captions": { "enabled": false, "cues": [] },
+  "proposals": [],
+  "corrections": [],
+  "styleUpdateProposals": []
+}

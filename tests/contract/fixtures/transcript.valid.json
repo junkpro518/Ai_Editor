@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "provider": "deepgram",
+  "model": "nova-3",
+  "modelParams": { "language": "ar" },
+  "audioSha256": "1111111111111111111111111111111111111111111111111111111111111111",
+  "language": "ar",
+  "durationUs": 5005000,
+  "createdAt": "2026-10-28T10:05:00.000Z",
+  "words": [
+    { "id": "w1", "text": "السلام", "startUs": 100000, "endUs": 600000, "confidence": 0.98 },
+    { "id": "w2", "text": "عليكم", "startUs": 650000, "endUs": 1100000, "confidence": 0.95 },
+    { "id": "w3", "text": "يعني", "startUs": 1200000, "endUs": 1500000, "confidence": null },
+    { "id": "w4", "text": "اليوم", "startUs": 1600000, "endUs": 2000000, "confidence": 0.71 },
+    { "id": "w5", "text": "نبدأ", "startUs": 2100000, "endUs": 2600000, "confidence": 0.9 }
+  ]
+}

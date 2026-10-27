@@ -27,7 +27,7 @@ gen tiny-noaudio-5s.mp4   -f lavfi -i "testsrc2=size=320x180:rate=30" -t 5 -an -
 gen tiny-ntsc-5s.mp4      -f lavfi -i "testsrc2=size=320x180:rate=30000/1001" -f lavfi -i "sine=frequency=440:sample_rate=48000" -t 5 -c:v "$VENC" "${PRESET[@]}" -pix_fmt yuv420p -c:a aac -b:a 64k
 # VFR: إسقاط إطارات بشكل غير منتظم ثم -fps_mode vfr → طوابع زمنية متغيرة (القرار 13)
 gen tiny-vfr-5s.mp4       -f lavfi -i "testsrc2=size=320x180:rate=30" -t 5 -vf "select='not(mod(n,7))+not(mod(n,3))'" -fps_mode vfr -an -c:v "$VENC" "${PRESET[@]}" -pix_fmt yuv420p
-# الدوران: -display_rotation خيار إدخال، فنولّد 180×320 ثم نعيد الحزم مع علامة دوران 90 (كما تفعل الجوالات)
+# الدوران: -display_rotation خيار إدخال، فنولّد 180×320 ثم نعيد الحزم مع علامة دوران 90 عكس عقارب الساعة (الجوال الحقيقي يعطي عادةً -90 → تُخزَّن 270)
 if [[ ! -f "$OUT/tiny-rotated-5s.mp4" ]]; then echo "توليد: tiny-rotated-5s.mp4"
   "$FF" -hide_banner -loglevel error -y -f lavfi -i "testsrc2=size=180x320:rate=30" -t 5 -an -c:v "$VENC" "${PRESET[@]}" -pix_fmt yuv420p "$OUT/.rot-tmp.mp4"
   "$FF" -hide_banner -loglevel error -y -display_rotation 90 -i "$OUT/.rot-tmp.mp4" -c copy "$OUT/tiny-rotated-5s.mp4" && rm -f "$OUT/.rot-tmp.mp4"

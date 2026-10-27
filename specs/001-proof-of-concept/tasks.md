@@ -51,22 +51,22 @@ description: "Task list for feature 001 — إثبات تقني: مونتاج م
 
 ### Tests (تُكتب أولاً وتفشل)
 
-- [ ] T011 [P] اختبارات الزمن في `tests/unit/core/time.test.ts`: `usToFrame`/`frameToSeconds` بكسر 30000/1001 بلا انزلاق، `nearestStandardFps` (24000/1001، 24، 25، 30000/1001، 30، 50، 60000/1001، 60)، `expectedFrames(clips) = Σ(outFrame − inFrame)`
-- [ ] T012 [P] اختبارات العقود في `tests/contract/schemas.test.ts`: fixtures صالحة وغير صالحة لكل من `project`، `style`، `transcript`، `commands` (مثل `durationUs > 900000000` يُرفض، `outFrame ≤ inFrame` يُرفض، `mode` خارج `mandatory|preference` يُرفض)
-- [ ] T013 [P] اختبارات سجل الأوامر في `tests/unit/core/commands/registry.test.ts`: كل أمر من الـ20 مسجّل، التحقق من المعاملات قبل التنفيذ، الأمر `undoable` يأخذ لقطة، الناتج يجتاز `project.schema.json`، التنفيذ نقي (نفس المدخل = نفس المخرج)
-- [ ] T014 [P] اختبارات التخزين في `tests/integration/storage.test.ts`: حفظ ذري (ملف مؤقت ثم rename)، `.bak` عند فشل التحليل، لقطات `snapshots/<seq>.json`، حد 200 مدخل مع طيّ الأقدم (FR-015)
-- [ ] T015 [P] اختبارات FFmpeg في `tests/integration/ffmpeg.test.ts` على عينات صغيرة في `tests/fixtures/`: `probe()` يرجع fps ككسر وrotation وhasAudio وframeCount بـ`-count_frames`، رفض >15 دقيقة/>8GB/>1080p قبل المعالجة (القرار 24)، `spawn` بمصفوفة وسائط و`file:` و`-protocol_whitelist file,pipe`، تحليل `-progress pipe:1`، الإلغاء يحذف الناتج
-- [ ] T016 [P] اختبار الأسرار في `tests/integration/secrets.test.ts`: `safeStorage` غير المتزامن، الرفض على Linux بلا secret store (`basic_text`)، المفتاح لا يظهر في أي ناتج IPC ولا في السجلات
+- [X] T011 [P] اختبارات الزمن في `tests/unit/core/time.test.ts`: `usToFrame`/`frameToSeconds` بكسر 30000/1001 بلا انزلاق، `nearestStandardFps` (24000/1001، 24، 25، 30000/1001، 30، 50، 60000/1001، 60)، `expectedFrames(clips) = Σ(outFrame − inFrame)`
+- [X] T012 [P] اختبارات العقود في `tests/contract/schemas.test.ts`: fixtures صالحة وغير صالحة لكل من `project`، `style`، `transcript`، `commands` (مثل `durationUs > 900000000` يُرفض، `outFrame ≤ inFrame` يُرفض، `mode` خارج `mandatory|preference` يُرفض)
+- [X] T013 [P] اختبارات سجل الأوامر في `tests/unit/core/commands/registry.test.ts`: كل أمر من الـ20 مسجّل، التحقق من المعاملات قبل التنفيذ، الأمر `undoable` يأخذ لقطة، الناتج يجتاز `project.schema.json`، التنفيذ نقي (نفس المدخل = نفس المخرج)
+- [X] T014 [P] اختبارات التخزين في `tests/integration/storage.test.ts`: حفظ ذري (ملف مؤقت ثم rename)، `.bak` عند فشل التحليل، لقطات `snapshots/<seq>.json`، حد 200 مدخل مع طيّ الأقدم (FR-015)
+- [X] T015 [P] اختبارات FFmpeg في `tests/integration/ffmpeg.test.ts` على عينات صغيرة في `tests/fixtures/`: `probe()` يرجع fps ككسر وrotation وhasAudio وframeCount بـ`-count_frames`، رفض >15 دقيقة/>8GB/>1080p قبل المعالجة (القرار 24)، `spawn` بمصفوفة وسائط و`file:` و`-protocol_whitelist file,pipe`، تحليل `-progress pipe:1`، الإلغاء يحذف الناتج
+- [X] T016 [P] اختبار الأسرار في `tests/integration/secrets.test.ts`: `safeStorage` غير المتزامن، الرفض على Linux بلا secret store (`basic_text`)، المفتاح لا يظهر في أي ناتج IPC ولا في السجلات
 
 ### Implementation
 
-- [ ] T017 [P] `src/core/time.ts`: الكسر `{num,den}`، `usToFrame`، `frameToSeconds` (نص بست خانات)، `nearestStandardFps`، `expectedFrames`
-- [ ] T018 [P] `src/core/contracts/`: الأنواع المولَّدة (T008) + `validateProject/Style/Transcript/CommandParams`
-- [ ] T019 `src/core/commands/registry.ts`: تحميل `commands.schema.json`، `execute(project, name, params, actor)` → تحقق ← لقطة (إن `undoable`) ← تنفيذ نقي ← تحقق المخرج ← حدث؛ وملف لكل أمر في `src/core/commands/<name>.ts` كهياكل تُملأ في القصص
-- [ ] T020 [P] `src/core/history/snapshots.ts`: مكدسا التراجع/الإعادة بلقطات كاملة، حد 200، تسلسل `seq`، الفاعل والوصف
-- [ ] T021 [P] `src/main/storage/`: `projects.ts` (`userData/projects/<id>/project.json` + `snapshots/` + `cache/`)، `styles.ts` (`userData/styles/<id>/v<n>.json` بلا تعديل في المكان)، `settings.ts`، كلها بـ`write-file-atomic` + `.bak`
-- [ ] T022 [P] `src/main/secrets.ts`: `safeStorage` async فقط، ملف `userData/secrets.enc`، فك التشفير لحظة الطلب داخل main فقط، `keyRef` بالاسم + آخر 4 أحرف للعرض (القرار 18)
-- [ ] T023 [P] `src/main/ffmpeg/process.ts` (spawn آمن، تقدم، إلغاء، مهلة) و`src/main/ffmpeg/probe.ts` (ffprobe → `MediaSource` مع `frameCount`، `sourceIsVfr`، `rotation`، رفض >15 دقيقة/>8GB/>1080p، القرار 24) و`src/main/ffmpeg/encoders.ts` (كشف `-encoders` + ترميز تجريبي ثانية لكل مشفّر عتادي، تخزين النتيجة في settings)
+- [X] T017 [P] `src/core/time.ts`: الكسر `{num,den}`، `usToFrame`، `frameToSeconds` (نص بست خانات)، `nearestStandardFps`، `expectedFrames`
+- [X] T018 [P] `src/core/contracts/`: الأنواع المولَّدة (T008) + `validateProject/Style/Transcript/CommandParams`
+- [X] T019 `src/core/commands/registry.ts`: تحميل `commands.schema.json`، `execute(project, name, params, actor)` → تحقق ← لقطة (إن `undoable`) ← تنفيذ نقي ← تحقق المخرج ← حدث؛ وملف لكل أمر في `src/core/commands/<name>.ts` كهياكل تُملأ في القصص
+- [X] T020 [P] `src/core/history/snapshots.ts`: مكدسا التراجع/الإعادة بلقطات كاملة، حد 200، تسلسل `seq`، الفاعل والوصف
+- [X] T021 [P] `src/main/storage/`: `projects.ts` (`userData/projects/<id>/project.json` + `snapshots/` + `cache/`)، `styles.ts` (`userData/styles/<id>/v<n>.json` بلا تعديل في المكان)، `settings.ts`، كلها بـ`write-file-atomic` + `.bak`
+- [X] T022 [P] `src/main/secrets.ts`: `safeStorage` async فقط، ملف `userData/secrets.enc`، فك التشفير لحظة الطلب داخل main فقط، `keyRef` بالاسم + آخر 4 أحرف للعرض (القرار 18)
+- [X] T023 [P] `src/main/ffmpeg/process.ts` (spawn آمن، تقدم، إلغاء، مهلة) و`src/main/ffmpeg/probe.ts` (ffprobe → `MediaSource` مع `frameCount`، `sourceIsVfr`، `rotation`، رفض >15 دقيقة/>8GB/>1080p، القرار 24) و`src/main/ffmpeg/encoders.ts` (كشف `-encoders` + ترميز تجريبي ثانية لكل مشفّر عتادي، تخزين النتيجة في settings)
 - [ ] T024 `src/preload/index.ts` + `src/main/ipc.ts`: سطح IPC محصور في persist/ffmpeg/secrets/providers (لا أوامر مونتاج في main)، `contextIsolation` مفعّل، `nodeIntegration` معطّل، `protocol.handle('media')` لخدمة ملفات المصدر للقراءة فقط
 - [ ] T025 [P] `src/renderer/commands/runtime.ts`: يشغّل `core/commands` في الـrenderer، يحفظ عبر IPC بعد كل أمر (debounce قصير)، يبث الحالة لـReact
 - [ ] T026 [P] هيكل الواجهة RTL: `src/renderer/App.tsx`، `i18n/{ar,en}.json` مع تبديل اللغة وتنسيق الأرقام/التواريخ حسب اللغة (FR-018)، شريط تنقل بين الشاشات، نافذة تأكيد عامة للأوامر `confirm: true`
