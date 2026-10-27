@@ -143,3 +143,7 @@ docs/
 - اسم مجلد اللقطات موحَّد: `projects/<id>/snapshots/<seq>.json` (data-model 1.9).
 - أمر `transcript.revertAutoFix` حُذف من 001 (لا تصحيح تلقائي، القرار 21)؛ السجل 20 أمراً. قيمة `correctedBy: "auto"` تبقى محجوزة في المخطط.
 - مصدر بلا مسار صوت: المدمج يستخدم `-an` ويُصدَّر فيديو بلا صوت (الحالة الحدّية في المواصفة).
+- إضافات Claude Code (CLAUDE.md §7) رُوجعت 2026-10-28 من الدليل الرسمي: لا تثبيت جديد؛ الموجود ويطابق الأدوات (typescript-lsp، code-review، pr-review-toolkit، security-guidance).
+- التطوير على Linux بلا شاشة: Electron يُشغَّل بـ`xvfb-run -a` و`--no-sandbox` (اختبارات ومهمة القياس فقط؛ لا في الحزمة).
+- الإصدارات الفعلية المثبّتة في `docs/licenses/INVENTORY.md` (vitest 5، Vite 8، electron-vite 6، TypeScript 5.9) تحلّ محل التقريبات في research.md R11.
+

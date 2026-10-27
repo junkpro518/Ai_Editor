@@ -14,7 +14,7 @@
 pnpm install
 pnpm ffmpeg:fetch        # يتحقق من بصمة SHA-256 لثنائيات LGPL في resources/ffmpeg/<platform>
 pnpm test                # vitest: وحدات + عقود (يجب أن تنجح قبل أي تشغيل)
-pnpm dev                 # يشغّل التطبيق
+pnpm dev                 # يشغّل التطبيق (على Linux بلا شاشة: xvfb-run -a pnpm dev، وتُمرَّر --no-sandbox في الاختبارات فقط)
 ```
 
 ## السيناريوهات

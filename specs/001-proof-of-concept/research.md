@@ -92,12 +92,12 @@ composeFrame(ctx: OffscreenCanvasRenderingContext2D /* بدقة المصدر د�
 
 | الاسم | الإصدار | الترخيص | الدور | الحالة |
 |---|---|---|---|---|
-| electron | 45.x | MIT | الغلاف (Chromium موحّد + Node) | مختار |
-| electron-builder | 26.18.x | MIT | تغليف وتوقيع | مختار |
+| electron | 45.1.0 | MIT | الغلاف (Chromium موحّد + Node) | مختار |
+| electron-builder | 26.18.1 | MIT | تغليف وتوقيع | مختار |
 | electron-updater | 6.8.x | MIT | تحديث (لاحقاً) | مؤجل |
-| TypeScript | 5.x | Apache-2.0 | اللغة | مختار |
+| TypeScript | 5.9.3 | Apache-2.0 | اللغة | مختار |
 | React | 19.x | MIT | الواجهة | مختار |
-| Vite + electron-vite | 7.x / أحدث | MIT | البناء | مختار |
+| Vite + electron-vite | 8.3.5 / 6.0.0 | MIT | البناء | مختار |
 | mp4box.js | أحدث مستقر | BSD-3-Clause | demux لـWebCodecs | مختار |
 | ajv | 8.x | MIT | تحقق المخططات | مختار |
 | write-file-atomic | أحدث | ISC | حفظ ذري | مختار |
@@ -105,8 +105,8 @@ composeFrame(ctx: OffscreenCanvasRenderingContext2D /* بدقة المصدر د�
 | json-schema-to-typescript | أحدث | MIT | توليد الأنواع من المخططات (T008) | تطوير فقط |
 | zimg (داخل FFmpeg) | مع البناء | WTFPL | تحويل الألوان HDR→SDR في المسار الاحتياطي (`zscale`) | مختار |
 | FFmpeg BtbN `linux64-lgpl` | وسم مثبّت | LGPLv3 | تشغيل اختبارات التكامل على Linux في CI والتطوير | تطوير/CI فقط، لا يُشحن |
-| vitest | 3.x | MIT | اختبارات | تطوير |
-| Playwright | أحدث | Apache-2.0 | اختبارات الواجهة/التركيب | تطوير |
+| vitest | 5.0.5 | MIT | اختبارات | تطوير |
+| Playwright | 1.64.1 | Apache-2.0 | اختبارات الواجهة/التركيب | تطوير |
 | jiwer | أحدث | Apache-2.0 | قياس WER | تطوير فقط |
 | FFmpeg (ثنائي منفصل) | فرع n8.1/n9.0 واحد للنظامين | LGPLv3 | ffprobe + ترميز صوت + دمج + (احتياطي ترميز فيديو) | مختار؛ المصدر وسكربتات البناء تُنشر |
 | libopus (داخل FFmpeg) | مع البناء | BSD-3 (غير متحقق من الملف) | استخراج الصوت | مختار |
