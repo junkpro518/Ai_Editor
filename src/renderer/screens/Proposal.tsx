@@ -3,8 +3,9 @@ import type { ProjectDocument, Proposal as ProposalDoc, Reason } from '../../cor
 import type { Rational } from '../../core/time';
 import { usToFrame } from '../../core/time';
 import { playableRanges } from '../../core/proposal/listen';
+import { sourceToTimeline } from '../../core/timeline/ops';
 import type { FrameRange } from '../../core/proposal/listen';
-import { navigate, run, toIpcError, useRuntime } from '../commands/runtime';
+import { getState, navigate, run, toIpcError, useRuntime } from '../commands/runtime';
 import { formatNumber, t } from '../i18n';
 import { mountPreview } from '../player';
 import type { Player } from '../player';
@@ -60,12 +61,17 @@ export function Proposal() {
     };
   }, [projectId, stop]);
 
-  /** تشغيل سلسلة مديات بإطارات المصدر فوق المشغّل (نمط Timeline.play: إيقاف ← عرض بداية التالي ← تشغيل). */
+  /**
+   * تشغيل سلسلة مديات بإطارات المصدر فوق المشغّل (نمط Timeline.play: إيقاف ← عرض بداية التالي ← تشغيل).
+   * الكابشن بإطار التايم لاين، فنمرّره صريحاً من اللقطات (بند مقصوص خارجها → بلا كابشن).
+   */
   const playRanges = useCallback(
     (ranges: FrameRange[], label: 'skip' | string, lastFrame: number): void => {
       const player = playerRef.current;
       const first = ranges[0];
       if (!player || !first) return;
+      const clips = getState().project?.timeline.clips ?? [];
+      const timelineFrame = (sourceFrame: number): number => sourceToTimeline(clips, sourceFrame) ?? -1;
       playingRef.current = true;
       setPlaying(label);
       let seg = 0;
@@ -83,7 +89,7 @@ export function Proposal() {
         seg += 1;
         player.pause();
         void player
-          .show(next.inFrame)
+          .show(next.inFrame, timelineFrame(next.inFrame))
           .then(() => {
             if (!playingRef.current) return;
             player.play();
@@ -92,7 +98,7 @@ export function Proposal() {
           .catch(() => stop());
       };
       void player
-        .show(first.inFrame)
+        .show(first.inFrame, timelineFrame(first.inFrame))
         .then(() => {
           if (!playingRef.current) return;
           player.play();

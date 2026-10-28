@@ -138,6 +138,34 @@ describe('checkParity', () => {
     for (const c of r.control!) expect(c.psnr).toBeGreaterThan(DEFAULT_THRESHOLDS.psnrDb);
   });
 
+  // T058 (الجزء الذي يعمل بلا renderer): طبقة محروقة في منطقة الكابشن على المرجع والناتج معاً → ok ولا إزاحة؛
+  // المرجع بالطبقة والناتج بلا طبقة → البوابة تسقط عند تلك الإطارات. الكابشن العربي الحقيقي (خطوط + canvas) في
+  // tests/e2e/captions.spec.ts لأن vitest لا يملك canvas.
+  it('كابشن محروق (طبقة في منطقة الكابشن): مطابق ومحاذٍ عند الإزاحة 0، وغيابه من الناتج يُكشف', async () => {
+    const box = 'drawbox=x=40:y=140:w=240:h=28:color=white@1:t=fill';
+    const dir = join(tmp, 'burned-refs');
+    mkdirSync(dir, { recursive: true });
+    const sample: ReferenceFrame[] = [];
+    for (const i of refs.slice(3, 8).map((f) => f.index)) {
+      const path = join(dir, referencePngName(i));
+      await runFfmpeg(bins.ffmpeg, [...PROTO, '-i', `file:${source}`, '-vf', `select=eq(n\\,${i}),${box}`, '-frames:v', '1', '-update', '1', path]);
+      sample.push({ index: i, path });
+    }
+    const burned = await encode('burned.mp4', ['-vf', box, '-c:v', 'mpeg4', '-q:v', '1', '-r', '30', '-an']);
+    const ok = await checkParity(bins, { exportPath: burned, expectedFrames: FRAMES, fps, referencePngs: sample, outDir: join(tmp, 'report-burned') });
+    expect(ok.failures).toEqual([]);
+    expect(ok.ok).toBe(true);
+    for (const f of ok.perFrame) {
+      expect(f.aligned, `frame ${f.index}`).toBe(true);
+      expect(f.psnr.same).toBeGreaterThanOrEqual(DEFAULT_THRESHOLDS.psnrDb);
+    }
+    // الناتج بلا الطبقة مقابل مرجع يحملها: الكابشن الغائب يُسقط PSNR تحت العتبة عند كل إطار
+    const missing = await checkParity(bins, { exportPath: good, expectedFrames: FRAMES, fps, referencePngs: sample, outDir: join(tmp, 'report-burned-missing') });
+    expect(missing.ok).toBe(false);
+    expect(missing.perFrame.every((f) => f.psnr.same < DEFAULT_THRESHOLDS.psnrDb)).toBe(true);
+    console.log(`burned overlay: PSNR median ${ok.psnrMedian.toFixed(2)} dB with overlay in both; ${missing.psnrMedian.toFixed(2)} dB when the export lacks it`);
+  });
+
   it('listReferencePngs يقرأ اتفاقية ref-NNNNN.png مرتّبة', async () => {
     const listed = await listReferencePngs(refsDir);
     expect(listed).toEqual(refs);

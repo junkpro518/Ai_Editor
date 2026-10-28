@@ -138,3 +138,18 @@
   max-height: 50vh;
   object-fit: contain;
 }
+
+/* لوحة الكابشن المصغّرة (T065): قراءة من النمط المثبّت + زر التفعيل */
+.caption-panel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.caption-panel .caption-facts {
+  margin: 0;
+  padding: 8px 12px;
+  grid-template-columns: repeat(4, max-content max-content);
+  font-size: 13px;
+}

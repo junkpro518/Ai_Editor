@@ -5,6 +5,7 @@ import { Import } from './screens/Import';
 import { Timeline } from './screens/Timeline';
 import { Export } from './screens/Export';
 import { Proposal } from './screens/Proposal';
+import { WordReview } from './screens/WordReview';
 import { Settings } from './screens/Settings';
 import { Disclosure } from './screens/Disclosure';
 import { TranscriptStatus } from './components/TranscriptStatus';
@@ -36,6 +37,7 @@ export function App() {
         {ready && screen === 'import' && <Import />}
         {ready && screen === 'timeline' && <Timeline />}
         {ready && screen === 'proposal' && <Proposal />}
+        {ready && screen === 'words' && <WordReview />}
         {ready && screen === 'settings' && <Settings />}
         {ready && screen === 'export' && <Export />}
       </main>

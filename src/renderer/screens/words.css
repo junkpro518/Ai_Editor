@@ -1,0 +1,58 @@
+/* مراجعة الكلمات (T064) */
+.words h2 {
+  font-size: 16px;
+  margin: 16px 0 8px;
+}
+.words .actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 8px 0 16px;
+}
+.words .counter {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.words .notice {
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.words table.items {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 16px;
+}
+.words table.items td {
+  border-bottom: 1px solid var(--line);
+  padding: 6px 8px;
+  text-align: start;
+  vertical-align: middle;
+}
+.words td.context mark {
+  background: transparent;
+  color: var(--accent);
+  font-weight: 600;
+}
+.words td.confidence {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.words td.edit {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.words td.edit input {
+  min-width: 140px;
+}
+.words td.revert {
+  white-space: nowrap;
+}
+.words .search {
+  width: 100%;
+  max-width: 420px;
+}

@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { readCaptionRules } from '../../core/captions/layout';
+import type { CaptionCue } from '../../core/captions/types';
 import type { StyleVersion } from '../../core/contracts/types';
 import type { Rational } from '../../core/time';
 import { expectedFrames, frameToUs, usToFrame } from '../../core/time';
@@ -33,7 +35,21 @@ function isEditableTarget(target: EventTarget | null): boolean {
 export function Timeline() {
   const { project, style } = useRuntime();
   if (!project || !style) return <section className="screen">{t('timeline.empty')}</section>;
-  return <Editor key={project.id} projectId={project.id} clips={project.timeline.clips} fps={project.source.fps} frameCount={project.source.frameCount} style={style} name={project.name} durationUs={project.source.durationUs} />;
+  return (
+    <Editor
+      key={project.id}
+      projectId={project.id}
+      clips={project.timeline.clips}
+      fps={project.source.fps}
+      frameCount={project.source.frameCount}
+      style={style}
+      name={project.name}
+      durationUs={project.source.durationUs}
+      cues={project.captions.cues}
+      captionsEnabled={project.captions.enabled}
+      hasTranscript={project.transcript !== null}
+    />
+  );
 }
 
 function Editor({
@@ -44,6 +60,9 @@ function Editor({
   style,
   name,
   durationUs,
+  cues,
+  captionsEnabled,
+  hasTranscript,
 }: {
   projectId: string;
   clips: ReadonlyArray<Clip>;
@@ -52,6 +71,9 @@ function Editor({
   style: StyleVersion;
   name: string;
   durationUs: number;
+  cues: ReadonlyArray<CaptionCue>;
+  captionsEnabled: boolean;
+  hasTranscript: boolean;
 }) {
   const total = expectedFrames(clips);
   const [playhead, setPlayhead] = useState(0);
@@ -83,7 +105,7 @@ function Editor({
         playerRef.current = p;
         setPreviewError(null);
         const src = timelineToSource(clipsRef.current, 0);
-        if (src !== null) void p.show(src);
+        if (src !== null) void p.show(src, 0);
       })
       .catch((e: unknown) => {
         if (!cancelled) setPreviewError(e instanceof Error ? e.message : String(e));
@@ -94,7 +116,8 @@ function Editor({
     };
   }, [projectId, stop]);
 
-  // بعد كل تعديل أو تحريك للمؤشر (خارج التشغيل): اعرض إطار المؤشر، ولا تتركه خارج التايم لاين
+  // بعد كل تعديل أو تحريك للمؤشر (خارج التشغيل): اعرض إطار المؤشر، ولا تتركه خارج التايم لاين.
+  // الكابشن بإطار التايم لاين (المؤشر)؛ وتغيّر cues (تصحيح كلمة/تبديل الكابشن) يعيد عرض الإطار نفسه.
   useEffect(() => {
     if (total > 0 && playhead >= total) {
       setPlayhead(total - 1);
@@ -102,8 +125,8 @@ function Editor({
     }
     if (playingRef.current) return;
     const src = timelineToSource(clips, playhead);
-    if (src !== null) void playerRef.current?.show(src).catch(() => undefined);
-  }, [clips, playhead, total]);
+    if (src !== null) void playerRef.current?.show(src, playhead).catch(() => undefined);
+  }, [clips, playhead, total, cues]);
 
   useEffect(() => {
     if (selectedId && !clips.some((c) => c.id === selectedId)) setSelectedId(null);
@@ -202,7 +225,7 @@ function Editor({
       seg += 1;
       player.pause();
       void player
-        .show(next.inFrame)
+        .show(next.inFrame, next.timelineStartFrame)
         .then(() => {
           if (!playingRef.current) return;
           setPlayhead(next.timelineStartFrame);
@@ -212,7 +235,7 @@ function Editor({
         .catch(() => stop());
     };
     void player
-      .show(hit.clip.inFrame + hit.offset)
+      .show(hit.clip.inFrame + hit.offset, playhead)
       .then(() => {
         if (!playingRef.current) return;
         player.play();
@@ -220,6 +243,8 @@ function Editor({
       })
       .catch(() => stop());
   }, [playhead, frameCount, stop]);
+
+  const toggleCaptions = useCallback((): void => void edit(() => run('captions.toggle', { enabled: !captionsEnabled })), [edit, captionsEnabled]);
 
   // اختصارات على مستوى النافذة (ليس على عنصر مركَّز): مسافة، الأسهم، S، Delete، Ctrl/Cmd+Z، Ctrl+Shift+Z / Ctrl+Y
   useEffect(() => {
@@ -336,10 +361,37 @@ function Editor({
         )}
       </div>
 
+      <CaptionPanel style={style} enabled={captionsEnabled} canToggle={hasTranscript} onToggle={toggleCaptions} />
+
       <p className={`status${status?.warn ? ' warn' : ''}`} data-testid="status" role="status">
         {status?.text ?? ''}
       </p>
       <p className="hint">{t('timeline.shortcuts')}</p>
     </section>
+  );
+}
+
+type PositionKey = 'captions.position.bottom' | 'captions.position.center' | 'captions.position.top';
+
+/** لوحة أسلوب الكابشن المصغّرة (T065): قراءة فقط من النمط المثبّت (التعديل في US3) + زر التفعيل → captions.toggle. */
+function CaptionPanel({ style, enabled, canToggle, onToggle }: { style: StyleVersion; enabled: boolean; canToggle: boolean; onToggle: () => void }) {
+  const rules = readCaptionRules(style);
+  return (
+    <div className="caption-panel" data-testid="caption-panel">
+      <button type="button" data-testid="captions-toggle" data-enabled={enabled ? 'true' : 'false'} disabled={!canToggle} title={canToggle ? undefined : t('captions.needTranscript')} onClick={onToggle}>
+        {enabled ? t('captions.on') : t('captions.off')}
+      </button>
+      <dl className="facts caption-facts">
+        <dt>{t('captions.font')}</dt>
+        <dd data-testid="caption-font">{rules.fontFamily}</dd>
+        <dt>{t('captions.size')}</dt>
+        <dd data-testid="caption-size">{t('captions.sizeValue', { px: formatNumber(rules.fontSizePx) })}</dd>
+        <dt>{t('captions.position')}</dt>
+        <dd data-testid="caption-position">{t(`captions.position.${rules.position}` as PositionKey)}</dd>
+        <dt>{t('captions.lines')}</dt>
+        <dd data-testid="caption-lines">{formatNumber(rules.maxLines)}</dd>
+      </dl>
+      <span className="hint">{t('captions.pinned', { v: formatNumber(style.version) })}</span>
+    </div>
   );
 }

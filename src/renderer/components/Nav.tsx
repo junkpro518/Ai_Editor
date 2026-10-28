@@ -18,7 +18,7 @@ const ITEMS: Array<{
   { screen: 'import', key: 'nav.import', ready: true },
   { screen: 'timeline', key: 'nav.timeline', ready: true },
   { screen: 'proposal', key: 'nav.proposal', ready: true },
-  { screen: 'words', key: 'nav.words', ready: false },
+  { screen: 'words', key: 'nav.words', ready: true },
   { screen: 'style', key: 'nav.style', ready: false },
   { screen: 'history', key: 'nav.history', ready: false },
   { screen: 'settings', key: 'nav.settings', ready: true },
