@@ -76,9 +76,9 @@
       "properties": {
         "id": { "type": "string" },
         "ruleId": { "type": "string", "description": "مسار الحقل مثل cut.silenceMaxUs" },
-        "rule": { "type": "string", "description": "القاعدة بجملة واحدة" },
-        "quote": { "type": "string", "description": "تصحيح المستخدم حرفياً" },
-        "check": { "type": "string", "description": "سؤال فحص ذاتي يطرحه الوكيل قبل الاقتراح" },
+        "rule": { "type": "string", "maxLength": 4000, "description": "القاعدة بجملة واحدة" },
+        "quote": { "type": "string", "maxLength": 2000, "description": "تصحيح المستخدم حرفياً (يُقصّ عند 2000 حرف بـ«…» — اقتباس جملة كاملة من المزود يُنسخ في كل إصدار لاحق)" },
+        "check": { "type": "string", "maxLength": 1000, "description": "سؤال فحص ذاتي يطرحه الوكيل قبل الاقتراح" },
         "source": { "$ref": "#/$defs/source" },
         "addedInVersion": { "type": "integer" }
       }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Precedent, ProjectDocument, Reason, StyleUpdateProposal } from '../../core/contracts/types';
+import type { ProjectDocument, Reason, StyleUpdateProposal } from '../../core/contracts/types';
 import { run, toIpcError, useRuntime } from '../commands/runtime';
 import { formatDate, formatNumber, t } from '../i18n';
 import { fieldDef, fieldLabel, formatValue } from '../style/fields';
@@ -58,6 +58,11 @@ export function StyleUpdate() {
             <article key={p.id} data-testid="style-update-past" data-id={p.id} data-state={p.state}>
               <span className="badge">{t(`styleUpdate.state.${p.state}` as StateKey)}</span> {trigger(p)}
               {p.decidedAt && <span className="hint"> · {formatDate(p.decidedAt)}</span>}
+              {p.state === 'superseded' && (
+                <p className="hint" data-testid="style-update-superseded">
+                  {t('styleUpdate.superseded')}
+                </p>
+              )}
             </article>
           ))}
         </>
@@ -76,7 +81,7 @@ function trigger(p: StyleUpdateProposal): string {
 
 function Card({ proposal: p, project, onAccept, onReject }: { proposal: StyleUpdateProposal; project: ProjectDocument; onAccept: () => void; onReject: () => void }) {
   // الاقتباسات من التصحيحات نفسها (المصدر)؛ السوابق تحمل نسخة منها احتياطاً
-  const precedents = p.newPrecedents as Precedent[];
+  const precedents = p.newPrecedents;
   const quotes = p.trigger.correctionIds.map((id) => project.corrections.find((c) => c.id === id)?.quote ?? precedents.find((x) => x.source.ref === id)?.quote ?? '');
   return (
     <article data-testid="style-update" data-id={p.id} data-state={p.state} data-reason={p.trigger.reason}>

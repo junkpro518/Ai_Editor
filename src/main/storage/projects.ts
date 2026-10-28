@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import writeFileAtomic from 'write-file-atomic';
 import type { ProjectDocument } from '../../core/contracts/types';
 import type { HistoryEntry } from '../../core/history/snapshots';
-import { validateProject } from '../../core/contracts/validate';
+import { ContractError, validateProject } from '../../core/contracts/validate';
 
 export class StorageError extends Error {
   constructor(
@@ -43,6 +43,11 @@ export function isEnoent(e: unknown): boolean {
   return typeof e === 'object' && e !== null && (e as { code?: string }).code === 'ENOENT';
 }
 
+/** تلف حقيقي (JSON مكسور أو مخالف للعقد) — وحده يبرّر إبعاد الملف والاسترجاع من .bak الأقدم (مراجعة US3) */
+function isCorrupt(e: unknown): boolean {
+  return e instanceof SyntaxError || e instanceof ContractError;
+}
+
 async function readValidProject(file: string): Promise<ProjectDocument> {
   const doc = await readJson(file);
   validateProject(doc);
@@ -54,6 +59,20 @@ export function createProjectStore(rootDir: string): ProjectStore {
   const dir = (id: string): string => path.join(projectsRoot, id);
   const file = (id: string): string => path.join(dir(id), 'project.json');
   const snapshotsDir = (id: string): string => path.join(dir(id), 'snapshots');
+  // الحفظ متسلسل لكل مشروع: نسخ .bak ثم الكتابة الذرية خطوتان، وحفظان متداخلان قد يكتملان بترتيب معكوس (مراجعة US3)
+  const saving = new Map<string, Promise<void>>();
+
+  async function saveNow(doc: ProjectDocument): Promise<void> {
+    const target = file(doc.id);
+    await fs.mkdir(dir(doc.id), { recursive: true });
+    // النسخة السابقة → .bak قبل الاستبدال الذري
+    try {
+      await fs.copyFile(target, `${target}.bak`);
+    } catch (e) {
+      if (!isEnoent(e)) throw e;
+    }
+    await writeJsonAtomic(target, doc);
+  }
 
   async function listSnapshotFiles(id: string): Promise<Array<{ seq: number; file: string }>> {
     let names: string[];
@@ -74,16 +93,15 @@ export function createProjectStore(rootDir: string): ProjectStore {
     dir,
     cacheDir: (id) => path.join(dir(id), 'cache'),
 
-    async save(doc) {
-      const target = file(doc.id);
-      await fs.mkdir(dir(doc.id), { recursive: true });
-      // النسخة السابقة → .bak قبل الاستبدال الذري
-      try {
-        await fs.copyFile(target, `${target}.bak`);
-      } catch (e) {
-        if (!isEnoent(e)) throw e;
-      }
-      await writeJsonAtomic(target, doc);
+    save(doc) {
+      // فشل حفظ سابق لا يوقف التالي؛ كل مستدعٍ يتلقى نتيجة حفظه هو
+      const next = (saving.get(doc.id) ?? Promise.resolve()).catch(() => undefined).then(() => saveNow(doc));
+      saving.set(doc.id, next);
+      void next.then(
+        () => saving.get(doc.id) === next && saving.delete(doc.id),
+        () => saving.get(doc.id) === next && saving.delete(doc.id),
+      );
+      return next;
     },
 
     async load(id) {
@@ -91,7 +109,11 @@ export function createProjectStore(rootDir: string): ProjectStore {
       try {
         return await readValidProject(target);
       } catch (primary) {
-        if (!isEnoent(primary)) {
+        // خطأ نظام ملفات عابر (صلاحيات، EISDIR، EMFILE…) ليس تلفاً: لا نُبعد الأحدث ولا نعيد .bak الأقدم مكانه
+        if (!isEnoent(primary) && !isCorrupt(primary)) {
+          throw new StorageError('project_unreadable', `تعذّر قراءة ملف المشروع «${id}».`, { primary });
+        }
+        if (isCorrupt(primary)) {
           // الملف موجود لكنه تالف: نُبعده باسم مميّز ثم نحاول .bak
           await fs.rename(target, `${target}.corrupt-${Date.now()}`).catch(() => undefined);
         }

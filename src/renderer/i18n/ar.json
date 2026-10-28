@@ -289,5 +289,7 @@
   "styleUpdate.past": "اقتراحات سابقة",
   "styleUpdate.state.pending": "معلّق",
   "styleUpdate.state.accepted": "مقبول",
-  "styleUpdate.state.rejected": "مرفوض"
+  "styleUpdate.state.rejected": "مرفوض",
+  "styleUpdate.state.superseded": "أُلغي",
+  "styleUpdate.superseded": "أُلغي الاقتراح لأن النمط تغيّر"
 }

@@ -22,6 +22,16 @@ export const FONT_STEP_PX = 2;
  * إلى الحد الأدنى وتقيس عند كل خطوة؛ بلا سقف قيمةٌ مثل 1e9 في ملف النمط تعلّق الواجهة في كل أمر (مراجعة us2 #1).
  */
 export const MAX_FONT_SIZE_1080 = Math.floor(1080 / LINE_HEIGHT_RATIO);
+/**
+ * سقف wordsPerChunk.max (us2 «تبقّى للمالك» #1، القرار 32): max عملاق يجعل المجموعة لقطة كاملة فيقسمها layoutChunk
+ * نصفين تكراراً بمئات آلاف القياسات. القيمة 20 قرار المالك.
+ */
+export const MAX_WORDS_PER_CHUNK = 20;
+
+function clampChunk({ min, max }: { min: number; max: number }): { min: number; max: number } {
+  const hi = Math.min(MAX_WORDS_PER_CHUNK, Math.max(1, max));
+  return { min: Math.min(hi, Math.max(1, min)), max: hi };
+}
 
 export interface CaptionFont {
   family: string;
@@ -62,7 +72,7 @@ export function readCaptionRules(style: StyleVersion): CaptionRules {
     fontSizePx: Math.min(MAX_FONT_SIZE_1080, Math.max(1, rule(style, 'fontSizePx', isNumber))),
     position: rule(style, 'position', isPosition),
     maxLines: rule(style, 'maxLines', isNumber),
-    wordsPerChunk: rule(style, 'wordsPerChunk', isMinMax),
+    wordsPerChunk: clampChunk(rule(style, 'wordsPerChunk', isMinMax)),
     breakAtPauseUs: rule(style, 'breakAtPauseUs', isNumber),
     highlightCurrent: rule(style, 'highlightCurrent', isBoolean),
     textColor: rule(style, 'textColor', isString),

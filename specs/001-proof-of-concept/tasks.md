@@ -180,7 +180,7 @@ description: "Task list for feature 001 — إثبات تقني: مونتاج م
 - [X] T074 [US3] أوامر `style.setField`، `style.updateProposal.accept/reject`، `style.rollback`، `project.upgradeStyle` في `src/core/commands/`
 - [X] T075 [US3] `src/renderer/screens/StylePanel.tsx`: حقول `cut` و`captions` بأنواعها (مدة، نسبة، قائمة كلمات، خط، لون، موضع) مع مفتاح إلزامي/تفضيل لكل حقل وعرض `source` (افتراضي/أنت/متعلَّم) وسجل الإصدارات مع «رجوع» وإشعار «إصدار أحدث متاح — ترقية؟»
 - [X] T076 [US3] `src/renderer/screens/StyleUpdate.tsx`: عرض اقتراح التحديث (الفرق + التصحيحات الثلاثة المقتبسة + السوابق الجديدة) بزرّي قبول (تأكيد) ورفض
-- [ ] T077 [US3] مراجعة أمنية (`security-audit`، وضع التوجيه) لكود US3: اقتباسات التصحيح كمدخل غير موثوق، مسارات ملفات الأنماط داخل `userData` فقط؛ `docs/security/us3.md`
+- [X] T077 [US3] مراجعة أمنية (`security-audit`، وضع التوجيه) لكود US3: اقتباسات التصحيح كمدخل غير موثوق، مسارات ملفات الأنماط داخل `userData` فقط؛ `docs/security/us3.md`
 
 **Checkpoint**: الفرضية المميزة تعمل: تصحيح ← اقتراح تحديث ← موافقة ← إصدار
 

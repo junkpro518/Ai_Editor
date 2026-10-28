@@ -4,7 +4,8 @@ import { readCutRules } from '../proposal/types';
 import { normalizeArabic, tokenize } from '../transcript/normalize';
 
 // التعلّم من التصحيحات (T073، FR-011، الدستور II): استثناءات exclude_item بالسبب نفسه عبر المشروع كله
-// (الأقل من العتبة تُحتسب في المقترحات التالية — FR-011)، ناقص ما دخل في اقتراح تحديث سابق بأي حالة.
+// (الأقل من العتبة تُحتسب في المقترحات التالية — FR-011)، ناقص ما دخل في اقتراح تحديث سابق غير ملغى
+// (superseded لا يستهلك تصحيحاته فتُعدّ من جديد — القرار 32).
 // الناتج اقتراح pending لا يغيّر النمط إلا بقبول صريح (SC-007)؛ القبول في style.updateProposal.accept.
 
 export interface LearnContext {
@@ -18,6 +19,13 @@ type Diff = StyleUpdateProposal['diff'][number];
 const SILENCE_MARGIN_US = 100_000;
 const SIMILARITY_STEP = 0.05;
 const SIMILARITY_MAX = 0.99;
+/**
+ * سقف اقتباس السابقة (مراجعة US3): اقتباس repeat/abandoned جملة كاملة من نص المزود (حتى 100k كلمة × 256 حرفاً
+ * بلا ترقيم) يُنسخ في كل إصدار نمط لاحق؛ = maxLength في style.schema.json. التصحيح في المشروع يبقى كاملاً.
+ */
+export const MAX_PRECEDENT_QUOTE = 2000;
+
+const clip = (quote: string): string => (quote.length > MAX_PRECEDENT_QUOTE ? `${quote.slice(0, MAX_PRECEDENT_QUOTE - 1)}…` : quote);
 
 /** مدة البند المستثنى (µs) من المقترح الذي يحمله؛ 0 إن لم يُعثر عليه */
 function itemDurationUs(project: ProjectDocument, c: Correction): number {
@@ -90,7 +98,7 @@ function sentences(reason: Reason, quote: string, diff: Diff[], style: StyleVers
  */
 export function buildStyleUpdateProposal(project: ProjectDocument, style: StyleVersion, ctx: LearnContext): StyleUpdateProposal | null {
   const threshold = readCutRules(style).repeatedRejectionThreshold;
-  const consumed = new Set(project.styleUpdateProposals.flatMap((s) => s.trigger.correctionIds));
+  const consumed = new Set(project.styleUpdateProposals.filter((s) => s.state !== 'superseded').flatMap((s) => s.trigger.correctionIds));
   const groups = new Map<Reason, Correction[]>();
   for (const c of project.corrections) {
     if (c.kind !== 'exclude_item' || !c.reason || consumed.has(c.id)) continue;
@@ -109,8 +117,8 @@ export function buildStyleUpdateProposal(project: ProjectDocument, style: StyleV
   const newPrecedents: Precedent[] = group.map((c) => ({
     id: ctx.newId(),
     ruleId: c.ruleId ?? (diff[0]?.path ?? `cut.${reason}`),
-    ...sentences(reason, c.quote, diff, style),
-    quote: c.quote,
+    ...sentences(reason, clip(c.quote), diff, style),
+    quote: clip(c.quote),
     source: { kind: 'learned', ref: c.id, at },
     // رقم تقريبي؛ accept يعيد ختمه برقم الإصدار الفعلي (المكتبة قد تكون أحدث من المثبّت)
     addedInVersion: style.version + 1,
@@ -124,6 +132,14 @@ export function buildStyleUpdateProposal(project: ProjectDocument, style: StyleV
     newPrecedents,
     state: 'pending',
   };
+}
+
+/**
+ * القرار 32: تغيّر تثبيت النمط (setField/rollback/upgradeStyle/قبول اقتراح آخر) يلغي الاقتراحات المعلّقة — بُنيت على
+ * قواعد لم تعد المثبّتة. superseded بتاريخ؛ التراجع عن الأمر يعيدها pending (لقطة كاملة).
+ */
+export function supersedePending(proposals: readonly StyleUpdateProposal[], at: string, exceptId?: string): StyleUpdateProposal[] {
+  return proposals.map((p) => (p.state === 'pending' && p.id !== exceptId ? { ...p, state: 'superseded', decidedAt: at } : p));
 }
 
 /** اقتراح التحديث المطلوب وهو ما زال pending، وإلا خطأ بكود ثابت (accept/reject). */

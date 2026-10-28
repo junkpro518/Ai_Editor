@@ -102,7 +102,12 @@ function flushSave(): Promise<void> {
   saveTimer = null;
   const doc = dirty;
   dirty = null;
-  if (doc) saving = saving.then(() => window.api.project.save(doc), () => window.api.project.save(doc));
+  return doc ? enqueueSave(doc) : saving;
+}
+
+/** نقطة الكتابة الوحيدة لـproject.json من الواجهة (مراجعة US3): كل حفظ يمرّ بالسلسلة نفسها */
+function enqueueSave(doc: ProjectDocument): Promise<void> {
+  saving = saving.then(() => window.api.project.save(doc), () => window.api.project.save(doc));
   return saving;
 }
 
@@ -297,7 +302,7 @@ export async function importPath(
       ctx({ probe }),
       { actor: 'user', history },
     );
-    await window.api.project.save(result.project);
+    await enqueueSave(result.project);
     set({ project: result.project, history, screen: 'timeline', projects: await window.api.project.list(), sourceMissing: false });
     window.__preview?.show(result.project.id, 0);
     return { ok: true, projectId: result.project.id };

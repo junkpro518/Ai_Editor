@@ -289,5 +289,7 @@
   "styleUpdate.past": "Past proposals",
   "styleUpdate.state.pending": "Pending",
   "styleUpdate.state.accepted": "Accepted",
-  "styleUpdate.state.rejected": "Rejected"
+  "styleUpdate.state.rejected": "Rejected",
+  "styleUpdate.state.superseded": "Superseded",
+  "styleUpdate.superseded": "The proposal was cancelled because the style changed"
 }

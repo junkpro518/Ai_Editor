@@ -140,7 +140,7 @@
       "type": "object", "required": ["id", "createdAt", "styleRef", "trigger", "diff", "newPrecedents", "state"], "additionalProperties": false,
       "properties": {
         "id": { "type": "string" }, "createdAt": { "type": "string" },
-        "styleRef": { "type": "object", "required": ["styleId", "version"], "properties": { "styleId": { "type": "string" }, "version": { "type": "integer" } } },
+        "styleRef": { "$ref": "ai-editor/style-version/1#/$defs/styleRef" },
         "trigger": {
           "type": "object", "required": ["kind", "correctionIds"], "additionalProperties": false,
           "properties": {
@@ -150,9 +150,9 @@
             "correctionIds": { "type": "array", "items": { "type": "string" } }
           }
         },
-        "diff": { "type": "array", "items": { "type": "object", "required": ["path", "from", "to"], "properties": { "path": { "type": "string" }, "from": {}, "to": {} } } },
-        "newPrecedents": { "type": "array", "items": { "type": "object" } },
-        "state": { "enum": ["pending", "accepted", "rejected"] },
+        "diff": { "type": "array", "items": { "type": "object", "required": ["path", "from", "to"], "additionalProperties": false, "properties": { "path": { "type": "string" }, "from": {}, "to": {} } } },
+        "newPrecedents": { "type": "array", "items": { "$ref": "ai-editor/style-version/1#/$defs/precedent" } },
+        "state": { "enum": ["pending", "accepted", "rejected", "superseded"], "description": "superseded: أُلغي تلقائياً لأن تثبيت النمط تغيّر قبل حسمه (القرار 32)" },
         "decidedAt": { "type": "string" }
       }
     }

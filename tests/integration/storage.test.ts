@@ -105,6 +105,31 @@ describe('ProjectStore', () => {
     expect(names.some((n) => n.startsWith('project.json.corrupt-'))).toBe(true);
   });
 
+  it('save متداخلان للمشروع نفسه بلا انتظار: الأخير طلباً هو ما يبقى على القرص (مراجعة US3)', async () => {
+    const store = createProjectStore(root);
+    await store.save(makeProject('p1', 'v0'));
+    for (let i = 1; i <= 20; i++) {
+      await Promise.all([store.save(makeProject('p1', `a${i}`)), store.save(makeProject('p1', `b${i}`))]);
+      expect((await store.load('p1')).name).toBe(`b${i}`);
+    }
+  });
+
+  it('load مع خطأ قراءة عابر غير التلف لا يُبعد الملف الأساسي ولا يعيد .bak الأقدم (مراجعة US3)', async () => {
+    const store = createProjectStore(root);
+    await store.save(makeProject('p1', 'القديم'));
+    await store.save(makeProject('p1', 'الأحدث'));
+    const file = path.join(store.dir('p1'), 'project.json');
+    // خطأ نظام ملفات (لا JSON تالف ولا عقد مخالف): مجلد مكان الملف → EISDIR
+    await fs.rename(file, `${file}.real`);
+    await fs.mkdir(file);
+    await expect(store.load('p1')).rejects.toMatchObject({ code: 'project_unreadable' });
+    const names = await fs.readdir(store.dir('p1'));
+    expect(names.some((n) => n.startsWith('project.json.corrupt-'))).toBe(false);
+    await fs.rmdir(file);
+    await fs.rename(`${file}.real`, file);
+    expect((await store.load('p1')).name).toBe('الأحدث');
+  });
+
   it('load يرمي project_unreadable عند تلف الملف و.bak معاً', async () => {
     const store = createProjectStore(root);
     await store.save(makeProject());
@@ -172,6 +197,17 @@ describe('ProjectStore', () => {
 });
 
 describe('StyleStore', () => {
+  // مراجعة US3 (T077): المسار styles/<id>/v<n>.json يُبنى من قيم الواجهة — الحارس في المخزن نفسه لا في IPC وحده
+  it('styleId خارج النمط أو version غير صحيح موجب آمن → bad_argument بلا أي قراءة خارج userData/styles', async () => {
+    const store = createStyleStore(root);
+    await fs.writeFile(path.join(root, 'v1.json'), JSON.stringify(await readDefaultStyle()));
+    for (const [sid, v] of [['..', 1], ['../x', 1], ['a/b', 1], ['', 1], ['default', 0], ['default', -1], ['default', 1.5], ['default', 1e21], ['default', Number.NaN]] as const) {
+      await expect(store.loadVersion(sid, v)).rejects.toMatchObject({ code: 'bad_argument' });
+    }
+    await expect(store.listVersions('../')).rejects.toMatchObject({ code: 'bad_argument' });
+    await expect(store.saveVersion({ ...(await readDefaultStyle()), version: 1e21 })).rejects.toBeDefined();
+  });
+
   it('saveVersion مرتين بنفس الإصدار يرمي version_exists ولا يعدّل الملف', async () => {
     const store = createStyleStore(root);
     const sv = await readDefaultStyle();

@@ -38,22 +38,24 @@ function pointer(root: Json, hash: string): Json {
   for (const seg of hash.replace(/^#\/?/, '').split('/').filter(Boolean)) cur = (cur as Json)[seg];
   return cur as Json;
 }
-function inlineRefs(node: unknown, titleFor?: string): unknown {
-  if (Array.isArray(node)) return node.map((n) => inlineRefs(n));
+// base: معرّف المخطط الذي اقتُطع منه جزء (#/$defs/x) — مراجعه الداخلية (#/...) تُحلّ في مخططه هو لا في المستضيف
+function inlineRefs(node: unknown, titleFor?: string, base?: string): unknown {
+  if (Array.isArray(node)) return node.map((n) => inlineRefs(n, undefined, base));
   if (node && typeof node === 'object') {
     const o = node as Json;
-    if (typeof o.$ref === 'string' && o.$ref.startsWith('ai-editor/')) {
-      const [id, hash] = o.$ref.split('#');
+    const ref = typeof o.$ref === 'string' && base && o.$ref.startsWith('#') ? `${base}${o.$ref}` : o.$ref;
+    if (typeof ref === 'string' && ref.startsWith('ai-editor/')) {
+      const [id, hash] = ref.split('#');
       const target = byId.get(id!);
       if (!target) throw new Error(`مخطط غير معروف: ${o.$ref}`);
       const picked = hash ? pointer(target, hash) : target;
       const { $schema: _s, $id: _i, ...rest } = picked;
-      const copy = inlineRefs(rest) as Json;
+      const copy = inlineRefs(rest, undefined, hash ? id : undefined) as Json;
       if (!hash) copy.title = titleFor ?? (id === transcript.$id ? 'Transcript' : copy.title);
       return copy;
     }
     const out: Json = {};
-    for (const [k, v] of Object.entries(o)) out[k] = inlineRefs(v);
+    for (const [k, v] of Object.entries(o)) out[k] = inlineRefs(v, undefined, base);
     return out;
   }
   return node;

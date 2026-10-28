@@ -1,4 +1,5 @@
 import { withCaptions } from '../captions/derive';
+import { supersedePending } from '../style/learn';
 import { rollbackContent } from '../style/library';
 import type { CommandImpl } from './types';
 import { CommandError } from './types';
@@ -15,8 +16,9 @@ export const impl: CommandImpl<'style.rollback'> = (project, params, ctx) => {
   if (!target || target.styleId !== params.styleId || target.version !== params.toVersion) {
     throw new CommandError('style_version_required', `الإصدار ${params.toVersion} من النمط «${params.styleId}» غير محمَّل`);
   }
-  const style = rollbackContent(target, Math.max(ctx.style.version, ctx.latestStyleVersion ?? 0), ctx.now());
-  const pinned = { ...project, style: { styleId: style.styleId, version: style.version } };
+  const at = ctx.now();
+  const style = rollbackContent(target, Math.max(ctx.style.version, ctx.latestStyleVersion ?? 0), at);
+  const pinned = { ...project, style: { styleId: style.styleId, version: style.version }, styleUpdateProposals: supersedePending(project.styleUpdateProposals, at) };
   return {
     project: withCaptions(pinned, { ...ctx, style }),
     description: `رجع النمط إلى محتوى الإصدار ${target.version} (الإصدار ${style.version})`,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildStyleUpdateProposal } from '../../../../src/core/style/learn';
+import { buildStyleUpdateProposal, MAX_PRECEDENT_QUOTE } from '../../../../src/core/style/learn';
 import type { Correction, Precedent, ProjectDocument, Proposal, Reason, StyleVersion } from '../../../../src/core/contracts/types';
 import { makeProject, makeStyle, FIXED_NOW } from '../../../helpers/project';
 
@@ -115,6 +115,33 @@ describe('buildStyleUpdateProposal', () => {
       ],
     });
     expect(buildStyleUpdateProposal(consumed, makeStyle(), ctx())).toBeNull();
+  });
+
+  // القرار 32: الاقتراح الملغى (superseded) لا يستهلك تصحيحاته؛ المعلّق والمحسوم يستهلكانها (لا اقتراح مكرر)
+  it('تصحيحات اقتراح superseded تُعدّ من جديد، والمعلّق يستهلكها', () => {
+    const items = [item('i1', 500_000, 700_000, 'filler', 'يعني'), item('i2', 1_500_000, 1_700_000, 'filler', 'يعني'), item('i3', 2_500_000, 2_700_000, 'filler', 'يعني')];
+    const prior = (state: 'superseded' | 'pending') => ({
+      id: 'sup-0', createdAt: FIXED_NOW, styleRef: { styleId: 'default', version: 1 },
+      trigger: { kind: 'repeated_rejection' as const, reason: 'filler' as const, count: 3, correctionIds: ['c1', 'c2', 'c3'] },
+      diff: [], newPrecedents: [], state, ...(state === 'superseded' ? { decidedAt: FIXED_NOW } : {}),
+    });
+    const again = buildStyleUpdateProposal(project(items, { styleUpdateProposals: [prior('superseded')] }), makeStyle(), ctx());
+    expect(again?.trigger.correctionIds).toEqual(['c1', 'c2', 'c3']);
+    expect(buildStyleUpdateProposal(project(items, { styleUpdateProposals: [prior('pending')] }), makeStyle(), ctx())).toBeNull();
+  });
+
+  // مراجعة US3: اقتباس repeat/abandoned جملة كاملة من نص المزود (حتى 100k كلمة × 256 حرفاً بلا ترقيم) يُنسخ في كل إصدار نمط لاحق
+  it('اقتباس السابقة يُقصّ إلى MAX_PRECEDENT_QUOTE حرفاً بعلامة «…» (والتصحيح نفسه في المشروع يبقى كاملاً)', () => {
+    const long = 'كلمة '.repeat(5000).trim();
+    const items = [item('i1', 500_000, 700_000, 'repeat', long), item('i2', 1_500_000, 1_700_000, 'repeat', long), item('i3', 2_500_000, 2_700_000, 'repeat', 'قصيرة')];
+    const p = project(items);
+    const sup = buildStyleUpdateProposal(p, makeStyle(), ctx())!;
+    const [a, , c] = precedents(sup);
+    expect(a!.quote.length).toBe(MAX_PRECEDENT_QUOTE);
+    expect(a!.quote.endsWith('…')).toBe(true);
+    expect(a!.rule.length).toBeLessThan(MAX_PRECEDENT_QUOTE + 200);
+    expect(c!.quote).toBe('قصيرة');
+    expect(p.corrections[0]!.quote).toBe(long);
   });
 
   it('صمت: يرفع silenceMaxUs إلى أطول صمت مستثنى + هامشا الحماية + 100ms؛ وإن كانت العتبة أعلى أصلاً فلا diff لكن السوابق تبقى', () => {

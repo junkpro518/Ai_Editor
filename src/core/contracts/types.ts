@@ -219,8 +219,38 @@ export interface StyleUpdateProposal {
     from: unknown;
     to: unknown;
   }[];
-  newPrecedents: {}[];
-  state: 'pending' | 'accepted' | 'rejected';
+  newPrecedents: {
+    id: string;
+    /**
+     * مسار الحقل مثل cut.silenceMaxUs
+     */
+    ruleId: string;
+    /**
+     * القاعدة بجملة واحدة
+     */
+    rule: string;
+    /**
+     * تصحيح المستخدم حرفياً (يُقصّ عند 2000 حرف بـ«…» — اقتباس جملة كاملة من المزود يُنسخ في كل إصدار لاحق)
+     */
+    quote: string;
+    /**
+     * سؤال فحص ذاتي يطرحه الوكيل قبل الاقتراح
+     */
+    check: string;
+    source: {
+      kind: 'default' | 'user' | 'learned' | 'imported';
+      /**
+       * معرّف التصحيح/المقطع/الدورة الذي أنتج القيمة
+       */
+      ref?: string;
+      at: string;
+    };
+    addedInVersion: number;
+  }[];
+  /**
+   * superseded: أُلغي تلقائياً لأن تثبيت النمط تغيّر قبل حسمه (القرار 32)
+   */
+  state: 'pending' | 'accepted' | 'rejected' | 'superseded';
   decidedAt?: string;
 }
 
@@ -292,7 +322,7 @@ export interface Precedent {
    */
   rule: string;
   /**
-   * تصحيح المستخدم حرفياً
+   * تصحيح المستخدم حرفياً (يُقصّ عند 2000 حرف بـ«…» — اقتباس جملة كاملة من المزود يُنسخ في كل إصدار لاحق)
    */
   quote: string;
   /**

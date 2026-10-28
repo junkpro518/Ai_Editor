@@ -106,6 +106,39 @@ describe('project.schema', () => {
   });
 });
 
+// مراجعة US3 (T077): styleUpdateProposal يطابق data-model §1.8 — newPrecedents من نوع Precedent وstyleRef/diff بلا خصائص زائدة،
+// والحالة superseded (القرار 32)
+describe('project.schema — styleUpdateProposal', () => {
+  const precedent = { id: 'p1', ruleId: 'cut.fillerWords', rule: 'قاعدة', quote: 'يعني', check: 'سؤال؟', source: { kind: 'learned', ref: 'c1', at: '2026-10-28T00:00:00.000Z' }, addedInVersion: 2 };
+  const withSup = (over: Record<string, unknown> = {}): unknown => {
+    const p = project();
+    p.styleUpdateProposals = [
+      {
+        id: 'sup-1', createdAt: '2026-10-28T00:00:00.000Z', styleRef: { styleId: 'default', version: 1 },
+        trigger: { kind: 'repeated_rejection', reason: 'filler', count: 1, correctionIds: ['c1'] },
+        diff: [{ path: 'cut.fillerWords', from: ['يعني'], to: [] }], newPrecedents: [precedent], state: 'pending', ...over,
+      } as never,
+    ];
+    return p;
+  };
+  it('الصالح يمر، وsuperseded حالة مقبولة', () => {
+    expect(() => validateProject(withSup())).not.toThrow();
+    expect(() => validateProject(withSup({ state: 'superseded', decidedAt: '2026-10-28T00:00:00.000Z' }))).not.toThrow();
+  });
+  it('سابقة ناقصة ({}) تُرفض', () => {
+    expectContractError(() => validateProject(withSup({ newPrecedents: [{}] })), 'schema', 'newPrecedents');
+  });
+  it('خاصية زائدة في styleRef أو في عنصر diff تُرفض', () => {
+    expectContractError(() => validateProject(withSup({ styleRef: { styleId: 'default', version: 1, x: 1 } })), 'schema', 'styleRef');
+    expectContractError(() => validateProject(withSup({ diff: [{ path: 'cut.fillerWords', from: [], to: [], x: 1 }] })), 'schema', 'diff');
+  });
+  it('اقتباس سابقة أطول من الحد يُرفض في النمط', () => {
+    const s = style();
+    s.precedents = [{ ...precedent, quote: 'ا'.repeat(2001) } as never];
+    expectContractError(() => validateStyle(s), 'schema', 'quote');
+  });
+});
+
 describe('style.schema', () => {
   it('النمط الافتراضي v1 يمر', () => {
     expect(() => validateStyle(style())).not.toThrow();

@@ -258,3 +258,54 @@ describe('project.upgradeStyle', () => {
     expect(r.project.style).toEqual({ styleId: 'default', version: 1 });
   });
 });
+
+// ---- مراجعة US3 (T077) + القرار 32: اقتراح تحديث معلّق يُلغى (superseded) متى تغيّر تثبيت النمط،
+// والقبول يرفض اقتراحاً قديماً (stale_proposal) كخط دفاع ثانٍ
+describe('اقتراحات التحديث المعلّقة عند تغيّر النمط (القرار 32)', () => {
+  const states = (p: ProjectDocument) => p.styleUpdateProposals.map((x) => [x.id, x.state, x.decidedAt ?? null]);
+  const decided = (id: string, state: StyleUpdateProposal['state']) => sup({ id, state, decidedAt: FIXED_NOW });
+
+  it('style.setField: المعلّق → superseded بتاريخ، والمحسوم يبقى؛ التراجع يعيده pending', () => {
+    const input = deepFreeze(makeProject({ styleUpdateProposals: [sup(), decided('sup-old', 'rejected')] }));
+    const history = new History();
+    const r = execute(input, 'style.setField', { path: 'cut.silenceMaxUs', value: 1_000_000 }, makeCtx(), user(history));
+    expect(states(r.project)).toEqual([
+      ['sup-1', 'superseded', FIXED_NOW],
+      ['sup-old', 'rejected', FIXED_NOW],
+    ]);
+    const u = execute(r.project, 'history.undo', {}, makeCtx(), user(history));
+    expect(u.project.styleUpdateProposals[0]).toEqual(sup());
+  });
+
+  it('style.rollback وproject.upgradeStyle يلغيان المعلّق أيضاً', () => {
+    const project = deepFreeze(makeProject({ style: { styleId: 'default', version: 2 }, styleUpdateProposals: [sup({ styleRef: { styleId: 'default', version: 2 } })] }));
+    const rb = execute(project, 'style.rollback', { styleId: 'default', toVersion: 1 }, { ...makeCtx(), style: v2(), styleVersion: makeStyle(), latestStyleVersion: 2 }, user(new History(), true));
+    expect(rb.project.styleUpdateProposals[0]).toMatchObject({ state: 'superseded', decidedAt: FIXED_NOW });
+    const up = execute(project, 'project.upgradeStyle', { toVersion: 1 }, { ...makeCtx(), style: v2(), styleVersion: makeStyle() }, user(new History(), true));
+    expect(up.project.styleUpdateProposals[0]).toMatchObject({ state: 'superseded', decidedAt: FIXED_NOW });
+  });
+
+  it('style.updateProposal.accept: المقبول accepted والمعلّقة الأخرى superseded', () => {
+    const other = sup({ id: 'sup-2', diff: [], trigger: { kind: 'repeated_rejection', reason: 'abandoned', count: 3, correctionIds: ['c4', 'c5', 'c6'] } });
+    const r = execute(makeProject({ styleUpdateProposals: [sup(), other] }), 'style.updateProposal.accept', { proposalId: 'sup-1' }, makeCtx(), user(new History(), true));
+    expect(states(r.project)).toEqual([
+      ['sup-1', 'accepted', FIXED_NOW],
+      ['sup-2', 'superseded', FIXED_NOW],
+    ]);
+  });
+
+  it('accept يرفض اقتراحاً قديماً بـstale_proposal: تثبيت مختلف، نمط مختلف، أو from لا يطابق القيمة الحالية', () => {
+    const c = () => user(new History(), true);
+    const run = (s: StyleUpdateProposal) => codeOf(() => execute(makeProject({ styleUpdateProposals: [s] }), 'style.updateProposal.accept', { proposalId: 'sup-1' }, makeCtx(), c()));
+    expect(run(sup({ styleRef: { styleId: 'default', version: 2 } }))).toBe('stale_proposal');
+    expect(run(sup({ styleRef: { styleId: 'other', version: 1 } }))).toBe('stale_proposal');
+    expect(run(sup({ diff: [{ path: 'cut.silenceMaxUs', from: 123, to: 2_000_000 }] }))).toBe('stale_proposal');
+    expect(run(sup({ diff: [{ path: 'cut.fillerWords', from: ['يعني'], to: [] }] }))).toBe('stale_proposal');
+    // الرسالة عربية
+    try {
+      execute(makeProject({ styleUpdateProposals: [sup({ styleRef: { styleId: 'default', version: 2 } })] }), 'style.updateProposal.accept', { proposalId: 'sup-1' }, makeCtx(), c());
+    } catch (e) {
+      expect((e as Error).message).toMatch(/[؀-ۿ]/);
+    }
+  });
+});

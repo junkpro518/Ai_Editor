@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LINE_HEIGHT_RATIO, MAX_FONT_SIZE_1080, blockLayout, captionFont, captionScale, fallbackMeasure, fontString, layoutChunk, readCaptionRules, resolveFontFamily } from '../../../../src/core/captions/layout';
+import { LINE_HEIGHT_RATIO, MAX_FONT_SIZE_1080, MAX_WORDS_PER_CHUNK, blockLayout, captionFont, captionScale, fallbackMeasure, fontString, layoutChunk, readCaptionRules, resolveFontFamily } from '../../../../src/core/captions/layout';
 import type { MeasureFn } from '../../../../src/core/commands/types';
 import { makeStyle } from '../../../helpers/project';
 
@@ -119,6 +119,21 @@ describe('layoutChunk', () => {
     // الحد الأدنى يبقى 1 لقيمة سالبة/صفر (لا NaN ولا حلقة سالبة)
     style.captions.fontSizePx = { ...style.captions.fontSizePx, value: -5 };
     expect(readCaptionRules(style).fontSizePx).toBe(1);
+  });
+
+  // مراجعة US3 (us2 «تبقّى للمالك» #1، القرار 32): wordsPerChunk.max عملاق يجعل المجموعة لقطة كاملة فيُقسم تكراراً بآلاف القياسات
+  it('wordsPerChunk يُسقَّف: max ∈ [1, MAX_WORDS_PER_CHUNK=20] وmin ∈ [1, max]', () => {
+    expect(MAX_WORDS_PER_CHUNK).toBe(20);
+    const style = makeStyle();
+    const set = (v: unknown) => {
+      style.captions.wordsPerChunk = { ...style.captions.wordsPerChunk, value: v };
+      return readCaptionRules(style).wordsPerChunk;
+    };
+    expect(set({ min: 2, max: 1e9 })).toEqual({ min: 2, max: 20 });
+    expect(set({ min: 1e9, max: 1e9 })).toEqual({ min: 20, max: 20 });
+    expect(set({ min: -3, max: 0 })).toEqual({ min: 1, max: 1 });
+    expect(set({ min: 5, max: 3 })).toEqual({ min: 3, max: 3 });
+    expect(set({ min: 2, max: 4 })).toEqual({ min: 2, max: 4 });
   });
 
   it('يستعمل دالة القياس المحقونة بالخط الصحيح والاتجاه rtl', () => {

@@ -13,6 +13,12 @@ export interface StyleStore {
 }
 
 const VERSION_RE = /^v(\d+)\.json$/;
+const STYLE_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
+
+/** الحارس في المخزن نفسه (مراجعة US3): styleId وversion من الواجهة يصيران مساراً — لا يخرج عن userData/styles */
+function badArgument(what: string): never {
+  throw new StorageError('bad_argument', `وسيط غير صالح: ${what}`);
+}
 
 async function exists(file: string): Promise<boolean> {
   return fs.access(file).then(
@@ -22,12 +28,23 @@ async function exists(file: string): Promise<boolean> {
 }
 
 export function createStyleStore(rootDir: string): StyleStore {
-  const file = (styleId: string, version: number): string => path.join(rootDir, 'styles', styleId, `v${version}.json`);
+  const stylesRoot = path.resolve(rootDir, 'styles');
+  const styleDir = (styleId: string): string => {
+    if (typeof styleId !== 'string' || !STYLE_ID_RE.test(styleId)) badArgument('styleId');
+    const dir = path.resolve(stylesRoot, styleId);
+    if (path.dirname(dir) !== stylesRoot) badArgument('styleId');
+    return dir;
+  };
+  const file = (styleId: string, version: number): string => {
+    if (!Number.isSafeInteger(version) || version < 1) badArgument('version');
+    return path.join(styleDir(styleId), `v${version}.json`);
+  };
 
   async function versionsOf(styleId: string): Promise<number[]> {
+    const dir = styleDir(styleId);
     let names: string[];
     try {
-      names = await fs.readdir(path.join(rootDir, 'styles', styleId));
+      names = await fs.readdir(dir);
     } catch {
       return [];
     }
@@ -41,16 +58,17 @@ export function createStyleStore(rootDir: string): StyleStore {
   const store: StyleStore = {
     async saveVersion(sv) {
       validateStyle(sv);
-      const target = file(sv.styleId, sv.version);
+      const target = file(sv.styleId, sv.version); // المخطط يفرض النمط نفسه؛ الحارس يضيف الحدّ الآمن للعدد
       // الإصدارات لا تُعدَّل في مكانها أبداً (data-model §1.7)
       if (await exists(target)) throw new StorageError('version_exists', `الإصدار ${sv.version} من النمط «${sv.styleId}» موجود مسبقاً.`);
       await writeJsonAtomic(target, sv);
     },
 
     async loadVersion(styleId, version) {
+      const target = file(styleId, version);
       let doc: unknown;
       try {
-        doc = await readJson(file(styleId, version));
+        doc = await readJson(target);
       } catch (e) {
         throw new StorageError('style_not_found', `الإصدار ${version} من النمط «${styleId}» غير موجود.`, e);
       }
