@@ -1,9 +1,10 @@
+import { withCaptions } from '../captions/derive';
 import { recomputeStarts } from '../timeline/ops';
 import type { CommandImpl } from './types';
 import { CommandError } from './types';
 
 /** ينقل اللقطة إلى موضع آخر في الترتيب ثم يعيد حساب البدايات. */
-export const impl: CommandImpl<'clip.move'> = (project, params) => {
+export const impl: CommandImpl<'clip.move'> = (project, params, ctx) => {
   const clips = project.timeline.clips;
   const idx = clips.findIndex((c) => c.id === params.clipId);
   const clip = clips[idx];
@@ -14,7 +15,7 @@ export const impl: CommandImpl<'clip.move'> = (project, params) => {
   const rest = clips.filter((c) => c.id !== params.clipId);
   const reordered = [...rest.slice(0, params.toIndex), clip, ...rest.slice(params.toIndex)];
   return {
-    project: { ...project, timeline: { ...project.timeline, clips: recomputeStarts(reordered) } },
+    project: withCaptions({ ...project, timeline: { ...project.timeline, clips: recomputeStarts(reordered) } }, ctx),
     description: `نقل اللقطة ${idx + 1} إلى الموضع ${params.toIndex + 1}`,
   };
 };

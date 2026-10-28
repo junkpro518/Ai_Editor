@@ -128,6 +128,9 @@ async function streamDurations(bins: FfmpegBins, path: string): Promise<{ videoU
 /**
  * إطار مرجعي PNG مقابل إطارات الناتج n−1..n+1 (بحث -ss على المدخل كما في الـspike)،
  * ويكتب الإطار المفكوك n إلى PNG بجانب المرجع للمراجع البشري (SC-002).
+ * المرجع يمرّ أولاً بـyuv420p (صيغة الكروما التي يستعملها خط التصدير حتماً) ثم rgb24: بلا ذلك يقيس PSNR
+ * تنصيف الكروما لا خطأ التصدير — كابشن 13px على 320×180 يحدّه عند ≈33 dB مهما كان المعدل (measurements.md).
+ * sws_flags=area: تنصيف الكروما بمتوسط 2×2 كما يفعل Chromium (libyuv)؛ الطرفان يُرفعان إلى rgb24 بالمرشّح نفسه.
  */
 async function compareFrame(
   bins: FfmpegBins,
@@ -148,7 +151,7 @@ async function compareFrame(
     ...PROTO, '-ss', frameToSeconds(start, fps), '-i', `file:${exportPath}`,
     ...PROTO, '-loop', '1', '-framerate', rate, '-i', `file:${ref.path}`,
     '-filter_complex',
-    `[0:v]format=rgb24,split=3[a1][a2][a3];[1:v]format=rgb24,split=2[b1][b2];` +
+    `sws_flags=area;[0:v]format=rgb24,split=3[a1][a2][a3];[1:v]format=yuv420p,format=rgb24,split=2[b1][b2];` +
       `[a1][b1]psnr=stats_file=${psnrFile}:shortest=1[o1];[a2][b2]ssim=stats_file=${ssimFile}:shortest=1[o2];` +
       `[a3]select=eq(n\\,${n - start})[png]`,
     '-map', '[o1]', '-map', '[o2]', '-frames:v', String(end - start + 1), '-f', 'null', '-',

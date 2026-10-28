@@ -1,12 +1,13 @@
 import { composeFrame, outputSize } from '../../core/captions/compose';
 import type { CaptionCue, SourceGeometry } from '../../core/captions/types';
 import type { StyleVersion } from '../../core/contracts/types';
+import { fontsReady } from '../fonts';
 
 export interface Preview {
   readonly width: number;
   readonly height: number;
-  /** يركّب بدقة المصدر على OffscreenCanvas ثم يعرض الناتج مصغّراً في canvas الظاهر. */
-  draw(frameIndex: number, frame: CanvasImageSource | null): void;
+  /** يركّب بدقة المصدر على OffscreenCanvas ثم يعرض الناتج مصغّراً في canvas الظاهر؛ frameIndex إطار التايم لاين (الكابشن بإطاراته). */
+  draw(frameIndex: number, frame: CanvasImageSource | null, cues: ReadonlyArray<CaptionCue>): void;
   /** FNV-1a على بكسلات الـOffscreen (لا الظاهر) — للاختبارات وفحص التطابق (R3). */
   pixelHash(): string;
   /** React يعيد إنشاء canvas عند تبديل الشاشة؛ نعيد الربط بلا إعادة فك. */
@@ -19,19 +20,13 @@ function context2d(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
   return ctx;
 }
 
-export function createPreview(
-  initialCanvas: HTMLCanvasElement,
-  source: SourceGeometry,
-  style: StyleVersion,
-  cues: ReadonlyArray<CaptionCue> = [],
-): Preview {
+export function createPreview(initialCanvas: HTMLCanvasElement, source: SourceGeometry, style: StyleVersion): Preview {
   const { width, height } = outputSize(source);
   const off = new OffscreenCanvas(width, height);
   const offCtx = off.getContext('2d', { willReadFrequently: true }); // pixelHash يقرأ البكسلات
   if (!offCtx) throw new Error('تعذّر إنشاء سياق 2D');
   let canvas = initialCanvas;
   let ctx = context2d(canvas);
-  const fonts = { ready: document.fonts.status === 'loaded' };
 
   // عرض مصغّر بنسبة ثابتة داخل canvas الظاهر (letterbox)
   function blit(): void {
@@ -46,8 +41,9 @@ export function createPreview(
   return {
     width,
     height,
-    draw(frameIndex, frame) {
-      composeFrame(offCtx, frameIndex, source, frame, cues, style, fonts);
+    draw(frameIndex, frame, cues) {
+      // fonts.ready حيّة لا مخبّأة: التصدير يقرأ نفس القيمة (export/run.ts) فيتطابقان
+      composeFrame(offCtx, frameIndex, source, frame, cues, style, { ready: fontsReady() });
       blit();
     },
     attach(next) {

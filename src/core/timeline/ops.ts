@@ -30,3 +30,9 @@ export function timelineToSource(clips: ReadonlyArray<Clip>, frame: number): num
   const hit = clipAtTimelineFrame(clips, frame);
   return hit ? hit.clip.inFrame + hit.offset : null;
 }
+
+/** إطار المصدر → إطار التايم لاين (أول لقطة تحويه؛ مدى مصدر مكرر بعد trim يُحسم للأسبق)؛ null إن كان مقصوصاً. */
+export function sourceToTimeline(clips: ReadonlyArray<Clip>, sourceFrame: number): number | null {
+  const clip = clips.find((c) => sourceFrame >= c.inFrame && sourceFrame < c.outFrame);
+  return clip ? clip.timelineStartFrame + sourceFrame - clip.inFrame : null;
+}

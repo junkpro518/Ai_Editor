@@ -1,3 +1,4 @@
+import { withCaptions } from '../captions/derive';
 import type { Correction } from '../contracts/types';
 import { recomputeStarts } from '../timeline/ops';
 import { clipWarnings, MIN_CLIP_RULE } from '../timeline/warnings';
@@ -36,7 +37,7 @@ export const impl: CommandImpl<'clip.trim'> = (project, params, ctx) => {
     corrections.push(correction);
   }
   return {
-    project: { ...project, timeline: { ...project.timeline, clips: relaid }, corrections },
+    project: withCaptions({ ...project, timeline: { ...project.timeline, clips: relaid }, corrections }, ctx),
     description: `قصّ اللقطة ${idx + 1} إلى [${inFrame}, ${outFrame})`,
     ...(warnings.length ? { warnings } : {}),
   };

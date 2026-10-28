@@ -1,3 +1,4 @@
+import { withCaptions } from '../captions/derive';
 import type { Correction, ProjectDocument, Reason } from '../contracts/types';
 import { computeTotals } from '../proposal/totals';
 import { findOpenProposal, hasSpeech, readCutRules } from '../proposal/types';
@@ -88,7 +89,7 @@ export const impl: CommandImpl<'proposal.apply'> = (project, params, ctx) => {
 
   const proposals = project.proposals.with(index, { ...proposal, items, totals: computeTotals(items), state: 'applied' });
   return {
-    project: { ...project, timeline: { ...project.timeline, clips }, proposals, corrections },
+    project: withCaptions({ ...project, timeline: { ...project.timeline, clips }, proposals, corrections }, ctx),
     description: appliedCount ? `طبّق المقترح: ${appliedCount} قصّة` : 'طبّق المقترح بلا قصّات',
     ...(effects ? { effects } : {}),
   };

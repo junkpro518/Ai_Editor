@@ -1,6 +1,8 @@
 import type { SourceGeometry } from '../../core/captions/types';
 import type { ProjectDocument, StyleVersion } from '../../core/contracts/types';
 import type { Rational } from '../../core/time';
+import { sourceToTimeline } from '../../core/timeline/ops';
+import { getState } from '../commands/runtime';
 import { createAudio } from './audio';
 import type { AudioTrack } from './audio';
 import { createFrameSource } from './decoder';
@@ -20,7 +22,11 @@ export interface PlayerOptions {
 }
 
 export interface Player {
-  show(frameIndex: number): Promise<void>;
+  /**
+   * يعرض إطار المصدر sourceFrame. الكابشن بإطارات التايم لاين، فيُمرَّر timelineFrame إن عُرف؛ وإلا يُحسب من
+   * لقطات المشروع المفتوح (أول لقطة تحوي الإطار — بعد trim قد يتكرر مدى مصدر، فالأدق أن يمرّره المستدعي).
+   */
+  show(sourceFrame: number, timelineFrame?: number): Promise<void>;
   play(): void;
   pause(): void;
   currentFrame(): number;
@@ -58,15 +64,20 @@ export async function createPlayer(opts: PlayerOptions): Promise<Player> {
   let wallStart = 0;
   let wallFrame = 0;
 
-  async function render(frameIndex: number): Promise<void> {
+  async function render(frameIndex: number, timelineFrame?: number): Promise<void> {
     const i = Math.max(0, Math.min(lastFrame, frameIndex));
     const frame = await frames.getFrame(i);
-    preview.draw(i, frame);
+    // الكابشن يُقرأ من المشروع المفتوح عند كل عرض (لا يُخبَّأ): الأوامر تعيد اشتقاقه وقد تغيّر اللقطات
+    const project = getState().project;
+    const cues = project?.id === opts.projectId ? project.captions.cues : [];
+    // إطار مصدر مقصوص (خارج كل اللقطات) لا يطابق أي كابشن: −1
+    const t = timelineFrame ?? (project ? sourceToTimeline(project.timeline.clips, i) : null) ?? -1;
+    preview.draw(t, frame, cues);
     current = i;
   }
 
-  function show(frameIndex: number): Promise<void> {
-    const run = chain.then(() => render(frameIndex));
+  function show(frameIndex: number, timelineFrame?: number): Promise<void> {
+    const run = chain.then(() => render(frameIndex, timelineFrame));
     chain = run.catch(() => undefined);
     return run;
   }

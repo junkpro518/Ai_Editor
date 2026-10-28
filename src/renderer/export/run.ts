@@ -4,6 +4,7 @@ import type { ProjectDocument, StyleVersion } from '../../core/contracts/types';
 import { seededIndices } from '../../core/export/seed';
 import { expectedFrames as countFrames, frameToUs } from '../../core/time';
 import { onEffect } from '../commands/runtime';
+import { fontsReady } from '../fonts';
 import { createFrameSource } from '../player/decoder';
 import { openDemuxer } from '../player/demux';
 import { createH264Encoder } from './encoder';
@@ -118,7 +119,7 @@ async function exportProject(project: ProjectDocument, style: StyleVersion, outp
   const canvas = new OffscreenCanvas(width, height);
   const ctx = canvas.getContext('2d', { willReadFrequently: raw !== undefined });
   if (!ctx) throw { code: 'internal', message: 'تعذّر إنشاء سياق 2D للتصدير' } satisfies ExportError;
-  const fonts = { ready: document.fonts.status === 'loaded' };
+  const fonts = { ready: fontsReady() };
 
   try {
     throwIfAborted();

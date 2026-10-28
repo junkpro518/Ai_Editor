@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import type { ProjectDocument, Transcript } from '../../core/contracts/types';
-import { getState, onEffect, run, setSourceMissing, systemUpdate, toIpcError } from '../commands/runtime';
+import { withCaptions } from '../../core/captions/derive';
+import { commandContext, getState, onEffect, run, setSourceMissing, systemUpdate, toIpcError } from '../commands/runtime';
 import type { IpcError } from '../commands/runtime';
 
 // مهمة التفريغ من طرف الواجهة (T046، FR-002/FR-016/FR-017): الأمر النقي transcript.request يطلق الأثر
@@ -74,8 +75,9 @@ export function applyTranscript(transcript: Transcript): Promise<void> {
   const p = getState().project;
   if (!p) return Promise.resolve();
   const { error: _dropped, ...job } = p.transcriptJob;
+  // قاعدة الإبطال (data-model §1.10): التفريغ تغيّر → الكابشن يُشتق هنا بنفس سياق الأوامر (measure)
   return systemUpdate(
-    { ...p, transcript, transcriptJob: { ...job, state: 'done', progress: 1, finishedAt: now(), audioHash: transcript.audioSha256 } },
+    withCaptions({ ...p, transcript, transcriptJob: { ...job, state: 'done', progress: 1, finishedAt: now(), audioHash: transcript.audioSha256 } }, commandContext()),
     { immediate: true },
   );
 }

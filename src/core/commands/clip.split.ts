@@ -1,3 +1,4 @@
+import { withCaptions } from '../captions/derive';
 import type { CommandImpl } from './types';
 import { CommandError } from './types';
 
@@ -24,7 +25,7 @@ export const impl: CommandImpl<'clip.split'> = (project, params, ctx) => {
     return next;
   });
   return {
-    project: { ...project, timeline: { ...project.timeline, clips: relaid } },
+    project: withCaptions({ ...project, timeline: { ...project.timeline, clips: relaid } }, ctx),
     description: `قسم اللقطة عند الإطار ${params.atFrame}`,
   };
 };

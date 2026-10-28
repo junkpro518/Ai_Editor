@@ -138,18 +138,18 @@ description: "Task list for feature 001 — إثبات تقني: مونتاج م
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T054 [P] [US2] `tests/unit/core/captions/chunking.test.ts`: مجموعات 3–5 كلمات (افتراضي)، كسر عند نهاية جملة أو وقفة ≥`breakAtPauseUs` أو حد الكلمات، مجموعة واحدة في وقت واحد، تفتح عند/قبل أول كلمة وتغلق عند/بعد آخرها، الربط بالموضع لا بالنص، حتمية (نفس المدخل = نفس المخرج)
-- [ ] T055 [P] [US2] `tests/unit/core/captions/derive.test.ts`: `deriveCues` يعيد الاشتقاق عند تغيّر `transcript`/`timeline`/`style.captions`/`fps` (قاعدة الإبطال) ويحوّل الأزمنة إلى إطارات على شبكة المشروع، ويحذف الكلمات الواقعة في أجزاء مقصوصة
+- [X] T054 [P] [US2] `tests/unit/core/captions/chunking.test.ts`: مجموعات 3–5 كلمات (افتراضي)، كسر عند نهاية جملة أو وقفة ≥`breakAtPauseUs` أو حد الكلمات، مجموعة واحدة في وقت واحد، تفتح عند/قبل أول كلمة وتغلق عند/بعد آخرها، الربط بالموضع لا بالنص، حتمية (نفس المدخل = نفس المخرج)
+- [X] T055 [P] [US2] `tests/unit/core/captions/derive.test.ts`: `deriveCues` يعيد الاشتقاق عند تغيّر `transcript`/`timeline`/`style.captions`/`fps` (قاعدة الإبطال) ويحوّل الأزمنة إلى إطارات على شبكة المشروع، ويحذف الكلمات الواقعة في أجزاء مقصوصة
 - [ ] T056 [P] [US2] `tests/e2e/arabic.spec.ts` (Playwright-Electron، فحوص دلالية، research.md R6): اتصال الحروف، ترتيب مستطيلات RTL، كلمة إنجليزية داخل الجملة في موضعها وبحروف LTR، أرقام لا تنقلب (25 لا 52، غربية ومشرقية)، لام-ألف مستطيل واحد، التفاف عند حد كلمة، إبراز كلمة في سطر مختلط، تشكيل لا يزحزح العرض
 - [ ] T057 [P] [US2] `tests/unit/core/commands/transcript.test.ts`: `transcript.fixWord` يحفظ `original` ويعلّم `correctedBy=user` ويسجّل `correction.word_fix` ويعيد اشتقاق الكابشن؛ `captions.toggle` يرفض بلا تفريغ
 - [ ] T058 [P] [US2] توسيع `tests/integration/parity.test.ts` ليشمل الكابشن المحروق: hash المعاينة = hash التصدير مع كابشن عربي مختلط، وعدم وجود إزاحة زمنية (أفضل إزاحة = 0)
 
 ### Implementation for User Story 2
 
-- [ ] T059 [P] [US2] `src/renderer/fonts.ts`: تحميل خطوط `resources/fonts` بـ`FontFace` و`document.fonts.ready` قبل الإطار 0؛ منع خطوط النظام
-- [ ] T060 [P] [US2] `src/core/captions/chunking.ts` (T054) و`src/core/captions/derive.ts` (T055) بإرجاع `CaptionCue{startFrame,endFrame,wordIds,lines,fontSizePx,activeWordRects}`
-- [ ] T061 [US2] `src/core/captions/layout.ts`: `fitFontSize` (أساس 78، أدنى 42، خطوة 2، maxWidth 1600/900) ومستطيلات الكلمات عبر دالة قياس `measure(text, font, dir) → rects` **تُحقن من الـrenderer** (تنفيذها في `src/renderer/captions/measure.ts` بـ`Range.getClientRects()` على عنصر مخفي بنفس الخط والاتجاه، أو `TextMetrics.getSelectionRects()` إن توفر — حسب الـspike) حتى يبقى `core` بلا DOM (T003)، محسوبة مرة واحدة داخل الأمر
-- [ ] T062 [US2] توسيع `src/core/captions/compose.ts`: رسم المجموعة كاملة `direction='rtl'` بلون النص، scrim حسب السطوع، ثم إعادة الرسم بلون الإبراز مقصوصاً على مستطيل الكلمة النشطة؛ **ممنوع** تقسيم النص حرفاً-حرفاً أو عكس السلاسل؛ الموضع من النمط والمنطقة الآمنة
+- [X] T059 [P] [US2] `src/renderer/fonts.ts`: تحميل خطوط `resources/fonts` بـ`FontFace` و`document.fonts.ready` قبل الإطار 0؛ منع خطوط النظام
+- [X] T060 [P] [US2] `src/core/captions/chunking.ts` (T054) و`src/core/captions/derive.ts` (T055) بإرجاع `CaptionCue{startFrame,endFrame,wordIds,lines,fontSizePx,activeWordRects}`
+- [X] T061 [US2] `src/core/captions/layout.ts`: `fitFontSize` (أساس 78، أدنى 42، خطوة 2، maxWidth 1600/900) ومستطيلات الكلمات عبر دالة قياس `measure(text, font, dir) → rects` **تُحقن من الـrenderer** (تنفيذها في `src/renderer/captions/measure.ts` بـ`Range.getClientRects()` على عنصر مخفي بنفس الخط والاتجاه، أو `TextMetrics.getSelectionRects()` إن توفر — حسب الـspike) حتى يبقى `core` بلا DOM (T003)، محسوبة مرة واحدة داخل الأمر
+- [X] T062 [US2] توسيع `src/core/captions/compose.ts`: رسم المجموعة كاملة `direction='rtl'` بلون النص، scrim حسب السطوع، ثم إعادة الرسم بلون الإبراز مقصوصاً على مستطيل الكلمة النشطة؛ **ممنوع** تقسيم النص حرفاً-حرفاً أو عكس السلاسل؛ الموضع من النمط والمنطقة الآمنة
 - [ ] T063 [US2] أوامر `captions.toggle`، `transcript.fixWord` في `src/core/commands/` + ربط قاعدة الإبطال في كل أمر يغيّر التفريغ/التايم لاين/النمط
 - [ ] T064 [US2] `src/renderer/screens/WordReview.tsx`: قائمة الكلمات منخفضة الثقة (عتبة ملف تعريف المزود؛ رسالة «هذا المزود لا يعطي ثقة لكل كلمة» عند null)، بدائل المزود إن وُجدت أو حقل كتابة، عدّاد الكلمات المصحَّحة والتراجع عن كل تصحيح، بلا تصحيح تلقائي (القرار 21)
 - [ ] T065 [US2] عرض الكابشن في `src/renderer/player/preview.ts` متزامناً بالإطار مع إبراز الكلمة الحالية، ولوحة أسلوب الكابشن المصغّرة (خط/حجم/موضع/أسطر) تقرأ من النمط المثبّت

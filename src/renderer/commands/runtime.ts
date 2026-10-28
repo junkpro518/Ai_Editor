@@ -11,6 +11,8 @@ import type { ExecuteResult } from '../../core/commands/registry';
 import type { CommandContext, Effect, ProbeLike } from '../../core/commands/types';
 import { History } from '../../core/history/snapshots';
 import type { Actor } from '../../core/history/snapshots';
+import { measureText } from '../captions/measure';
+import { loadFonts, warnUnknownFontFamily } from '../fonts';
 import { setLang } from '../i18n';
 import type { Lang } from '../i18n';
 
@@ -122,7 +124,13 @@ export function onEffect<K extends Effect['kind']>(kind: K, handler: EffectHandl
 function ctx(extra?: Partial<CommandContext>): CommandContext {
   if (!state.style)
     throw { code: 'style_missing', message: 'النمط الافتراضي لم يُحمَّل بعد' } satisfies IpcError;
-  return { style: state.style, now: () => new Date().toISOString(), newId, ...extra };
+  // measure: قياس النص عبر DOM (captions/measure.ts) — اشتقاق الكابشن يحتاجه داخل الأوامر (data-model §1.10)
+  return { style: state.style, now: () => new Date().toISOString(), newId, measure: measureText, ...extra };
+}
+
+/** السياق نفسه للتحديثات النظامية خارج الأوامر (إلحاق التفريغ يعيد اشتقاق الكابشن). */
+export function commandContext(): CommandContext {
+  return ctx();
 }
 
 export function navigate(screen: Screen): void {
@@ -130,12 +138,15 @@ export function navigate(screen: Screen): void {
 }
 
 export async function init(): Promise<void> {
+  // الخطوط قبل أول معاينة (T059): كابشن لا يُرسم إلا بعد fontsReady()
   const [style, settings, projects] = await Promise.all([
     window.api.style.ensureDefault(),
     window.api.settings.load(),
     window.api.project.list(),
+    loadFonts(),
   ]);
   setLang(settings.ui.lang);
+  warnUnknownFontFamily(String(style.captions.fontFamily.value));
   set({ style, projects, ready: true });
 }
 
@@ -274,6 +285,7 @@ export async function loadProject(id: string): Promise<void> {
   const history = History.fromJSON({ undo: snapshots, redo: [], nextSeq: (last?.seq ?? 0) + 1 });
   // FR-016: مصدر منقول أو مُعاد تسميته → الواجهة تطلب تحديد مكانه (TranscriptStatus)
   const stat = await window.api.project.statSource(id).catch(() => ({ exists: true }));
+  warnUnknownFontFamily(String(style.captions.fontFamily.value));
   set({ project, style, history, screen: 'timeline', lastProbe: null, sourceMissing: !stat.exists });
   if (stat.exists) window.__preview?.show(project.id, 0);
 }

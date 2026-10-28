@@ -1,4 +1,5 @@
 import type { StyleVersion } from '../contracts/types';
+import { blockLayout, captionFont, fontString, readCaptionRules } from './layout';
 import type { CaptionCue, Compose2D, Fonts, SourceGeometry } from './types';
 
 /** حجم canvas الناتج: يُبدَّل العرض والارتفاع عند 90/270. */
@@ -10,19 +11,24 @@ export function outputSize(source: SourceGeometry): { width: number; height: num
 /**
  * دالة التركيب الموحدة (الدستور IV، بحث B §3): المعاينة والتصدير يستدعيانها بنفس المدخلات.
  * نقية وحتمية: لا ساعة، لا عشوائية، لا rAF. canvas الناتج بحجم outputSize(source) — مسؤولية المستدعي.
- * الإصدار الأول يرسم الفيديو فقط؛ الكابشن في US2 (`cues` تُستلم الآن حتى لا يتغير العقد لاحقاً).
+ * الترتيب ثابت: الفيديو (بالدوران) ثم الكابشن النشط عند frameIndex في فضاء الناتج.
  */
 export function composeFrame(
   ctx: Compose2D,
-  _frameIndex: number,
+  frameIndex: number,
   source: SourceGeometry,
   frame: CanvasImageSource | null,
-  _cues: ReadonlyArray<CaptionCue>,
-  _style: StyleVersion,
-  _fonts: Fonts,
+  cues: ReadonlyArray<CaptionCue>,
+  style: StyleVersion,
+  fonts: Fonts,
 ): void {
   const { width: W, height: H } = outputSize(source);
   ctx.clearRect(0, 0, W, H);
+  drawVideo(ctx, source, frame, W, H);
+  drawCaptions(ctx, frameIndex, W, H, cues, style, fonts);
+}
+
+function drawVideo(ctx: Compose2D, source: SourceGeometry, frame: CanvasImageSource | null, W: number, H: number): void {
   if (!frame) {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, W, H);
@@ -50,5 +56,65 @@ export function composeFrame(
     ctx.rotate(-(3 * Math.PI) / 2);
   }
   ctx.drawImage(frame, 0, 0, source.width, source.height);
+  ctx.restore();
+}
+
+/** الكابشن الذي يحوي الإطار (startFrame ≤ f < endFrame) ببحث ثنائي؛ الكابشن مرتب بلا تداخل (derive). */
+export function findActiveCue(cues: ReadonlyArray<CaptionCue>, frameIndex: number): CaptionCue | null {
+  let lo = 0;
+  let hi = cues.length - 1;
+  let found = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (cues[mid]!.startFrame <= frameIndex) {
+      found = mid;
+      lo = mid + 1;
+    } else hi = mid - 1;
+  }
+  if (found < 0) return null;
+  const cue = cues[found]!;
+  return frameIndex < cue.endFrame ? cue : null;
+}
+
+const SCRIM_PADDING_RATIO = 0.35;
+const SCRIM_RADIUS_RATIO = 0.25;
+
+/**
+ * الكابشن (T062، R6): scrim ثم كل سطر سلسلة واحدة بـdirection='rtl' متوسّطة (bidi مسؤولية Chromium — ممنوع
+ * تقسيم النص أو عكسه)، ثم إبراز الكلمة النشطة بإعادة رسم سطرها مقصوصاً على مستطيلها المخزَّن في الكابشن.
+ * يُرسم فقط عندما الخطوط جاهزة (لا نرسم بخط بديل ثم نبدّل).
+ */
+function drawCaptions(ctx: Compose2D, frameIndex: number, W: number, H: number, cues: ReadonlyArray<CaptionCue>, style: StyleVersion, fonts: Fonts): void {
+  if (!fonts.ready || cues.length === 0) return;
+  const cue = findActiveCue(cues, frameIndex);
+  if (!cue || cue.lines.length === 0) return;
+  const rules = readCaptionRules(style);
+  const block = blockLayout(cue.lines.length, cue.fontSizePx, { width: W, height: H }, rules);
+  const pad = Math.round(cue.fontSizePx * SCRIM_PADDING_RATIO);
+
+  ctx.fillStyle = rules.bgColor;
+  ctx.beginPath();
+  ctx.roundRect(block.left - pad, block.top - pad, block.width + 2 * pad, block.height + 2 * pad, Math.round(cue.fontSizePx * SCRIM_RADIUS_RATIO));
+  ctx.fill();
+
+  ctx.font = fontString(captionFont(rules.fontFamily, cue.fontSizePx));
+  ctx.direction = 'rtl';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  const cx = W / 2;
+  const lineY = (i: number): number => block.top + i * block.lineHeight + block.baseline;
+  ctx.fillStyle = rules.textColor;
+  cue.lines.forEach((line, i) => ctx.fillText(line, cx, lineY(i)));
+
+  const rects = cue.activeWordRects;
+  if (!rules.highlightCurrent || !rects || rects.length === 0) return;
+  const first = rects[0]!;
+  const lineIndex = Math.min(cue.lines.length - 1, Math.max(0, Math.floor(((first[1] ?? 0) - block.top) / block.lineHeight)));
+  ctx.save();
+  ctx.beginPath();
+  for (const r of rects) ctx.rect(r[0] ?? 0, r[1] ?? 0, r[2] ?? 0, r[3] ?? 0);
+  ctx.clip();
+  ctx.fillStyle = rules.highlightColor;
+  ctx.fillText(cue.lines[lineIndex]!, cx, lineY(lineIndex));
   ctx.restore();
 }
