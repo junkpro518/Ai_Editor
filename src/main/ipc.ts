@@ -1,5 +1,5 @@
 import { isAbsolute } from 'node:path';
-import { access } from 'node:fs/promises';
+import { access, stat } from 'node:fs/promises';
 import type { BrowserWindow } from 'electron';
 import { app, dialog, ipcMain } from 'electron';
 import type { ProjectDocument, StyleVersion } from '../core/contracts/types';
@@ -152,6 +152,18 @@ export function registerIpc(deps: IpcDeps): void {
   });
 
   handle('project:list', () => deps.projects.list());
+
+  // FR-016: هل ملف المصدر ما زال في مكانه وبلا تغيير؟ المسار من المشروع المحفوظ لا من الواجهة
+  handle('project:statSource', async (i) => {
+    const doc = await deps.projects.load(id(i, 'id'));
+    try {
+      const st = await stat(doc.source.path);
+      return { exists: true, fileSize: st.size, mtime: st.mtime.toISOString() };
+    } catch (e) {
+      if ((e as { code?: string }).code === 'ENOENT') return { exists: false };
+      throw e;
+    }
+  });
   handle('project:writeSnapshot', (i, e) => {
     const entry = obj(e, 'entry');
     int(entry['seq'], 'entry.seq');

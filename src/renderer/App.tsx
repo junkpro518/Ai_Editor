@@ -4,12 +4,18 @@ import { ConfirmDialog } from './components/ConfirmDialog';
 import { Import } from './screens/Import';
 import { Timeline } from './screens/Timeline';
 import { Export } from './screens/Export';
+import { Proposal } from './screens/Proposal';
+import { Settings } from './screens/Settings';
+import { Disclosure } from './screens/Disclosure';
+import { TranscriptStatus } from './components/TranscriptStatus';
 import { answerConfirm, init, useRuntime } from './commands/runtime';
+import { acceptDisclosure, dismissDisclosure, useTranscriptUi } from './transcript/run';
 import { t, useLang } from './i18n';
 
 export function App() {
   useLang(); // إعادة الرسم عند تبديل اللغة
   const { ready, screen, project, pendingConfirm } = useRuntime();
+  const { pendingDisclosure } = useTranscriptUi();
   const [initError, setInitError] = useState<string | null>(null);
   useEffect(() => {
     init().catch((e: unknown) =>
@@ -20,6 +26,7 @@ export function App() {
   return (
     <>
       <Nav current={screen} hasProject={project !== null} />
+      {ready && <TranscriptStatus />}
       <main>
         {initError && (
           <p className="error" role="alert">
@@ -28,9 +35,12 @@ export function App() {
         )}
         {ready && screen === 'import' && <Import />}
         {ready && screen === 'timeline' && <Timeline />}
+        {ready && screen === 'proposal' && <Proposal />}
+        {ready && screen === 'settings' && <Settings />}
         {ready && screen === 'export' && <Export />}
       </main>
       {pendingConfirm && <ConfirmDialog command={pendingConfirm.name} onAnswer={answerConfirm} />}
+      {pendingDisclosure && <Disclosure info={pendingDisclosure} onAccept={() => void acceptDisclosure()} onCancel={dismissDisclosure} />}
     </>
   );
 }

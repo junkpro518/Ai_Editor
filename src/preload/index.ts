@@ -22,6 +22,7 @@ const api = {
     save: (doc: unknown) => call<void>('project:save', doc),
     load: (id: string) => call('project:load', id),
     list: () => call('project:list'),
+    statSource: (id: string) => call('project:statSource', id),
     writeSnapshot: (id: string, entry: unknown) => call<void>('project:writeSnapshot', id, entry),
     readSnapshots: (id: string) => call('project:readSnapshots', id),
   },
@@ -52,6 +53,21 @@ const api = {
       call<void>('export:referenceFrame', sessionId, index, png),
     finish: (sessionId: string) => call('export:finish', sessionId),
     cancel: (sessionId: string) => call<void>('export:cancel', sessionId),
+  },
+  // التفريغ (T046): main يشغّل المهمة ويبث أحداثها؛ الحمولة تُنقّى هنا إلى الحقول المعروفة فقط
+  transcript: {
+    start: (projectId: string, options: unknown) => call<{ jobId: string }>('transcript:start', projectId, options),
+    cancel: (jobId: string) => call<void>('transcript:cancel', jobId),
+    onEvent: (cb: (event: unknown) => void) => {
+      const listener = (_e: unknown, raw: unknown): void => {
+        if (typeof raw !== 'object' || raw === null) return;
+        const p = raw as Record<string, unknown>;
+        if (typeof p['projectId'] !== 'string' || typeof p['jobId'] !== 'string' || typeof p['state'] !== 'string') return;
+        cb({ projectId: p['projectId'], jobId: p['jobId'], state: p['state'], progress: p['progress'], transcript: p['transcript'], error: p['error'] });
+      };
+      ipcRenderer.on('transcript:event', listener);
+      return () => ipcRenderer.removeListener('transcript:event', listener);
+    },
   },
   media: { urlFor: (projectId: string) => `media://source/${encodeURIComponent(projectId)}` },
   app: {

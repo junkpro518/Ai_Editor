@@ -6,7 +6,7 @@ import type {
   StyleVersion,
 } from '../../core/contracts/types';
 import { execute } from '../../core/commands/registry';
-import { getCommandSpec } from '../../core/contracts/validate';
+import { getCommandSpec, validateProject } from '../../core/contracts/validate';
 import type { ExecuteResult } from '../../core/commands/registry';
 import type { CommandContext, Effect, ProbeLike } from '../../core/commands/types';
 import { History } from '../../core/history/snapshots';
@@ -41,6 +41,8 @@ export interface RuntimeState {
   lastProbe: ProbeLike | null;
   /** آخر خطأ استيراد (رمز مستقر → رسالة عربية في الواجهة) */
   importError: IpcError | null;
+  /** FR-016: ملف المصدر غير موجود في مكانه عند فتح المشروع (يُفحص في loadProject) */
+  sourceMissing: boolean;
 }
 
 let state: RuntimeState = {
@@ -53,6 +55,7 @@ let state: RuntimeState = {
   pendingConfirm: null,
   lastProbe: null,
   importError: null,
+  sourceMissing: false,
 };
 const listeners = new Set<() => void>();
 
@@ -181,6 +184,23 @@ export async function run<N extends CommandName>(
   return result;
 }
 
+/**
+ * تحديث نظامي خارج الأوامر (ليس في التاريخ ولا يُتراجع عنه): حالة مهمة التفريغ ونتيجتها وإعادة ربط المصدر
+ * (FR-016؛ الافتراض الموثَّق في موجز المرحلة 3). يُدقَّق المستند قبل العرض والحفظ؛ `immediate` يحفظ فوراً
+ * لأن main يقرأ المشروع من القرص عند بدء التفريغ.
+ */
+export async function systemUpdate(next: ProjectDocument, opts: { immediate?: boolean } = {}): Promise<void> {
+  validateProject(next);
+  if (!state.project || state.project.id !== next.id) return;
+  set({ project: next });
+  if (opts.immediate) {
+    dirty = next;
+    await flushSave();
+  } else {
+    scheduleSave(next);
+  }
+}
+
 /** استيراد: probe في main ← project.import نقي هنا ← حفظ فوري ← التايم لاين (T029). */
 export async function importPath(
   path: string,
@@ -200,7 +220,7 @@ export async function importPath(
       { actor: 'user', history },
     );
     await window.api.project.save(result.project);
-    set({ project: result.project, history, screen: 'timeline', projects: await window.api.project.list() });
+    set({ project: result.project, history, screen: 'timeline', projects: await window.api.project.list(), sourceMissing: false });
     window.__preview?.show(result.project.id, 0);
     return { ok: true, projectId: result.project.id };
   } catch (e) {
@@ -252,8 +272,14 @@ export async function loadProject(id: string): Promise<void> {
   ]);
   const last = snapshots.at(-1);
   const history = History.fromJSON({ undo: snapshots, redo: [], nextSeq: (last?.seq ?? 0) + 1 });
-  set({ project, style, history, screen: 'timeline', lastProbe: null });
-  window.__preview?.show(project.id, 0);
+  // FR-016: مصدر منقول أو مُعاد تسميته → الواجهة تطلب تحديد مكانه (TranscriptStatus)
+  const stat = await window.api.project.statSource(id).catch(() => ({ exists: true }));
+  set({ project, style, history, screen: 'timeline', lastProbe: null, sourceMissing: !stat.exists });
+  if (stat.exists) window.__preview?.show(project.id, 0);
+}
+
+export function setSourceMissing(sourceMissing: boolean): void {
+  set({ sourceMissing });
 }
 
 if (window.api.app.isTest) {

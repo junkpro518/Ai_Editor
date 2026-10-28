@@ -220,3 +220,135 @@ main {
 .verdict.bad .verdict-title {
   color: var(--danger);
 }
+
+/* حالة التفريغ (T046) */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.status-bar progress {
+  flex: 1;
+  min-width: 120px;
+  height: 10px;
+}
+.status-bar.warn {
+  border-color: var(--accent);
+}
+.status-bar.bad {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.status-bar .reason {
+  color: var(--danger);
+}
+.status {
+  min-height: 1.6em;
+}
+.status.warn {
+  color: var(--danger);
+}
+.muted {
+  color: var(--muted);
+}
+
+/* المقترح (T048) */
+.proposal .actions,
+.settings .row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 8px 0 16px;
+}
+.proposal table.items {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 16px;
+}
+.proposal table.items th,
+.proposal table.items td {
+  border-bottom: 1px solid var(--line);
+  padding: 6px 8px;
+  text-align: start;
+  vertical-align: top;
+}
+.proposal td.time {
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  text-align: end;
+  white-space: nowrap;
+}
+.badge {
+  display: inline-block;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 10px;
+  font-size: 13px;
+  margin-inline-end: 6px;
+}
+.badge.silence {
+  border-color: var(--muted);
+}
+.badge.filler {
+  border-color: var(--accent);
+}
+.badge.repeat,
+.badge.abandoned {
+  border-color: #3ddc84;
+}
+.badge.blocked {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.totals {
+  grid-template-columns: repeat(2, max-content 1fr);
+}
+
+/* الإعدادات (T046) */
+.settings .field {
+  margin: 12px 0;
+}
+.settings label {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.settings input,
+.settings select {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 10px;
+  min-width: 280px;
+}
+.settings .keys {
+  list-style: none;
+  padding: 0;
+}
+.settings .keys li {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.settings .keys time {
+  color: var(--muted);
+  flex: 1;
+}
+.send-log {
+  border-collapse: collapse;
+}
+.send-log th,
+.send-log td {
+  border-bottom: 1px solid var(--line);
+  padding: 4px 12px;
+  text-align: start;
+}

@@ -17,11 +17,11 @@ const ITEMS: Array<{
 }> = [
   { screen: 'import', key: 'nav.import', ready: true },
   { screen: 'timeline', key: 'nav.timeline', ready: true },
-  { screen: 'proposal', key: 'nav.proposal', ready: false },
+  { screen: 'proposal', key: 'nav.proposal', ready: true },
   { screen: 'words', key: 'nav.words', ready: false },
   { screen: 'style', key: 'nav.style', ready: false },
   { screen: 'history', key: 'nav.history', ready: false },
-  { screen: 'settings', key: 'nav.settings', ready: false },
+  { screen: 'settings', key: 'nav.settings', ready: true },
   { screen: 'export', key: 'nav.export', ready: true },
 ];
 
@@ -32,7 +32,8 @@ export function Nav({ current, hasProject }: { current: Screen; hasProject: bool
       <span className="brand">{t('app.title')}</span>
       <ul>
         {ITEMS.map((item) => {
-          const disabled = !item.ready || (item.screen !== 'import' && !hasProject);
+          // الإعدادات تُفتح بلا مشروع: المفتاح يُدخل قبل أول تفريغ (FR-017)
+          const disabled = !item.ready || (item.screen !== 'import' && item.screen !== 'settings' && !hasProject);
           return (
             <li key={item.screen}>
               <button

@@ -6,6 +6,7 @@
 |---|---|---|
 | `deepgram-ar-sa.json` | Deepgram `nova-3`، `language=ar-SA` | `results.channels[0].alternatives[0].words[]` بثوانٍ عشرية و`confidence` و`punctuated_word`؛ جملتان بترقيم وفجوة ≥ 700 ms |
 | `deepgram-multi.json` | Deepgram `nova-3`، `language=multi` | نفس الشكل مع `language` لكل كلمة (عربي/إنجليزي مخلوط) |
+| `deepgram-tiny-5s.json` | Deepgram `nova-3`، `language=ar-SA` | مشتق يدوياً لـ`tiny-5s.mp4` (5 ثوانٍ، 30fps): 12 كلمة، فجوة صمت 900 ms بعد «الدرس.» (بند صمت [2.12s, 2.78s]) وحشو «يعني» (بند [2.90s, 3.10s]) — يستهلكه `tests/e2e/us1-import-propose-apply-export.spec.ts` عبر خادم محلي بدل المزود |
 | `elevenlabs-scribe-v2.json` | ElevenLabs `scribe_v2`، `timestamps_granularity=word` | `words[]` بأنواع `word`/`spacing`/`audio_event` (تُحذف غير الكلمات)، `logprob` → `exp` مقيّد 0..1، كلمة بلا `logprob` → `null` |
 
 تُستهلك في `tests/contract/providers.test.ts` عبر المحوّلات في `src/core/transcript/providers/`.

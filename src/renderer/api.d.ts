@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports -- أنواع فقط: توصيف window.api المشترك بين preload والواجهة (T024)؛ لا كود من main يصل الواجهة */
-import type { ProjectDocument, StyleVersion } from '../core/contracts/types';
+import type { ProjectDocument, StyleVersion, Transcript } from '../core/contracts/types';
 import type { ProbeLike as ProbeResult } from '../core/commands/types';
 import type { HistoryEntry } from '../core/history/snapshots';
 import type { Settings, SettingsPatch } from '../main/storage/settings';
@@ -12,6 +12,16 @@ declare global {
     message: string;
   }
 
+  /** حدث مهمة التفريغ من main (src/main/transcription/ipc.ts) بعد تنقيته في preload */
+  interface TranscriptEvent {
+    projectId: string;
+    jobId: string;
+    state: ProjectDocument['transcriptJob']['state'];
+    progress?: number;
+    transcript?: Transcript;
+    error?: IpcError;
+  }
+
   interface Api {
     project: {
       pickVideoFile(): Promise<string | null>;
@@ -20,6 +30,8 @@ declare global {
       save(doc: ProjectDocument): Promise<void>;
       load(id: string): Promise<ProjectDocument>;
       list(): Promise<Array<{ id: string; name: string; updatedAt: string }>>;
+      /** FR-016: حال ملف المصدر على القرص (من المشروع المحفوظ) */
+      statSource(id: string): Promise<{ exists: true; fileSize: number; mtime: string } | { exists: false }>;
       writeSnapshot(id: string, entry: HistoryEntry): Promise<void>;
       readSnapshots(id: string): Promise<HistoryEntry[]>;
     };
@@ -44,6 +56,12 @@ declare global {
       referenceFrame(sessionId: string, index: number, png: ArrayBuffer): Promise<void>;
       finish(sessionId: string): Promise<ExportFinishResult>;
       cancel(sessionId: string): Promise<void>;
+    };
+    transcript: {
+      start(projectId: string, options: { provider: string; model: string; language: string }): Promise<{ jobId: string }>;
+      cancel(jobId: string): Promise<void>;
+      /** يعيد دالة إلغاء الاشتراك */
+      onEvent(cb: (event: TranscriptEvent) => void): () => void;
     };
     media: { urlFor(projectId: string): string };
     app: { version(): Promise<string>; platform: string; isTest: boolean };

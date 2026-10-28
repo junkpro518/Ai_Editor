@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { app, BrowserWindow, safeStorage } from 'electron';
+import { app, BrowserWindow, ipcMain, safeStorage } from 'electron';
 import { createProjectStore } from './storage/projects';
 import { createStyleStore } from './storage/styles';
 import { createSettingsStore } from './storage/settings';
@@ -10,9 +10,13 @@ import { resolveFfmpeg } from './ffmpeg/paths';
 import type { FfmpegBins } from './ffmpeg/paths';
 import { registerIpc } from './ipc';
 import { registerExportIpc } from './export/ipc';
+import { registerTranscriptionIpc } from './transcription/ipc';
+import { plaintextTestSafeStorage } from './testSafeStorage';
 import { handleMediaProtocol, registerMediaScheme } from './protocol';
 
 const isTest = process.env['AI_EDITOR_TEST'] === '1';
+// خطاف الاختبار فقط: خادم محلي بدل المزوّدين (tests/e2e) — يُقرأ حصراً عندما isTest
+const testProviderBaseUrl = isTest ? process.env['AI_EDITOR_PROVIDER_BASE_URL'] : undefined;
 
 // خطاف الاختبار فقط: مجلد بيانات معزول لكل تشغيل (قبل whenReady كي تراه المخازن)
 const testUserData = process.env['AI_EDITOR_USER_DATA'];
@@ -67,16 +71,29 @@ app.whenReady().then(async () => {
   const defaultStylePath = join(resourcesDir, 'styles', 'default-v1.json');
   let bins: FfmpegBins | null = null;
   const projects = createProjectStore(root);
+  const settings = createSettingsStore(root);
+  // في الاختبار فقط: مخزن نصي في مجلد بيانات مؤقت (testSafeStorage.ts)؛ الإنتاج دائماً safeStorage (القرار 18)
+  const secrets = createSecrets({ safeStorage: isTest ? plaintextTestSafeStorage() : safeStorage, filePath: join(root, 'secrets.enc'), platform: process.platform });
+  const getBins = (): FfmpegBins => (bins ??= resolveFfmpeg({ resourcesDir: join(resourcesDir, 'ffmpeg') }));
   registerIpc({
     window: () => win,
     isTrustedSender: isTrustedUrl,
     projects,
     styles,
-    settings: createSettingsStore(root),
-    secrets: createSecrets({ safeStorage, filePath: join(root, 'secrets.enc'), platform: process.platform }),
-    bins: () => (bins ??= resolveFfmpeg({ resourcesDir: join(resourcesDir, 'ffmpeg') })),
+    settings,
+    secrets,
+    bins: getBins,
     defaultStylePath,
     isTest,
+  });
+  registerTranscriptionIpc(ipcMain, {
+    window: () => win,
+    isTrustedSender: isTrustedUrl,
+    projects,
+    settings,
+    secrets,
+    bins: getBins,
+    baseUrls: testProviderBaseUrl ? { deepgram: testProviderBaseUrl, elevenlabs: testProviderBaseUrl } : undefined,
   });
   registerExportIpc({ window: () => win, isTrustedSender: isTrustedUrl, projects, bins: () => (bins ??= resolveFfmpeg({ resourcesDir: join(resourcesDir, 'ffmpeg') })), isTest });
   await styles.ensureDefault(defaultStylePath);
