@@ -17,6 +17,10 @@ export interface CommandContext {
   measure?: MeasureFn;
   /** مطلوب لـ project.import فقط */
   probe?: ProbeLike;
+  /** إصدار الهدف محمَّلاً مسبقاً (style.rollback / project.upgradeStyle) — runtime يحمّله من المكتبة قبل التنفيذ */
+  styleVersion?: StyleVersion;
+  /** أحدث رقم إصدار في المكتبة لهذا النمط؛ الإصدار الجديد يُرقَّم بعده لا بعد المثبّت (US3) */
+  latestStyleVersion?: number;
 }
 
 /** أثر جانبي يطلبه الأمر من الطبقة الخارجية؛ الأمر نفسه يبقى نقياً. */
@@ -24,6 +28,7 @@ export type Effect =
   | { kind: 'request-transcript'; mode: 'cloud' | 'local' }
   | { kind: 'export-mp4'; outputPath: string }
   | { kind: 'style-version-created'; style: StyleVersion }
+  /** proposalId = معرّف project.styleUpdateProposals[] (اقتراح تحديث النمط)، لا معرّف مقترح القص */
   | { kind: 'style-update-proposed'; proposalId: string };
 
 export interface CommandResult {

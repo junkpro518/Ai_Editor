@@ -167,17 +167,17 @@ description: "Task list for feature 001 — إثبات تقني: مونتاج م
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T067 [P] [US3] `tests/unit/core/style/library.test.ts`: إنشاء إصدار جديد عند كل حفظ (لا تعديل في المكان)، `versions[]` مرتبة مع تاريخ وسبب، `style.rollback` يُنشئ إصداراً جديداً بمحتوى قديم، الإصدارات لا تُحذف بالتراجع
-- [ ] T068 [P] [US3] `tests/unit/core/style/rules.test.ts`: `mandatory` يمنع بند المقترح ويعلّمه `blocked` مع `blockedBy`؛ `preference` يرجّح فقط؛ التعديل اليدوي المخالف يُسمح مع تصحيح `kind=manual_edit` وحقل `violates=ruleId`
-- [ ] T069 [P] [US3] `tests/unit/core/style/learn.test.ts`: بعد `proposal.apply` مع ≥3 استثناءات بالسبب نفسه (حقل النمط `cut.repeatedRejectionThreshold`، افتراضي 3) يُنشأ `StyleUpdateProposal` بـ`trigger.correctionIds` و`diff` (مثل رفع `silenceMaxUs`) و`newPrecedents` (rule + quote + check + source)؛ أقل من 3 لا يُنشئ شيئاً لكن يُحتسب لاحقاً؛ القبول = إصدار `reason="learned"` + `basedOnCorrections`؛ الرفض لا يغيّر النمط (SC-007)
-- [ ] T070 [P] [US3] `tests/unit/core/commands/style.test.ts`: `style.setField` (مسار `^(cut|captions)\.[a-zA-Z]+$`، إصدار جديد، تثبيت المشروع عليه، إعادة اشتقاق الكابشن إن كان المسار `captions.*`)، `project.upgradeStyle` (يلغي المقترح غير المطبَّق ويعيد الاشتقاق كأمر واحد)، إشعار وجود إصدار أحدث لا يغيّر شيئاً تلقائياً
+- [X] T067 [P] [US3] `tests/unit/core/style/library.test.ts`: إنشاء إصدار جديد عند كل حفظ (لا تعديل في المكان)، `versions[]` مرتبة مع تاريخ وسبب، `style.rollback` يُنشئ إصداراً جديداً بمحتوى قديم، الإصدارات لا تُحذف بالتراجع
+- [X] T068 [P] [US3] `tests/unit/core/style/rules.test.ts`: `mandatory` يمنع بند المقترح ويعلّمه `blocked` مع `blockedBy`؛ `preference` يرجّح فقط؛ التعديل اليدوي المخالف يُسمح مع تصحيح `kind=manual_edit` وحقل `violates=ruleId`
+- [X] T069 [P] [US3] `tests/unit/core/style/learn.test.ts`: بعد `proposal.apply` مع ≥3 استثناءات بالسبب نفسه (حقل النمط `cut.repeatedRejectionThreshold`، افتراضي 3) يُنشأ `StyleUpdateProposal` بـ`trigger.correctionIds` و`diff` (مثل رفع `silenceMaxUs`) و`newPrecedents` (rule + quote + check + source)؛ أقل من 3 لا يُنشئ شيئاً لكن يُحتسب لاحقاً؛ القبول = إصدار `reason="learned"` + `basedOnCorrections`؛ الرفض لا يغيّر النمط (SC-007)
+- [X] T070 [P] [US3] `tests/unit/core/commands/style.test.ts`: `style.setField` (مسار `^(cut|captions)\.[a-zA-Z]+$`، إصدار جديد، تثبيت المشروع عليه، إعادة اشتقاق الكابشن إن كان المسار `captions.*`)، `project.upgradeStyle` (يلغي المقترح غير المطبَّق ويعيد الاشتقاق كأمر واحد)، إشعار وجود إصدار أحدث لا يغيّر شيئاً تلقائياً
 - [ ] T071 [P] [US3] `tests/e2e/us3-style.spec.ts`: Q7 كاملاً
 
 ### Implementation for User Story 3
 
-- [ ] T072 [P] [US3] `src/core/style/library.ts` (قراءة/إنشاء إصدارات عبر IPC storage، `currentVersion`، `availableVersion` عند الفتح) و`src/core/style/rules.ts` (تقييم `mandatory|preference`، دمج القيم في مولّد المقترح)
-- [ ] T073 [US3] `src/core/style/learn.ts`: تجميع التصحيحات حسب `reason`/`ruleId`، حساب `diff` المقترح (قواعد بسيطة لكل سبب: صمت → رفع العتبة إلى أقصر صمت مرفوض؛ حشو → إزالة الكلمة من القائمة؛ إعادة → رفع `repeatsSimilarity`)، بناء `Precedent{rule, quote, check, source}`؛ ويُستدعى من `proposal.apply`
-- [ ] T074 [US3] أوامر `style.setField`، `style.updateProposal.accept/reject`، `style.rollback`، `project.upgradeStyle` في `src/core/commands/`
+- [X] T072 [P] [US3] `src/core/style/library.ts` (قراءة/إنشاء إصدارات عبر IPC storage، `currentVersion`، `availableVersion` عند الفتح) و`src/core/style/rules.ts` (تقييم `mandatory|preference`، دمج القيم في مولّد المقترح)
+- [X] T073 [US3] `src/core/style/learn.ts`: تجميع التصحيحات حسب `reason`/`ruleId`، حساب `diff` المقترح (قواعد بسيطة لكل سبب: صمت → رفع العتبة إلى أقصر صمت مرفوض؛ حشو → إزالة الكلمة من القائمة؛ إعادة → رفع `repeatsSimilarity`)، بناء `Precedent{rule, quote, check, source}`؛ ويُستدعى من `proposal.apply`
+- [X] T074 [US3] أوامر `style.setField`، `style.updateProposal.accept/reject`، `style.rollback`، `project.upgradeStyle` في `src/core/commands/`
 - [ ] T075 [US3] `src/renderer/screens/StylePanel.tsx`: حقول `cut` و`captions` بأنواعها (مدة، نسبة، قائمة كلمات، خط، لون، موضع) مع مفتاح إلزامي/تفضيل لكل حقل وعرض `source` (افتراضي/أنت/متعلَّم) وسجل الإصدارات مع «رجوع» وإشعار «إصدار أحدث متاح — ترقية؟»
 - [ ] T076 [US3] `src/renderer/screens/StyleUpdate.tsx`: عرض اقتراح التحديث (الفرق + التصحيحات الثلاثة المقتبسة + السوابق الجديدة) بزرّي قبول (تأكيد) ورفض
 - [ ] T077 [US3] مراجعة أمنية (`security-audit`، وضع التوجيه) لكود US3: اقتباسات التصحيح كمدخل غير موثوق، مسارات ملفات الأنماط داخل `userData` فقط؛ `docs/security/us3.md`

@@ -1,7 +1,25 @@
+import { withCaptions } from '../captions/derive';
+import { rollbackContent } from '../style/library';
 import type { CommandImpl } from './types';
 import { CommandError } from './types';
 
-// هيكل المرحلة 2؛ يُملأ في قصة المستخدم الخاصة به.
-export const impl: CommandImpl<'style.rollback'> = () => {
-  throw new CommandError('not_implemented', 'الأمر style.rollback لم يُنفَّذ بعد');
+/**
+ * الرجوع لإصدار سابق = إصدار جديد بمحتواه (لا حذف للتاريخ، FR-010) ويثبّت المشروع عليه.
+ * الهدف يحمّله runtime في ctx.styleVersion قبل التنفيذ (core بلا I/O).
+ */
+export const impl: CommandImpl<'style.rollback'> = (project, params, ctx) => {
+  if (params.styleId !== project.style.styleId) {
+    throw new CommandError('style_mismatch', `المشروع مثبّت على النمط «${project.style.styleId}» لا «${params.styleId}»`);
+  }
+  const target = ctx.styleVersion;
+  if (!target || target.styleId !== params.styleId || target.version !== params.toVersion) {
+    throw new CommandError('style_version_required', `الإصدار ${params.toVersion} من النمط «${params.styleId}» غير محمَّل`);
+  }
+  const style = rollbackContent(target, Math.max(ctx.style.version, ctx.latestStyleVersion ?? 0), ctx.now());
+  const pinned = { ...project, style: { styleId: style.styleId, version: style.version } };
+  return {
+    project: withCaptions(pinned, { ...ctx, style }),
+    description: `رجع النمط إلى محتوى الإصدار ${target.version} (الإصدار ${style.version})`,
+    effects: [{ kind: 'style-version-created', style }],
+  };
 };

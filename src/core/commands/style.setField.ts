@@ -1,7 +1,21 @@
+import { withCaptions } from '../captions/derive';
+import { applyField, createVersion } from '../style/library';
+import { resolvePath } from '../style/rules';
 import type { CommandImpl } from './types';
-import { CommandError } from './types';
 
-// هيكل المرحلة 2؛ يُملأ في قصة المستخدم الخاصة به.
-export const impl: CommandImpl<'style.setField'> = () => {
-  throw new CommandError('not_implemented', 'الأمر style.setField لم يُنفَّذ بعد');
+/**
+ * يغيّر قاعدة واحدة في النمط: إصدار جديد في المكتبة (reason=user) ويثبّت المشروع عليه (FR-010، US3-1).
+ * الكتابة في main عبر أثر style-version-created؛ مسار captions.* يعيد اشتقاق الكابشن بالنمط الجديد (data-model §1.10).
+ */
+export const impl: CommandImpl<'style.setField'> = (project, params, ctx) => {
+  const { section, field } = resolvePath(ctx.style, params.path);
+  const at = ctx.now();
+  const candidate = applyField(ctx.style, params.path, params.value, params.mode, { kind: 'user', at });
+  const style = createVersion(ctx.style, { [section]: candidate[section] }, { reason: params.reason ?? 'user', now: at, latestVersion: ctx.latestStyleVersion });
+  const pinned = { ...project, style: { styleId: style.styleId, version: style.version } };
+  return {
+    project: section === 'captions' ? withCaptions(pinned, { ...ctx, style }) : pinned,
+    description: `غيّر ${field} في النمط (الإصدار ${style.version})`,
+    effects: [{ kind: 'style-version-created', style }],
+  };
 };

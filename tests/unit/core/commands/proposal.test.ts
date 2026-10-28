@@ -225,18 +225,32 @@ describe('proposal.apply', () => {
     expect(r.project.proposals[0]!.state).toBe('applied');
   });
 
-  it('≥ repeatedRejectionThreshold استثناءات بالسبب نفسه → أثر style-update-proposed (وإلا لا أثر)', () => {
-    const three = [
-      item('i1', 500_000, 700_000, { reason: 'filler', state: 'excluded' }),
-      item('i2', 1_500_000, 1_700_000, { reason: 'filler', state: 'excluded' }),
-      item('i3', 2_500_000, 2_700_000, { reason: 'filler', state: 'excluded' }),
+  it('≥ repeatedRejectionThreshold استثناءات بالسبب نفسه → StyleUpdateProposal pending مُلحَق + أثر style-update-proposed (وإلا لا شيء)', () => {
+    // الاستثناء عبر الأمر حتى تُسجَّل التصحيحات التي يُبنى عليها الاقتراح (FR-006/FR-011)
+    const items = [
+      item('i1', 500_000, 700_000, { reason: 'filler', ruleId: 'cut.fillerWords', text: 'يعني' }),
+      item('i2', 1_500_000, 1_700_000, { reason: 'filler', ruleId: 'cut.fillerWords', text: 'يعني' }),
+      item('i3', 2_500_000, 2_700_000, { reason: 'filler', ruleId: 'cut.fillerWords', text: 'اه' }),
       item('i4', 3_500_000, 4_000_000),
     ];
-    const r3 = execute(project30(three), 'proposal.apply', { proposalId: 'prop-1' }, makeCtx(), user(new History(), true));
-    expect(r3.effects).toEqual([{ kind: 'style-update-proposed', proposalId: 'prop-1' }]);
-    const two = three.slice(1);
-    const r2 = execute(project30(two), 'proposal.apply', { proposalId: 'prop-1' }, makeCtx(), user(new History(), true));
+    const ctx = makeCtx();
+    const reviewed3 = execute(project30(items), 'proposal.exclude', { proposalId: 'prop-1', itemIds: ['i1', 'i2', 'i3'] }, ctx, user()).project;
+    const r3 = execute(reviewed3, 'proposal.apply', { proposalId: 'prop-1' }, ctx, user(new History(), true));
+    const sup = r3.project.styleUpdateProposals[0]!;
+    expect(r3.effects).toEqual([{ kind: 'style-update-proposed', proposalId: sup.id }]);
+    expect(sup).toMatchObject({
+      state: 'pending',
+      styleRef: { styleId: 'default', version: 1 },
+      trigger: { kind: 'repeated_rejection', reason: 'filler', count: 3, correctionIds: ['id-1', 'id-2', 'id-3'] },
+      diff: [{ path: 'cut.fillerWords' }],
+    });
+    expect(sup.newPrecedents).toHaveLength(3);
+    expect(r3.project.timeline.clips.map((c) => [c.inFrame, c.outFrame])).toEqual([[0, 105], [120, 150]]);
+
+    const reviewed2 = execute(project30(items), 'proposal.exclude', { proposalId: 'prop-1', itemIds: ['i2', 'i3'] }, makeCtx(), user()).project;
+    const r2 = execute(reviewed2, 'proposal.apply', { proposalId: 'prop-1' }, makeCtx(), user(new History(), true));
     expect(r2.effects).toBeUndefined();
+    expect(r2.project.styleUpdateProposals).toEqual([]);
   });
 
   it('حالة غير مناسبة → proposal_not_reviewed؛ غير موجود → proposal_not_found', () => {

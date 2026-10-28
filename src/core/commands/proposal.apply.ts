@@ -1,7 +1,8 @@
 import { withCaptions } from '../captions/derive';
-import type { Correction, ProjectDocument, Reason } from '../contracts/types';
+import type { Correction, ProjectDocument } from '../contracts/types';
 import { computeTotals } from '../proposal/totals';
 import { findOpenProposal, hasSpeech, readCutRules } from '../proposal/types';
+import { buildStyleUpdateProposal } from '../style/learn';
 import { frameToUs, usToFrame } from '../time';
 import type { CommandImpl, Effect } from './types';
 
@@ -80,16 +81,13 @@ export const impl: CommandImpl<'proposal.apply'> = (project, params, ctx) => {
     corrections.push({ id: ctx.newId(), at: ctx.now(), actor: 'user', kind: 'exclude_all', proposalId: proposal.id, quote: 'استثنى كل بنود المقترح' });
   }
 
-  // FR-011: ≥ العتبة استثناءات بالسبب نفسه في هذا المقترح → أثر فقط؛ StyleUpdateProposal نفسه في US3
-  const byReason = new Map<Reason, number>();
-  for (const i of excluded) byReason.set(i.reason, (byReason.get(i.reason) ?? 0) + 1);
-  const effects: Effect[] | undefined = [...byReason.values()].some((n) => n >= rules.repeatedRejectionThreshold)
-    ? [{ kind: 'style-update-proposed', proposalId: proposal.id }]
-    : undefined;
-
   const proposals = project.proposals.with(index, { ...proposal, items, totals: computeTotals(items), state: 'applied' });
+  // FR-011: ≥ العتبة استثناءات بالسبب نفسه (عبر المشروع، غير مستهلكة) → اقتراح تحديث النمط pending + أثر للواجهة
+  const applied = { ...project, timeline: { ...project.timeline, clips }, proposals, corrections };
+  const learned = buildStyleUpdateProposal(applied, ctx.style, ctx);
+  const effects: Effect[] | undefined = learned ? [{ kind: 'style-update-proposed', proposalId: learned.id }] : undefined;
   return {
-    project: withCaptions({ ...project, timeline: { ...project.timeline, clips }, proposals, corrections }, ctx),
+    project: withCaptions(learned ? { ...applied, styleUpdateProposals: [...applied.styleUpdateProposals, learned] } : applied, ctx),
     description: appliedCount ? `طبّق المقترح: ${appliedCount} قصّة` : 'طبّق المقترح بلا قصّات',
     ...(effects ? { effects } : {}),
   };

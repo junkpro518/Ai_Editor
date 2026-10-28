@@ -45,6 +45,8 @@ export interface RuntimeState {
   importError: IpcError | null;
   /** FR-016: ملف المصدر غير موجود في مكانه عند فتح المشروع (يُفحص في loadProject) */
   sourceMissing: boolean;
+  /** US3: أحدث رقم إصدار في مكتبة النمط المثبّت؛ > project.style.version → إشعار «إصدار أحدث متاح» (لا ترقية تلقائية) */
+  latestStyleVersion: number | null;
 }
 
 let state: RuntimeState = {
@@ -58,6 +60,7 @@ let state: RuntimeState = {
   lastProbe: null,
   importError: null,
   sourceMissing: false,
+  latestStyleVersion: null,
 };
 const listeners = new Set<() => void>();
 
@@ -91,13 +94,16 @@ export function toIpcError(e: unknown): IpcError {
 const SAVE_DEBOUNCE_MS = 300;
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
 let dirty: ProjectDocument | null = null;
+// الحفظ متسلسل: كتابتان ذريتان متزامنتان قد تكتملان بترتيب معكوس فتبقى النسخة الأقدم على القرص
+let saving: Promise<void> = Promise.resolve();
 
-async function flushSave(): Promise<void> {
+function flushSave(): Promise<void> {
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = null;
   const doc = dirty;
   dirty = null;
-  if (doc) await window.api.project.save(doc);
+  if (doc) saving = saving.then(() => window.api.project.save(doc), () => window.api.project.save(doc));
+  return saving;
 }
 
 function scheduleSave(doc: ProjectDocument): void {
@@ -125,7 +131,42 @@ function ctx(extra?: Partial<CommandContext>): CommandContext {
   if (!state.style)
     throw { code: 'style_missing', message: 'النمط الافتراضي لم يُحمَّل بعد' } satisfies IpcError;
   // measure: قياس النص عبر DOM (captions/measure.ts) — اشتقاق الكابشن يحتاجه داخل الأوامر (data-model §1.10)
-  return { style: state.style, now: () => new Date().toISOString(), newId, measure: measureText, ...extra };
+  return {
+    style: state.style,
+    now: () => new Date().toISOString(),
+    newId,
+    measure: measureText,
+    ...(state.latestStyleVersion !== null ? { latestStyleVersion: state.latestStyleVersion } : {}),
+    ...extra,
+  };
+}
+
+/** أحدث رقم إصدار في المكتبة لهذا النمط (0 إن لم يوجد) */
+async function latestVersionOf(styleId: string): Promise<number> {
+  const versions = await window.api.style.listVersions(styleId);
+  return versions.reduce((m, v) => Math.max(m, v.version), 0);
+}
+
+/**
+ * state.style يتبع تثبيت المشروع دائماً: التراجع عن style.setField يرجع التثبيت وحده (الإصدار يبقى في المكتبة،
+ * data-model §1.9) وproject.upgradeStyle يثبّت بلا أثر — فيُحمَّل الإصدار المثبّت إن اختلف (أو يُؤخذ المحمَّل مسبقاً).
+ */
+async function syncStyleToPin(project: ProjectDocument, preloaded?: StyleVersion): Promise<void> {
+  const pin = project.style;
+  if (state.style && state.style.styleId === pin.styleId && state.style.version === pin.version) return;
+  const style =
+    preloaded && preloaded.styleId === pin.styleId && preloaded.version === pin.version
+      ? preloaded
+      : await window.api.style.loadVersion(pin.styleId, pin.version);
+  warnUnknownFontFamily(String(style.captions.fontFamily.value));
+  set({ style });
+}
+
+/** أثر style-version-created: الإصدار الجديد يصير نمط الجلسة فوراً ثم يُكتب في المكتبة (ملف جديد لا يُستبدل). */
+async function persistStyleVersion(style: StyleVersion): Promise<void> {
+  warnUnknownFontFamily(String(style.captions.fontFamily.value));
+  set({ style, latestStyleVersion: Math.max(state.latestStyleVersion ?? 0, style.version) });
+  await window.api.style.saveVersion(style);
 }
 
 /** السياق نفسه للتحديثات النظامية خارج الأوامر (إلحاق التفريغ يعيد اشتقاق الكابشن). */
@@ -139,15 +180,18 @@ export function navigate(screen: Screen): void {
 
 export async function init(): Promise<void> {
   // الخطوط قبل أول معاينة (T059): كابشن لا يُرسم إلا بعد fontsReady()
-  const [style, settings, projects] = await Promise.all([
+  const [defaultStyle, settings, projects] = await Promise.all([
     window.api.style.ensureDefault(),
     window.api.settings.load(),
     window.api.project.list(),
     loadFonts(),
   ]);
   setLang(settings.ui.lang);
+  // المشاريع الجديدة تثبّت أحدث إصدار في المكتبة لا v1 الافتراضي (FR-010: المكتبة عند المستخدم تنمو)
+  const latestStyleVersion = await latestVersionOf(defaultStyle.styleId);
+  const style = latestStyleVersion > defaultStyle.version ? await window.api.style.loadVersion(defaultStyle.styleId, latestStyleVersion) : defaultStyle;
   warnUnknownFontFamily(String(style.captions.fontFamily.value));
-  set({ style, projects, ready: true });
+  set({ style, projects, ready: true, latestStyleVersion: Math.max(latestStyleVersion, style.version) });
 }
 
 export async function changeLang(lang: Lang): Promise<void> {
@@ -171,12 +215,15 @@ export async function run<N extends CommandName>(
   params: CommandParamsMap[N],
   opts: { actor?: Actor; confirmed?: boolean; probe?: ProbeLike } = {},
 ): Promise<ExecuteResult | null> {
+  // الرجوع/الترقية يحتاجان إصدار الهدف داخل الأمر النقي: يُحمَّل من المكتبة هنا (مثل probe للاستيراد).
+  // await لهذين فقط، وقراءة المشروع بعده: أمران متتاليان في النبضة نفسها لا يلتقطان الحالة القديمة
+  const styleVersion = name === 'style.rollback' || name === 'project.upgradeStyle' ? await preloadStyleVersion(name, params) : undefined;
   const project = state.project;
   if (!project) throw { code: 'no_project', message: 'لا مشروع مفتوح' } satisfies IpcError;
   const actor = opts.actor ?? 'user';
   let result: ExecuteResult;
   try {
-    result = execute(project, name, params, ctx(opts.probe ? { probe: opts.probe } : undefined), {
+    result = execute(project, name, params, ctx({ ...(opts.probe ? { probe: opts.probe } : {}), ...(styleVersion ? { styleVersion } : {}) }), {
       actor,
       history: state.history,
       confirmed: opts.confirmed,
@@ -191,8 +238,26 @@ export async function run<N extends CommandName>(
   // لقطة على القرص للأوامر القابلة للتراجع فقط؛ undo/redo يعيدان entry لكنهما لا يُنشئان مدخلاً جديداً
   if (result.entry && getCommandSpec(name).undoable)
     await window.api.project.writeSnapshot(result.project.id, result.entry);
-  for (const effect of result.effects ?? []) effectHandlers.get(effect.kind)?.(effect, result.project, state.style!);
+  for (const effect of result.effects ?? []) {
+    // الإصدار الجديد يُحفظ هنا أولاً؛ ثم معالج الواجهة (إن سُجِّل) لتحديث قائمة الإصدارات مثلاً
+    if (effect.kind === 'style-version-created') await persistStyleVersion(effect.style);
+    effectHandlers.get(effect.kind)?.(effect, result.project, state.style!);
+  }
+  await syncStyleToPin(result.project, styleVersion);
   return result;
+}
+
+function preloadStyleVersion<N extends CommandName>(name: N, params: CommandParamsMap[N]): Promise<StyleVersion | undefined> {
+  if (name === 'style.rollback') {
+    const p = params as CommandParamsMap['style.rollback'];
+    return window.api.style.loadVersion(p.styleId, p.toVersion);
+  }
+  if (name === 'project.upgradeStyle') {
+    const p = params as CommandParamsMap['project.upgradeStyle'];
+    if (!state.project) throw { code: 'no_project', message: 'لا مشروع مفتوح' } satisfies IpcError;
+    return window.api.style.loadVersion(state.project.style.styleId, p.toVersion);
+  }
+  return Promise.resolve(undefined);
 }
 
 /**
@@ -277,16 +342,17 @@ function placeholderProject(probe: ProbeLike): ProjectDocument {
 export async function loadProject(id: string): Promise<void> {
   await flushSave();
   const project = await window.api.project.load(id);
-  const [style, snapshots] = await Promise.all([
+  const [style, snapshots, latestStyleVersion] = await Promise.all([
     window.api.style.loadVersion(project.style.styleId, project.style.version),
     window.api.project.readSnapshots(id),
+    latestVersionOf(project.style.styleId),
   ]);
   const last = snapshots.at(-1);
   const history = History.fromJSON({ undo: snapshots, redo: [], nextSeq: (last?.seq ?? 0) + 1 });
   // FR-016: مصدر منقول أو مُعاد تسميته → الواجهة تطلب تحديد مكانه (TranscriptStatus)
   const stat = await window.api.project.statSource(id).catch(() => ({ exists: true }));
   warnUnknownFontFamily(String(style.captions.fontFamily.value));
-  set({ project, style, history, screen: 'timeline', lastProbe: null, sourceMissing: !stat.exists });
+  set({ project, style, history, screen: 'timeline', lastProbe: null, sourceMissing: !stat.exists, latestStyleVersion: Math.max(latestStyleVersion, style.version) });
   if (stat.exists) window.__preview?.show(project.id, 0);
 }
 
