@@ -136,7 +136,12 @@ test('Q1/Q2: استيراد ثم إفصاح ثم تفريغ عبر الخادم 
   expect(settings.transcription.disclosures).toEqual([expect.objectContaining({ provider: 'deepgram', keyRef: 'deepgram (…0000)' })]);
   expect(settings.transcription.sendLog).toHaveLength(1);
   expect(settings.transcription.sendLog[0]).toMatchObject({ provider: 'deepgram' });
-  // المحفوظ على القرص يحمل التفريغ (FR-016)
+  // المحفوظ على القرص يحمل التفريغ (FR-016) — الحفظ ذري ومؤجَّل بعد تحديث الحالة، فننتظر القرص لا الذاكرة
+  await page.waitForFunction(
+    async (id) => ((await window.api.project.load(id)).transcript?.words.length ?? 0) === 12,
+    projectId,
+    { timeout: 15_000 },
+  );
   const saved = await page.evaluate((id) => window.api.project.load(id), projectId);
   expect(saved.transcript?.words).toHaveLength(12);
   expect(JSON.stringify(saved)).not.toContain(DUMMY_KEY);

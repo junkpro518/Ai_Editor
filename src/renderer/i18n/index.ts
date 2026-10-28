@@ -38,7 +38,8 @@ export function useLang(): Lang {
 
 export function t(key: Key, vars?: Record<string, string>): string {
   let s = dict[lang][key] ?? dict.ar[key] ?? key;
-  for (const [k, v] of Object.entries(vars ?? {})) s = s.replace(`{${k}}`, v);
+  // دالة بدل سلسلة: القيمة قد تحمل نص كلمة من المزود، و`$&`/`$'` في سلسلة الاستبدال تُفسَّر أنماطاً (مراجعة us2 #4)
+  for (const [k, v] of Object.entries(vars ?? {})) s = s.replace(`{${k}}`, () => v);
   return s;
 }
 

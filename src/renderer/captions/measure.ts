@@ -7,6 +7,11 @@ import type { MeasureFn } from '../../core/commands/types';
 
 let host: HTMLDivElement | null = null;
 const cache = new Map<string, ReturnType<MeasureFn>>();
+/**
+ * سقف المخبأ: نص التفريغ يأتي من المزود (حتى 100k كلمة × 256 حرفاً بالعقد) والمفتاح يحمل السطر المجمَّع عند كل
+ * حجم خط، فبلا سقف يبقى غيغابايتات في ذاكرة الواجهة طول الجلسة (مراجعة us2 #2). تفريغ 15 دقيقة يحتاج بضعة آلاف فقط.
+ */
+export const MAX_CACHE_ENTRIES = 20_000;
 
 function hostElement(): HTMLDivElement {
   if (host?.isConnected) return host;
@@ -56,6 +61,7 @@ export const measureText: MeasureFn = (text, font, dir) => {
     return [left - box.left, top - box.top, right - left, bottom - top];
   });
   const result = { width: box.width, height: box.height, wordRects };
+  if (cache.size >= MAX_CACHE_ENTRIES) cache.clear();
   cache.set(key, result);
   return result;
 };

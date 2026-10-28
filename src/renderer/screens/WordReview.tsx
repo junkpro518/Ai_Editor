@@ -82,7 +82,9 @@ export function WordReview() {
     if (last?.command.name === 'transcript.fixWord' && params?.wordId === w.id) return exec(() => run('history.undo', {}));
     return exec(() => run('transcript.fixWord', { wordId: w.id, text: w.original ?? w.text }));
   };
-  const row = (w: Word) => <WordRow key={w.id} word={w} words={words} onFix={fix} onRevert={revert} />;
+  // فهرس كل كلمة مرة واحدة: indexOf لكل صف يجعل القائمة تربيعية مع تفريغ كبير كله «منخفض الثقة» (مراجعة us2 #5)
+  const indexById = new Map(words.map((w, i) => [w.id, i]));
+  const row = (w: Word) => <WordRow key={w.id} word={w} index={indexById.get(w.id) ?? -1} words={words} onFix={fix} onRevert={revert} />;
 
   return (
     <section className="screen words" data-testid="words">
@@ -146,11 +148,10 @@ export function WordReview() {
   );
 }
 
-function WordRow({ word, words, onFix, onRevert }: { word: Word; words: ReadonlyArray<Word>; onFix: (w: Word, text: string) => Promise<void>; onRevert: (w: Word) => Promise<void> }) {
+function WordRow({ word, index: i, words, onFix, onRevert }: { word: Word; index: number; words: ReadonlyArray<Word>; onFix: (w: Word, text: string) => Promise<void>; onRevert: (w: Word) => Promise<void> }) {
   const [draft, setDraft] = useState(word.text);
   // نص الكلمة قد يتغيّر من خارج الصف (تصحيح أو تراجع): الحقل يتبعه
   useEffect(() => setDraft(word.text), [word.text]);
-  const i = words.indexOf(word);
   const before = words.slice(Math.max(0, i - CONTEXT), i).map((w) => w.text).join(' ');
   const after = words.slice(i + 1, i + 1 + CONTEXT).map((w) => w.text).join(' ');
   const text = draft.trim();

@@ -17,6 +17,11 @@ export const BASELINE_RATIO = 1.0;
 /** أساس fit (بحث B §4): الأدنى 42 بمقياس 1080p، الخطوة 2px */
 export const MIN_FONT_SIZE_1080 = 42;
 export const FONT_STEP_PX = 2;
+/**
+ * سقف حجم الخط بمقياس 1080p: سطر واحد (1.3·الحجم) يجب أن يتسع في ارتفاع 1080. حلقة fit تنزل خطوة 2px من الأساس
+ * إلى الحد الأدنى وتقيس عند كل خطوة؛ بلا سقف قيمةٌ مثل 1e9 في ملف النمط تعلّق الواجهة في كل أمر (مراجعة us2 #1).
+ */
+export const MAX_FONT_SIZE_1080 = Math.floor(1080 / LINE_HEIGHT_RATIO);
 
 export interface CaptionFont {
   family: string;
@@ -54,7 +59,7 @@ export function readCaptionRules(style: StyleVersion): CaptionRules {
   return {
     enabled: rule(style, 'enabled', isBoolean),
     fontFamily: rule(style, 'fontFamily', isString),
-    fontSizePx: rule(style, 'fontSizePx', isNumber),
+    fontSizePx: Math.min(MAX_FONT_SIZE_1080, Math.max(1, rule(style, 'fontSizePx', isNumber))),
     position: rule(style, 'position', isPosition),
     maxLines: rule(style, 'maxLines', isNumber),
     wordsPerChunk: rule(style, 'wordsPerChunk', isMinMax),

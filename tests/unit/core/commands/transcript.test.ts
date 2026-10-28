@@ -104,6 +104,11 @@ describe('transcript.fixWord', () => {
     expect(codeOf(() => execute(project30(), 'transcript.fixWord', { wordId: 'w4', text: '   ' }, makeCtx(), user()))).toBe('invalid_word_text');
     // كلمة واحدة لا كلمتان: مستطيلات الكلمات في الكابشن تُفهرس بالمسافات
     expect(codeOf(() => execute(project30(), 'transcript.fixWord', { wordId: 'w4', text: 'يعني كذا' }, makeCtx(), user()))).toBe('invalid_word_text');
+    // مراجعة us2 #3: أطول من 256 حرفاً يُرفض قبل أي اشتقاق أو قياس (بلا استدعاء measure)
+    let measured = 0;
+    const ctx = { ...makeCtx(), measure: (() => (measured++, { width: 1, height: 1, wordRects: [] })) as NonNullable<ReturnType<typeof makeCtx>['measure']> };
+    expect(codeOf(() => execute(project30(), 'transcript.fixWord', { wordId: 'w4', text: 'ا'.repeat(257) }, ctx, user()))).toBe('schema');
+    expect(measured).toBe(0);
   });
 
   it('المسافات الطرفية تُشذَّب', () => {

@@ -6536,7 +6536,7 @@ return errors === 0;
 validate62.evaluated = {"props":true,"dynamicProps":false,"dynamicItems":false};
 
 export const cmd_transcript_fixWord = validate63;
-const schema58 = {"type":"object","required":["wordId","text"],"additionalProperties":false,"properties":{"wordId":{"type":"string"},"text":{"type":"string","minLength":1}},"$defs":{"styleRef":{"type":"object","required":["styleId","version"],"properties":{"styleId":{"type":"string"},"version":{"type":"integer"}}},"command":{"type":"object","required":["name","undoable","confirm","actors","params"],"additionalProperties":true,"properties":{"name":{"type":"string","pattern":"^[a-z]+(\\.[a-zA-Z]+)+$"},"description":{"type":"string"},"undoable":{"type":"boolean","description":"true = تؤخذ لقطة كاملة من المشروع قبل التنفيذ"},"confirm":{"type":"boolean","description":"true = تأكيد منفصل (الدستور III: تصدير، إرسال خارجي، تطبيق مقترح، تغيير نمط)"},"actors":{"type":"array","items":{"enum":["user","agent"]}},"params":{"type":"object"},"result":{"type":"object"},"errors":{"type":"array","items":{"type":"string"}},"warnings":{"type":"array","items":{"type":"string"}}}}}};
+const schema58 = {"type":"object","required":["wordId","text"],"additionalProperties":false,"properties":{"wordId":{"type":"string"},"text":{"type":"string","minLength":1,"maxLength":256}},"$defs":{"styleRef":{"type":"object","required":["styleId","version"],"properties":{"styleId":{"type":"string"},"version":{"type":"integer"}}},"command":{"type":"object","required":["name","undoable","confirm","actors","params"],"additionalProperties":true,"properties":{"name":{"type":"string","pattern":"^[a-z]+(\\.[a-zA-Z]+)+$"},"description":{"type":"string"},"undoable":{"type":"boolean","description":"true = تؤخذ لقطة كاملة من المشروع قبل التنفيذ"},"confirm":{"type":"boolean","description":"true = تأكيد منفصل (الدستور III: تصدير، إرسال خارجي، تطبيق مقترح، تغيير نمط)"},"actors":{"type":"array","items":{"enum":["user","agent"]}},"params":{"type":"object"},"result":{"type":"object"},"errors":{"type":"array","items":{"type":"string"}},"warnings":{"type":"array","items":{"type":"string"}}}}}};
 
 function validate63(data, {instancePath="", parentData, parentDataProperty, rootData=data, dynamicAnchors={}}={}){
 let vErrors = null;
@@ -6596,8 +6596,8 @@ errors++;
 if(data.text !== undefined){
 let data1 = data.text;
 if(typeof data1 === "string"){
-if(func4(data1) < 1){
-const err4 = {instancePath:instancePath+"/text",schemaPath:"#/properties/text/minLength",keyword:"minLength",params:{limit: 1},message:"must NOT have fewer than 1 characters"};
+if(func4(data1) > 256){
+const err4 = {instancePath:instancePath+"/text",schemaPath:"#/properties/text/maxLength",keyword:"maxLength",params:{limit: 256},message:"must NOT have more than 256 characters"};
 if(vErrors === null){
 vErrors = [err4];
 }
@@ -6606,9 +6606,8 @@ vErrors.push(err4);
 }
 errors++;
 }
-}
-else {
-const err5 = {instancePath:instancePath+"/text",schemaPath:"#/properties/text/type",keyword:"type",params:{type: "string"},message:"must be string"};
+if(func4(data1) < 1){
+const err5 = {instancePath:instancePath+"/text",schemaPath:"#/properties/text/minLength",keyword:"minLength",params:{limit: 1},message:"must NOT have fewer than 1 characters"};
 if(vErrors === null){
 vErrors = [err5];
 }
@@ -6618,14 +6617,25 @@ vErrors.push(err5);
 errors++;
 }
 }
-}
 else {
-const err6 = {instancePath,schemaPath:"#/type",keyword:"type",params:{type: "object"},message:"must be object"};
+const err6 = {instancePath:instancePath+"/text",schemaPath:"#/properties/text/type",keyword:"type",params:{type: "string"},message:"must be string"};
 if(vErrors === null){
 vErrors = [err6];
 }
 else {
 vErrors.push(err6);
+}
+errors++;
+}
+}
+}
+else {
+const err7 = {instancePath,schemaPath:"#/type",keyword:"type",params:{type: "object"},message:"must be object"};
+if(vErrors === null){
+vErrors = [err7];
+}
+else {
+vErrors.push(err7);
 }
 errors++;
 }

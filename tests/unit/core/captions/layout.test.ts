@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { blockLayout, captionFont, captionScale, fallbackMeasure, fontString, layoutChunk, readCaptionRules, resolveFontFamily } from '../../../../src/core/captions/layout';
+import { LINE_HEIGHT_RATIO, MAX_FONT_SIZE_1080, blockLayout, captionFont, captionScale, fallbackMeasure, fontString, layoutChunk, readCaptionRules, resolveFontFamily } from '../../../../src/core/captions/layout';
 import type { MeasureFn } from '../../../../src/core/commands/types';
 import { makeStyle } from '../../../helpers/project';
 
@@ -97,6 +97,28 @@ describe('layoutChunk', () => {
       expect(x + w).toBeLessThanOrEqual(block.left + block.width + 1);
       if (i > 0 && i < firstLineWords) expect(x).toBeLessThan(r.wordRects[i - 1]![0]!); // RTL داخل السطر
     }
+  });
+
+  // مراجعة us2 #1: حلقة fit تنزل 2px في كل خطوة وتقيس في كل خطوة؛ حجم خط عملاق في ملف النمط كان يعلّق الواجهة
+  it('حجم خط عملاق في النمط يُسقَّف عند MAX_FONT_SIZE_1080 فتبقى حلقة fit محدودة', () => {
+    const style = makeStyle();
+    style.captions.fontSizePx = { ...style.captions.fontSizePx, value: 1e9 };
+    const huge = readCaptionRules(style);
+    expect(huge.fontSizePx).toBe(MAX_FONT_SIZE_1080);
+    expect(MAX_FONT_SIZE_1080).toBe(Math.floor(1080 / LINE_HEIGHT_RATIO));
+    let calls = 0;
+    const counting: MeasureFn = (text, font, dir) => {
+      calls++;
+      return fallbackMeasure(text, font, dir);
+    };
+    const r = layoutChunk(['السلام', 'عليكم'], huge, HD, counting);
+    expect(r.fontSizePx).toBeLessThanOrEqual(MAX_FONT_SIZE_1080);
+    expect(r.fontSizePx).toBeGreaterThanOrEqual(42);
+    // كلمتان: ≤ 3 قياسات لكل خطوة × ≤ 395 خطوة (830→42) + مستطيلات السطر الأخير
+    expect(calls).toBeLessThan(1500);
+    // الحد الأدنى يبقى 1 لقيمة سالبة/صفر (لا NaN ولا حلقة سالبة)
+    style.captions.fontSizePx = { ...style.captions.fontSizePx, value: -5 };
+    expect(readCaptionRules(style).fontSizePx).toBe(1);
   });
 
   it('يستعمل دالة القياس المحقونة بالخط الصحيح والاتجاه rtl', () => {

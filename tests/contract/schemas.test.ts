@@ -183,3 +183,11 @@ describe('commands.schema', () => {
     expect(() => getCommandSpec('nope.nope' as never)).toThrow(ContractError);
   });
 });
+
+// مراجعة us2 #3: نص التصحيح بسقف الكلمة نفسه في عقد التفريغ (256) — يُرفض عند معاملات الأمر لا بعد الاشتقاق والقياس
+describe('transcript.fixWord params', () => {
+  it('نص أطول من 256 حرفاً يُرفض (maxLength)، و256 يمرّ', () => {
+    expectContractError(() => validateCommandParams('transcript.fixWord', { wordId: 'w1', text: 'ا'.repeat(257) }), 'schema', 'text');
+    expect(() => validateCommandParams('transcript.fixWord', { wordId: 'w1', text: 'ا'.repeat(256) })).not.toThrow();
+  });
+});
