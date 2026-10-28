@@ -21,8 +21,9 @@ function missing(tried: string[]): Error & { code: 'ffmpeg_missing' } {
 }
 
 // الترتيب: FFMPEG_DIR (قاطع إن ضُبط) → opts.resourcesDir/<platform>-<arch> → <repo>/resources/ffmpeg/<platform>-<arch> (تطوير) → process.resourcesPath/ffmpeg (حزمة)
-export function resolveFfmpeg(opts?: { resourcesDir?: string }): FfmpegBins {
-  const envDir = process.env['FFMPEG_DIR'];
+// allowEnvOverride: main يمرّر !app.isPackaged كي لا يبدّل متغيّر بيئة ثنائيات الحزمة (مراجعة US1 #2)؛ الافتراضي true للاختبار وسكربتات CLI
+export function resolveFfmpeg(opts?: { resourcesDir?: string; allowEnvOverride?: boolean }): FfmpegBins {
+  const envDir = (opts?.allowEnvOverride ?? true) ? process.env['FFMPEG_DIR'] : undefined;
   if (envDir) {
     const bins = binsIn(envDir);
     if (!bins) throw missing([envDir]);

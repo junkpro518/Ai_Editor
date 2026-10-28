@@ -25,6 +25,8 @@ test('الواجهة RTL وشريط التنقل بالعربية', async () => 
   await expect(page.locator('.nav .brand')).toHaveText('محرر المونتاج الذكي');
   await expect(page.locator('.nav button[data-screen="import"]')).toHaveText('استيراد');
   await expect(page.locator('.nav button[data-screen="timeline"]')).toHaveText('التايم لاين');
+  // علم الاختبار يصل preload عبر additionalArguments من main لا عبر البيئة (مراجعة US1 #2)
+  expect(await page.evaluate(() => window.api.app.isTest)).toBe(true);
   expect(await page.evaluate(() => typeof window.__test)).toBe('object');
 });
 

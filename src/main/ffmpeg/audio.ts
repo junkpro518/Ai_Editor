@@ -37,7 +37,7 @@ async function sha256File(path: string): Promise<string> {
 
 /**
  * الصوت للرفع فقط (البحث A §استخراج الصوت، FR-017): أحادي 16 kHz Opus/WebM 32 kbps،
- * بلا فيديو ولا ترجمات ولا بيانات وصفية — لا شيء غير الصوت يغادر الجهاز.
+ * بلا فيديو ولا ترجمات ولا بيانات وصفية ولا فصول — لا شيء غير الصوت يغادر الجهاز.
  */
 export async function extractUploadAudio(
   bins: { ffmpeg: string; ffprobe: string },
@@ -69,6 +69,7 @@ export async function extractUploadAudio(
         '-ac', '1', '-ar', '16000',
         '-c:a', 'libopus', '-b:a', '32k',
         '-map_metadata', '-1',
+        '-map_chapters', '-1',
         '-f', 'webm',
         out,
       ],

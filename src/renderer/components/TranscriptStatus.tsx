@@ -23,6 +23,8 @@ const KNOWN_ERRORS: ReadonlySet<string> = new Set([
   'source_changed',
   'source_mismatch',
   'local_mode_unavailable',
+  'disclosure_required',
+  'transcript_busy',
 ]);
 type ErrorKey = `transcript.error.${'offline' | 'no_api_key'}`;
 /** رسالة عربية مستقرة لكل رمز خطأ في التفريغ؛ الرموز غير المعروفة تظهر برمزها (لا فشل صامت). */

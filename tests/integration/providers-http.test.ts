@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { createServer } from 'node:http';
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
-import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveFfmpeg } from '../../src/main/ffmpeg/paths';
@@ -158,6 +158,43 @@ describe('http.ts: postMultipart / postBody', () => {
     });
   });
 
+  it('content-length أكبر من السقف → provider_error بلا قراءة الجسم (مراجعة US1 #4)', async () => {
+    handler = (_req, res) => {
+      res.writeHead(200, { 'content-type': 'application/json', 'content-length': String(65 * 1024 * 1024) });
+      res.end(); // الرأس يكفي؛ لا نرسل الجسم
+    };
+    await expect(postBody(`${baseUrl}/big`, { headers: {}, body: new Uint8Array(1), contentType: 'audio/webm' }, { retries: 0 })).rejects.toMatchObject({
+      code: 'provider_error',
+      status: 200,
+    });
+  });
+
+  it('جسم مجزّأ (بلا content-length) يتجاوز السقف أثناء التدفق → provider_error', async () => {
+    handler = (_req, res) => {
+      res.writeHead(200, { 'content-type': 'application/json' });
+      const chunk = Buffer.alloc(256 * 1024, 0x20);
+      for (let i = 0; i < 8; i++) res.write(chunk); // 2 MB مجزّأة
+      res.end('{}');
+    };
+    await expect(
+      postBody(`${baseUrl}/stream`, { headers: {}, body: new Uint8Array(1), contentType: 'audio/webm' }, { retries: 0, maxBodyBytes: 1024 * 1024 }),
+    ).rejects.toMatchObject({ code: 'provider_error', status: 200 });
+  });
+
+  it('302 لا يُتبع (الترويسة تحمل المفتاح) → provider_error بحالة 302', async () => {
+    let hits = 0;
+    handler = (_req, res) => {
+      hits++;
+      res.writeHead(302, { location: `${baseUrl}/elsewhere` });
+      res.end();
+    };
+    await expect(postBody(`${baseUrl}/x`, { headers: { authorization: `Token ${DUMMY_KEY}` }, body: new Uint8Array(1), contentType: 'audio/webm' }, { retries: 0 })).rejects.toMatchObject({
+      code: 'provider_error',
+      status: 302,
+    });
+    expect(hits).toBe(1);
+  });
+
   it('منفذ مغلق → offline', async () => {
     const closed = createServer();
     await new Promise<void>((r) => closed.listen(0, '127.0.0.1', r));
@@ -233,7 +270,7 @@ function fakeSecrets(): Secrets & { calls: string[] } {
       calls.push(name);
       return fn(DUMMY_KEY);
     },
-    keyRef: async (name) => `${name} (…cdef)`,
+    keyRef: async (name) => (name === 'deepgram' ? `${name} (…cdef)` : null),
   };
 }
 
@@ -289,6 +326,9 @@ describe('runTranscriptionJob', () => {
     expect(s.transcription.sendLog).toEqual([{ at: '2026-10-28T07:00:00.000Z', provider: 'deepgram', audioDurationUs: t.durationUs }]);
     expect(s.transcription.provider).toBe('deepgram'); // الدمج لا يمسح بقية الإعدادات
 
+    // cache/ للمستخدم وحده (مراجعة US1)
+    if (process.platform !== 'win32') expect(statSync(cacheDir).mode & 0o777).toBe(0o700);
+
     // الجسم المرسَل هو ملف الصوت المستخرج (WebM)، لا الفيديو
     expect(seen[0]!.headers['content-type']).toBe('audio/webm');
     expect(seen[0]!.body.length).toBeLessThan(readFileSync(fx('tiny-5s.mp4')).length);
@@ -318,6 +358,33 @@ describe('runTranscriptionJob', () => {
     expect((await settings.load()).transcription.sendLog).toEqual([]);
   });
 
+  it('استجابة {} → failed/bad_response، وsendLog يسجّل الإرسال رغم الفشل، والخام يُحذف (مراجعة US1 #1)', async () => {
+    handler = (_req, res) => reply(res, 200, {});
+    const root = join(tmp, 'job-badresp');
+    const settings = createSettingsStore(root);
+    const states: JobState[] = [];
+    const p = runTranscriptionJob({
+      bins,
+      secrets: fakeSecrets(),
+      settings,
+      projectCacheDir: join(root, 'cache'),
+      sourcePath: fx('tiny-5s.mp4'),
+      provider: 'deepgram',
+      model: 'nova-3',
+      language: 'ar-SA',
+      baseUrl,
+      onProgress: (s) => states.push(s),
+    });
+    await expect(p).rejects.toMatchObject({ code: 'bad_response' });
+    expect(states[states.length - 1]).toBe('failed');
+    expect(seen).toHaveLength(1); // الصوت غادر الجهاز فعلاً
+    const log = (await settings.load()).transcription.sendLog;
+    expect(log).toHaveLength(1);
+    expect(log[0]).toMatchObject({ provider: 'deepgram' });
+    expect(existsSync(join(root, 'cache/audio.webm'))).toBe(false);
+    expect(existsSync(join(root, 'cache/transcript-raw.json'))).toBe(false);
+  });
+
   it('مصدر بلا صوت → no_audio قبل أي طلب شبكة', async () => {
     const root = join(tmp, 'job-noaudio');
     await expect(
@@ -341,33 +408,41 @@ describe('runTranscriptionJob', () => {
 describe('registerTranscriptionIpc', () => {
   type Listener = (event: IpcEventLike, ...args: unknown[]) => unknown;
 
-  function setup(root: string): {
+  const UI = 'app://ui/index.html';
+  const START = { provider: 'deepgram', model: 'nova-3', language: 'ar-SA' };
+
+  async function setup(
+    root: string,
+    opts: { disclosed?: boolean } = {},
+  ): Promise<{
     invoke: <T>(channel: string, url: string, ...args: unknown[]) => Promise<Envelope<T>>;
     events: TranscriptEvent[];
     projects: ReturnType<typeof createProjectStore>;
-  } {
+    settings: ReturnType<typeof createSettingsStore>;
+    api: ReturnType<typeof registerTranscriptionIpc>;
+  }> {
     const handlers = new Map<string, Listener>();
     const ipc: IpcMainLike = { handle: (channel, listener) => handlers.set(channel, listener) };
     const events: TranscriptEvent[] = [];
     const projects = createProjectStore(root);
-    registerTranscriptionIpc(ipc, {
-      isTrustedSender: (url) => url === 'app://ui/index.html',
+    const settings = createSettingsStore(root);
+    const api = registerTranscriptionIpc(ipc, {
+      isTrustedSender: (url) => url === UI,
       window: () => ({ webContents: { send: (channel: string, payload: unknown) => (channel === 'transcript:event' ? events.push(payload as TranscriptEvent) : 0) } }),
       projects,
-      settings: createSettingsStore(root),
+      settings,
       secrets: fakeSecrets(),
       bins: () => bins,
       baseUrls: { deepgram: baseUrl, elevenlabs: baseUrl },
     });
-    return {
-      events,
-      projects,
-      invoke: async (channel, url, ...args) => {
-        const h = handlers.get(channel);
-        if (!h) throw new Error(`no handler ${channel}`);
-        return (await h({ senderFrame: { url } }, ...args)) as never;
-      },
+    const invoke = async <T,>(channel: string, url: string, ...args: unknown[]): Promise<Envelope<T>> => {
+      const h = handlers.get(channel);
+      if (!h) throw new Error(`no handler ${channel}`);
+      return (await h({ senderFrame: { url } }, ...args)) as never;
     };
+    // الإفصاح (FR-017) يُقبل عبر القناة نفسها التي تستعملها الواجهة
+    if (opts.disclosed ?? true) expect((await invoke('transcript:acceptDisclosure', UI, 'deepgram')).ok).toBe(true);
+    return { events, projects, settings, api, invoke };
   }
 
   const waitFor = async (pred: () => boolean): Promise<void> => {
@@ -381,16 +456,20 @@ describe('registerTranscriptionIpc', () => {
   it('start → { jobId } ثم أحداث transcript:event حتى done مع النص', async () => {
     handler = (_req, res) => reply(res, 200, deepgramArSa);
     const root = join(tmp, 'ipc-ok');
-    const { invoke, events, projects } = setup(root);
+    const { invoke, events, projects, api } = await setup(root);
     const doc = makeProject({ id: 'p1', source: { ...makeProject().source, path: fx('tiny-5s.mp4') } });
     await projects.save(doc);
 
-    const r = await invoke<{ jobId: string }>('transcript:start', 'app://ui/index.html', 'p1', { provider: 'deepgram', model: 'nova-3', language: 'ar-SA' });
+    const r = await invoke<{ jobId: string }>('transcript:start', UI, 'p1', START);
     expect(r.ok).toBe(true);
     const jobId = (r as { ok: true; value: { jobId: string } }).value.jobId;
     expect(typeof jobId).toBe('string');
+    expect(api.isRunning('p1')).toBe(true);
+    // مهمة واحدة لكل مشروع (مراجعة US1 #6)
+    expect(await invoke('transcript:start', UI, 'p1', START)).toMatchObject({ ok: false, error: { code: 'transcript_busy' } });
 
     await waitFor(() => events.some((e) => e.state === 'done' || e.state === 'failed'));
+    expect(api.isRunning('p1')).toBe(false);
     const done = events.find((e) => e.state === 'done')!;
     expect(done).toMatchObject({ projectId: 'p1', jobId, state: 'done', progress: 1 });
     expect(() => validateTranscript(done.transcript)).not.toThrow();
@@ -402,18 +481,47 @@ describe('registerTranscriptionIpc', () => {
 
   it('مرسِل غير موثوق أو وسائط غير صالحة → ok:false بلا تشغيل', async () => {
     const root = join(tmp, 'ipc-bad');
-    const { invoke, projects } = setup(root);
+    const { invoke, projects } = await setup(root);
     await projects.save(makeProject({ id: 'p2', source: { ...makeProject().source, path: fx('tiny-5s.mp4') } }));
 
-    const untrusted = await invoke('transcript:start', 'https://evil.example/', 'p2', { provider: 'deepgram', model: 'nova-3', language: 'ar-SA' });
+    const untrusted = await invoke('transcript:start', 'https://evil.example/', 'p2', START);
     expect(untrusted.ok).toBe(false);
-    const badProvider = await invoke('transcript:start', 'app://ui/index.html', 'p2', { provider: 'openai', model: 'whisper-1', language: 'ar' });
+    const badProvider = await invoke('transcript:start', UI, 'p2', { provider: 'openai', model: 'whisper-1', language: 'ar' });
     expect(badProvider).toMatchObject({ ok: false, error: { code: 'bad_argument' } });
-    const badId = await invoke('transcript:start', 'app://ui/index.html', '../p2', { provider: 'deepgram', model: 'nova-3', language: 'ar-SA' });
+    const badId = await invoke('transcript:start', UI, '../p2', START);
     expect(badId).toMatchObject({ ok: false, error: { code: 'bad_argument' } });
-    const missing = await invoke('transcript:start', 'app://ui/index.html', 'nope', { provider: 'deepgram', model: 'nova-3', language: 'ar-SA' });
+    const missing = await invoke('transcript:start', UI, 'nope', START);
     expect(missing.ok).toBe(false);
     expect(seen).toHaveLength(0);
+  });
+
+  it('بلا إفصاح → disclosure_required ولا طلب شبكة؛ بعد acceptDisclosure يمضي (مراجعة US1 #3)', async () => {
+    handler = (_req, res) => reply(res, 200, deepgramArSa);
+    const root = join(tmp, 'ipc-disclosure');
+    const { invoke, events, projects, settings } = await setup(root, { disclosed: false });
+    await projects.save(makeProject({ id: 'p4', source: { ...makeProject().source, path: fx('tiny-5s.mp4') } }));
+
+    expect(await invoke('transcript:start', UI, 'p4', START)).toMatchObject({ ok: false, error: { code: 'disclosure_required' } });
+    expect(seen).toHaveLength(0);
+    expect((await settings.load()).transcription.disclosures).toEqual([]);
+
+    // مزود بلا مفتاح → secret_not_found لا إفصاح
+    expect(await invoke('transcript:acceptDisclosure', UI, 'elevenlabs')).toMatchObject({ ok: false, error: { code: 'secret_not_found' } });
+    expect(await invoke('transcript:acceptDisclosure', UI, 'openai')).toMatchObject({ ok: false, error: { code: 'bad_argument' } });
+    expect(await invoke('transcript:acceptDisclosure', 'https://evil.example/', 'deepgram')).toMatchObject({ ok: false });
+
+    expect((await invoke('transcript:acceptDisclosure', UI, 'deepgram')).ok).toBe(true);
+    const s = await settings.load();
+    expect(s.transcription.disclosures).toEqual([{ provider: 'deepgram', keyRef: 'deepgram (…cdef)', acceptedAt: expect.any(String) }]);
+    expect(s.transcription.keyRef).toBe('deepgram (…cdef)');
+    // قبول ثانٍ لا يكرّر السجل
+    expect((await invoke('transcript:acceptDisclosure', UI, 'deepgram')).ok).toBe(true);
+    expect((await settings.load()).transcription.disclosures).toHaveLength(1);
+
+    const r = await invoke('transcript:start', UI, 'p4', START);
+    expect(r.ok).toBe(true);
+    await waitFor(() => events.some((e) => e.state === 'done' || e.state === 'failed'));
+    expect(events.at(-1)?.state).toBe('done');
   });
 
   it('cancel → حدث failed برمز aborted', async () => {
@@ -421,18 +529,34 @@ describe('registerTranscriptionIpc', () => {
       /* نعلّق حتى يُلغى */
     };
     const root = join(tmp, 'ipc-cancel');
-    const { invoke, events, projects } = setup(root);
+    const { invoke, events, projects } = await setup(root);
     await projects.save(makeProject({ id: 'p3', source: { ...makeProject().source, path: fx('tiny-5s.mp4') } }));
-    const r = (await invoke<{ jobId: string }>('transcript:start', 'app://ui/index.html', 'p3', { provider: 'deepgram', model: 'nova-3', language: 'ar-SA' })) as {
+    const r = (await invoke<{ jobId: string }>('transcript:start', UI, 'p3', START)) as {
       ok: true;
       value: { jobId: string };
     };
     await waitFor(() => events.some((e) => e.state === 'uploading'));
-    const c = await invoke('transcript:cancel', 'app://ui/index.html', r.value.jobId);
+    const c = await invoke('transcript:cancel', UI, r.value.jobId);
     expect(c.ok).toBe(true);
     await waitFor(() => events.some((e) => e.state === 'failed'));
     expect(events.find((e) => e.state === 'failed')).toMatchObject({ state: 'failed', error: { code: 'aborted' } });
     // إلغاء معرّف غير موجود لا يفشل
-    expect((await invoke('transcript:cancel', 'app://ui/index.html', 'no-such-job')).ok).toBe(true);
+    expect((await invoke('transcript:cancel', UI, 'no-such-job')).ok).toBe(true);
+  });
+
+  it('cancelAll (before-quit) يلغي المهمة الجارية ولا يبقى audio.webm', async () => {
+    handler = () => {
+      /* نعلّق حتى يُلغى */
+    };
+    const root = join(tmp, 'ipc-cancelall');
+    const { invoke, events, projects, api } = await setup(root);
+    await projects.save(makeProject({ id: 'p5', source: { ...makeProject().source, path: fx('tiny-5s.mp4') } }));
+    expect((await invoke('transcript:start', UI, 'p5', START)).ok).toBe(true);
+    await waitFor(() => events.some((e) => e.state === 'uploading'));
+    api.cancelAll();
+    await waitFor(() => events.some((e) => e.state === 'failed'));
+    expect(events.find((e) => e.state === 'failed')).toMatchObject({ error: { code: 'aborted' } });
+    expect(api.isRunning('p5')).toBe(false);
+    expect(existsSync(join(projects.cacheDir('p5'), 'audio.webm'))).toBe(false);
   });
 });

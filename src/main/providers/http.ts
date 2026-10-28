@@ -29,7 +29,11 @@ export interface SendOptions {
   timeoutMs?: number;
   retries?: number;
   signal?: AbortSignal;
+  /** سقف جسم الاستجابة بالبايت (الافتراضي 64 MB) */
+  maxBodyBytes?: number;
 }
+
+const MAX_BODY_BYTES = 64 * 1024 * 1024;
 
 export interface HttpResult {
   status: number;
@@ -65,7 +69,28 @@ function sleep(ms: number, signal?: AbortSignal): Promise<void> {
   });
 }
 
-async function once(url: string, headers: Record<string, string>, body: BodyInit, timeoutMs: number, userSignal?: AbortSignal): Promise<HttpResult> {
+/** يقرأ الجسم تدفقياً بسقف: content-length أولاً ثم العدّ أثناء القراءة (مراجعة US1 #4) — استجابة ضخمة لا تبتلع الذاكرة */
+async function readCapped(res: Response, maxBytes: number): Promise<string> {
+  const declared = Number(res.headers.get('content-length'));
+  if (declared > maxBytes) throw new ProviderError('provider_error', res.status);
+  if (!res.body) return '';
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel();
+      throw new ProviderError('provider_error', res.status);
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString('utf8');
+}
+
+async function once(url: string, headers: Record<string, string>, body: BodyInit, timeoutMs: number, maxBodyBytes: number, userSignal?: AbortSignal): Promise<HttpResult> {
   const timeoutSignal = AbortSignal.timeout(timeoutMs);
   const signal = userSignal ? AbortSignal.any([timeoutSignal, userSignal]) : timeoutSignal;
   // لا نصنّف حسب اسم الخطأ (يتغير بين إصدارات undici) بل حسب أيّ إشارة أُلغيت
@@ -78,9 +103,12 @@ async function once(url: string, headers: Record<string, string>, body: BodyInit
   let res: Response;
   let text: string;
   try {
-    res = await fetch(url, { method: 'POST', headers, body, signal });
-    text = await res.text();
-  } catch {
+    // لا تتبّع لإعادة التوجيه: الترويسة تحمل المفتاح ولا تغادر مضيف المزود. 'manual' لا 'error' لأن undici يرمي
+    // عند 'error' نفس TypeError التي يرميها انقطاع الشبكة فتُصنَّف offline؛ مع 'manual' تصل 3xx كحالة → provider_error
+    res = await fetch(url, { method: 'POST', headers, body, signal, redirect: 'manual' });
+    text = await readCapped(res, maxBodyBytes);
+  } catch (e) {
+    if (e instanceof ProviderError) throw e;
     throw classifyNetwork();
   }
 
@@ -102,9 +130,10 @@ function retryable(e: ProviderError): boolean {
 async function send(url: string, headers: Record<string, string>, body: BodyInit, opts: SendOptions): Promise<HttpResult> {
   const retries = opts.retries ?? 3;
   const timeoutMs = opts.timeoutMs ?? 300_000;
+  const maxBodyBytes = opts.maxBodyBytes ?? MAX_BODY_BYTES;
   for (let attempt = 0; ; attempt++) {
     try {
-      return await once(url, headers, body, timeoutMs, opts.signal);
+      return await once(url, headers, body, timeoutMs, maxBodyBytes, opts.signal);
     } catch (e) {
       if (!(e instanceof ProviderError) || !retryable(e) || attempt >= retries) throw e;
       await sleep(BACKOFF_MS[Math.min(attempt, BACKOFF_MS.length - 1)] as number, opts.signal);

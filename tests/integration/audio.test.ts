@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveFfmpeg } from '../../src/main/ffmpeg/paths';
-import { runFfprobe } from '../../src/main/ffmpeg/process';
+import { runFfmpeg, runFfprobe } from '../../src/main/ffmpeg/process';
 import { AudioError, extractUploadAudio } from '../../src/main/ffmpeg/audio';
 
 const repo = fileURLToPath(new URL('../..', import.meta.url));
@@ -35,6 +35,21 @@ describe('extractUploadAudio (T043، البحث A §استخراج الصوت)',
     // -map_metadata -1: لا يبقى إلا وسم ENCODER الذي يكتبه libwebm نفسه
     const tags = Object.keys(info.format.tags ?? {}).map((k) => k.toLowerCase());
     expect(tags.filter((k) => k !== 'encoder')).toEqual([]);
+  });
+
+  it('مصدر بفصول (chapters) → الناتج بلا فصول (-map_chapters -1، مراجعة US1)', async () => {
+    // نبني نسخة من tiny-5s تحمل فصلين عبر ملف ffmetadata
+    const meta = join(tmp, 'chapters.ffmeta');
+    writeFileSync(meta, ';FFMETADATA1\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=0\nEND=2000\ntitle=الأول\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=2000\nEND=5000\ntitle=الثاني\n');
+    const src = join(tmp, 'with-chapters.mp4');
+    await runFfmpeg(bins.ffmpeg, ['-protocol_whitelist', 'file,pipe', '-i', `file:${fx('tiny-5s.mp4')}`, '-i', `file:${meta}`, '-map_chapters', '1', '-map', '0', '-c', 'copy', src]);
+    const chaptersOf = async (p: string): Promise<unknown[]> =>
+      (JSON.parse(await runFfprobe(bins.ffprobe, ['-print_format', 'json', '-show_chapters', `file:${p}`])) as { chapters: unknown[] }).chapters;
+    expect((await chaptersOf(src)).length).toBe(2); // الفحص ذو معنى: المصدر يحمل فصولاً فعلاً
+
+    const out = join(tmp, 'no-chapters.webm');
+    await extractUploadAudio(bins, src, out);
+    expect(await chaptersOf(out)).toEqual([]);
   });
 
   it('tiny-noaudio-5s → no_audio بلا ملف ناتج', async () => {

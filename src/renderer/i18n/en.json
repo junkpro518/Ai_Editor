@@ -137,6 +137,8 @@
   "transcript.error.source_changed": "The source file changed since import; pick the right file.",
   "transcript.error.source_mismatch": "The chosen file is not the same clip.",
   "transcript.error.local_mode_unavailable": "Local transcription is not available in this version.",
+  "transcript.error.disclosure_required": "Accept the disclosure before the first transcription with this key.",
+  "transcript.error.transcript_busy": "A transcription is already running for this project.",
   "disclosure.title": "Before the first transcription: what is sent?",
   "disclosure.what": "What is sent",
   "disclosure.whatValue": "Audio only (not video), Opus mono 16 kHz, ≈ {size} MB, duration {duration}. Deleted from your device after success.",

@@ -121,6 +121,9 @@ export interface Transcript {
   language: string;
   durationUs: number;
   createdAt: string;
+  /**
+   * @maxItems 100000
+   */
   words: {
     id: string;
     text: string;

@@ -60,6 +60,8 @@ declare global {
     transcript: {
       start(projectId: string, options: { provider: string; model: string; language: string }): Promise<{ jobId: string }>;
       cancel(jobId: string): Promise<void>;
+      /** FR-017: يسجّل main الإفصاح لـ{المزود، المفتاح المحفوظ}؛ transcript.start يرفض قبله بـdisclosure_required */
+      acceptDisclosure(provider: string): Promise<void>;
       /** يعيد دالة إلغاء الاشتراك */
       onEvent(cb: (event: TranscriptEvent) => void): () => void;
     };

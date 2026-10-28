@@ -4,7 +4,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { createProjectStore } from '../../src/main/storage/projects';
 import { createStyleStore } from '../../src/main/storage/styles';
-import { createSettingsStore } from '../../src/main/storage/settings';
+import { assertRendererSettingsPatch, createSettingsStore } from '../../src/main/storage/settings';
 import type { ProjectDocument, StyleVersion } from '../../src/core/contracts/types';
 import type { HistoryEntry } from '../../src/core/history/snapshots';
 
@@ -258,5 +258,19 @@ describe('SettingsStore', () => {
     const reloaded = await createSettingsStore(root).load();
     expect(reloaded).toEqual(patched);
     expect(JSON.parse(await fs.readFile(path.join(root, 'settings.json'), 'utf8'))).toEqual(patched);
+  });
+});
+
+describe('assertRendererSettingsPatch (مراجعة US1 #3: settings:save من الواجهة)', () => {
+  it('sendLog أو disclosures في الرقعة → bad_argument', () => {
+    expect(() => assertRendererSettingsPatch({ transcription: { sendLog: [] } })).toThrow(expect.objectContaining({ code: 'bad_argument' }));
+    expect(() => assertRendererSettingsPatch({ transcription: { disclosures: [{ provider: 'deepgram', keyRef: 'x', acceptedAt: 'y' }] } })).toThrow(
+      expect.objectContaining({ code: 'bad_argument' }),
+    );
+  });
+  it('رقع الواجهة العادية تمر', () => {
+    expect(() => assertRendererSettingsPatch({ ui: { lang: 'en' } })).not.toThrow();
+    expect(() => assertRendererSettingsPatch({ transcription: { provider: 'elevenlabs', model: 'scribe_v2' } })).not.toThrow();
+    expect(() => assertRendererSettingsPatch({})).not.toThrow();
   });
 });

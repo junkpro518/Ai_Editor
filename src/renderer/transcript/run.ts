@@ -171,13 +171,13 @@ export async function acceptDisclosure(): Promise<FlowResult> {
   const info = ui.pendingDisclosure;
   if (!info) return err('no_disclosure');
   set({ pendingDisclosure: null });
-  const settings = await window.api.settings.load();
-  await window.api.settings.save({
-    transcription: {
-      keyRef: info.keyRef,
-      disclosures: [...settings.transcription.disclosures, { provider: info.provider, keyRef: info.keyRef, acceptedAt: now() }],
-    },
-  });
+  // main يسجّل الإفصاح بـkeyRef المفتاح المحفوظ فعلاً ويرفض أي تفريغ قبله (FR-017)؛ الواجهة لا تكتب disclosures
+  try {
+    await window.api.transcript.acceptDisclosure(info.provider);
+  } catch (e) {
+    const ie = toIpcError(e);
+    return err(ie.code, ie.message);
+  }
   // الموافقة على الإفصاح هي تأكيد الأمر نفسه (العقد: «التأكيد الأول يعرض الإفصاح»)
   return runRequest(true);
 }

@@ -7,12 +7,16 @@ import { validateProject } from '../core/contracts/validate';
 import type { HistoryEntry } from '../core/history/snapshots';
 import type { ProjectStore } from './storage/projects';
 import type { StyleStore } from './storage/styles';
+import { assertRendererSettingsPatch } from './storage/settings';
 import type { SettingsPatch, SettingsStore } from './storage/settings';
 import type { Secrets } from './secrets';
 import type { FfmpegBins } from './ffmpeg/paths';
 import { probe } from './ffmpeg/probe';
 import { detectEncoders } from './ffmpeg/encoders';
 import { registerMediaSource } from './protocol';
+import { removeStaleAudio } from './transcription/ipc';
+
+const RUNNING_JOB_STATES = new Set<ProjectDocument['transcriptJob']['state']>(['extracting_audio', 'uploading', 'transcribing']);
 
 export interface IpcDeps {
   /** هل عنوان الإطار المرسِل هو صفحة الواجهة المحمَّلة (index.html أو خادم التطوير)؟ */
@@ -25,6 +29,8 @@ export interface IpcDeps {
   bins: () => FfmpegBins; // كسول: غياب ffmpeg يصل الواجهة كخطأ ffmpeg_missing لا كتعطّل للإقلاع
   defaultStylePath: string;
   isTest: boolean;
+  /** مهمة تفريغ حيّة لهذا المشروع؟ (src/main/transcription/ipc.ts) */
+  isTranscriptionRunning: (projectId: string) => boolean;
 }
 
 export interface IpcError {
@@ -148,6 +154,8 @@ export function registerIpc(deps: IpcDeps): void {
     const doc = await deps.projects.load(id(i, 'id'));
     probedPaths.add(doc.source.path);
     registerMediaSource(doc.id, doc.source.path);
+    // حالة «جارية» محفوظة بلا مهمة حيّة = إغلاق أثناء التفريغ؛ لا يبقى صوت مستخرج قديم (FR-017)
+    if (RUNNING_JOB_STATES.has(doc.transcriptJob.state) && !deps.isTranscriptionRunning(doc.id)) await removeStaleAudio(deps.projects.cacheDir(doc.id));
     return doc;
   });
 
@@ -182,7 +190,11 @@ export function registerIpc(deps: IpcDeps): void {
   });
 
   handle('settings:load', () => deps.settings.load());
-  handle('settings:save', (p) => deps.settings.save(obj(p, 'patch') as SettingsPatch));
+  handle('settings:save', (p) => {
+    const patch = obj(p, 'patch') as SettingsPatch;
+    assertRendererSettingsPatch(patch); // sendLog/disclosures يكتبهما main فقط (مراجعة US1 #3)
+    return deps.settings.save(patch);
+  });
 
   // الأسرار: لا قناة قراءة أبداً (القرار 18)
   handle('secrets:available', () => deps.secrets.available());

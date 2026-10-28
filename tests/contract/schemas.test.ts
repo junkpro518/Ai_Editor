@@ -136,6 +136,19 @@ describe('transcript.schema', () => {
     t.words[1]!.confidence = 1.5;
     expectContractError(() => validateTranscript(t), 'schema');
   });
+  it('أكثر من 100000 كلمة يُرفض (maxItems، مراجعة US1 #4)', () => {
+    const t = transcript();
+    const w = t.words[0]!;
+    t.words = Array.from({ length: 100_001 }, (_, i) => ({ ...w, id: `w${i}` }));
+    expectContractError(() => validateTranscript(t), 'schema', 'words');
+    t.words.length = 100_000;
+    expect(() => validateTranscript(t)).not.toThrow();
+  });
+  it('نص كلمة أطول من 256 حرفاً يُرفض (maxLength)', () => {
+    const t = transcript();
+    t.words[0]!.text = 'ا'.repeat(257);
+    expectContractError(() => validateTranscript(t), 'schema', 'text');
+  });
 });
 
 describe('commands.schema', () => {

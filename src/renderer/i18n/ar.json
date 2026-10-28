@@ -137,6 +137,8 @@
   "transcript.error.source_changed": "ملف المصدر تغيّر منذ الاستيراد؛ حدّد الملف الصحيح.",
   "transcript.error.source_mismatch": "الملف المختار ليس نفس المقطع.",
   "transcript.error.local_mode_unavailable": "التفريغ المحلي غير متاح في هذه النسخة.",
+  "transcript.error.disclosure_required": "يلزم قبول الإفصاح قبل أول تفريغ بهذا المفتاح.",
+  "transcript.error.transcript_busy": "يوجد تفريغ جارٍ لهذا المشروع بالفعل.",
   "disclosure.title": "قبل أول تفريغ: ما الذي يُرسَل؟",
   "disclosure.what": "ما يُرسَل",
   "disclosure.whatValue": "الصوت فقط (لا الفيديو)، مضغوط Opus أحادي 16 kHz، ≈ {size} MB، المدة {duration}. يُحذف من جهازك بعد نجاح التفريغ.",

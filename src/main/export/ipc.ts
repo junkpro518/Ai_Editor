@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import { once } from 'node:events';
-import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { access, mkdir, rm, stat, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { PassThrough } from 'node:stream';
 import type { BrowserWindow } from 'electron';
 import { dialog } from 'electron';
+import { outputSize } from '../../core/captions/compose';
 import type { Rational } from '../../core/time';
 import type { FfmpegBins } from '../ffmpeg/paths';
 import { mux } from '../ffmpeg/mux';
@@ -15,6 +16,7 @@ import type { IpcDeps } from '../ipc';
 import { checkParity, listReferencePngs, referenceDir, referencePngName } from '../parity';
 import type { ParityInput } from '../parity';
 import type { ProjectStore } from '../storage/projects';
+import { finalizeOutputPath, isSameFile } from './outputPath';
 
 // قنوات التصدير (T050/T051): الواجهة ترمّز (WebCodecs) وترسل كتل Annex-B بالترتيب؛ main يدمجها بـFFmpeg.
 // نفس نموذج الأمان في ipc.ts: مسار الإخراج يجب أن يكون قد اختير عبر حوار الحفظ في هذه الجلسة (إلا في الاختبار)،
@@ -120,7 +122,14 @@ const edlOf = (v: unknown): EdlRange[] => {
 
 const isMp4 = (p: string): boolean => /\.mp4$/i.test(p);
 
-export function registerExportIpc(deps: ExportIpcDeps): void {
+export interface ExportIpc {
+  /** عند الخروج: إيقاف ffmpeg وحذف الملف الناقص والصور المرجعية */
+  cancelAll(): void;
+}
+
+const exists = (p: string): Promise<boolean> => access(p).then(() => true, () => false);
+
+export function registerExportIpc(deps: ExportIpcDeps): ExportIpc {
   const handle = makeHandle(deps.isTrustedSender);
   const pickedOutputs = new Set<string>();
   const sessions = new Map<string, Session>();
@@ -149,7 +158,13 @@ export function registerExportIpc(deps: ExportIpcDeps): void {
     };
     const r = win ? await dialog.showSaveDialog(win, opts) : await dialog.showSaveDialog(opts);
     if (r.canceled || !r.filePath) return null;
-    const path = isMp4(r.filePath) ? r.filePath : `${r.filePath}.mp4`;
+    const { path, needsConfirm } = await finalizeOutputPath(r.filePath, exists);
+    if (needsConfirm) {
+      // الحوار أكّد اسماً بلا .mp4؛ الملف الفعلي موجود → تأكيد ثانٍ (مراجعة US1 #5)
+      const msg = { type: 'question' as const, message: `الملف ${path} موجود. استبداله؟`, buttons: ['استبدال', 'إلغاء'], defaultId: 1, cancelId: 1 };
+      const a = win ? await dialog.showMessageBox(win, msg) : await dialog.showMessageBox(msg);
+      if (a.response !== 0) return null;
+    }
     pickedOutputs.add(path);
     return path;
   });
@@ -165,23 +180,26 @@ export function registerExportIpc(deps: ExportIpcDeps): void {
     if (expectedFrames === 0) throw new ArgError('وسيط غير صالح: expectedFrames');
     const fps = rational(opts['fps'], 'fps');
     const edl = edlOf(opts['edl']);
+    if ([...sessions.values()].some((s) => !s.finished)) throw fail('export_busy', 'يوجد تصدير جارٍ بالفعل');
+
+    const project = await deps.projects.load(projectId);
+    if (await isSameFile(outputPath, project.source.path)) throw fail('output_is_source', 'لا يمكن الكتابة فوق ملف المصدر');
     let raw: ExportStartOptions['raw'];
     if (opts['raw'] !== undefined) {
       const r = obj(opts['raw'], 'raw');
       const encoder = str(r['encoder'], 'raw.encoder');
       if (!/^h264_[a-z0-9]+$/.test(encoder)) throw new ArgError('مشفّر غير صالح');
       raw = { width: int(r['width'], 'raw.width'), height: int(r['height'], 'raw.height'), encoder };
+      // أبعاد الإطارات الخام = حجم إخراج المصدر (بعد الدوران) لا ما تقرره الواجهة
+      const size = outputSize({ width: project.source.width, height: project.source.height, rotation: project.source.rotation ?? 0 });
+      if (raw.width !== size.width || raw.height !== size.height) throw new ArgError('أبعاد raw لا تطابق المصدر');
     }
-    if ([...sessions.values()].some((s) => !s.finished)) throw fail('export_busy', 'يوجد تصدير جارٍ بالفعل');
-
-    const project = await deps.projects.load(projectId);
-    if (resolve(outputPath) === resolve(project.source.path)) throw fail('output_is_source', 'لا يمكن الكتابة فوق ملف المصدر');
 
     const sessionId = randomUUID();
     // الصور المرجعية في مكان parity.ts المتفق عليه (يقرأه pnpm acceptance:parity أيضاً)؛ تصدير جديد يمسح السابقة
     const refDir = referenceDir(deps.projects.cacheDir(projectId));
     await rm(refDir, { recursive: true, force: true });
-    await mkdir(refDir, { recursive: true });
+    await mkdir(refDir, { recursive: true, mode: 0o700 }); // cache/ للمستخدم وحده إن أُنشئ هنا أولاً
     const stdin = new PassThrough({ highWaterMark: 8 * 1024 * 1024 });
     const abort = new AbortController();
     const spec = { outputPath, fps, hasAudio: project.source.hasAudio, sourcePath: project.source.path, edl, stdin, signal: abort.signal };
@@ -283,4 +301,14 @@ export function registerExportIpc(deps: ExportIpcDeps): void {
     s.abort.abort(); // runFfmpeg يقتل ffmpeg ويحذف الملف الناقص (FR-014)
     await discard(sessionId, s);
   });
+
+  return {
+    cancelAll: () => {
+      for (const [sessionId, s] of sessions) {
+        s.finished = true;
+        s.abort.abort();
+        void discard(sessionId, s).catch(() => undefined);
+      }
+    },
+  };
 }

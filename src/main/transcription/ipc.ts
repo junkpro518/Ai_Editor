@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto';
+import { rm } from 'node:fs/promises';
+import { join } from 'node:path';
 import type { Transcript } from '../../core/contracts/types';
 import type { FfmpegBins } from '../ffmpeg/paths';
 import type { Envelope, IpcError } from '../ipc';
@@ -61,8 +63,17 @@ function toIpcError(e: unknown): IpcError {
   return { code, message: e instanceof Error ? e.message : String(e) };
 }
 
-export function registerTranscriptionIpc(ipc: IpcMainLike, deps: TranscriptionIpcDeps): void {
+export interface TranscriptionIpc {
+  /** هل لهذا المشروع مهمة جارية؟ (project:load لا يمسح audio.webm لمهمة حيّة) */
+  isRunning(projectId: string): boolean;
+  /** عند الخروج: إلغاء كل المهام كي لا يبقى صوت مستخرج على القرص */
+  cancelAll(): void;
+}
+
+export function registerTranscriptionIpc(ipc: IpcMainLike, deps: TranscriptionIpcDeps): TranscriptionIpc {
   const jobs = new Map<string, AbortController>();
+  // مهمة واحدة لكل مشروع (مراجعة US1 #6): مشروع → jobId
+  const running = new Map<string, string>();
 
   function handle<T>(channel: string, fn: (...args: unknown[]) => Promise<T> | T): void {
     ipc.handle(channel, async (event, ...args): Promise<Envelope<T>> => {
@@ -82,13 +93,23 @@ export function registerTranscriptionIpc(ipc: IpcMainLike, deps: TranscriptionIp
     if (!isProviderName(provider)) throw new ArgError('مزود غير معروف');
     const model = str(opts['model'], 'model');
     const language = str(opts['language'], 'language');
+    // FR-017 يُنفَّذ في main (مراجعة US1 #3): لا رفع قبل إفصاح مقبول لنفس {المزود، المفتاح المحفوظ الآن}
+    const keyRef = await deps.secrets.keyRef(provider);
+    if (!keyRef) throw Object.assign(new Error('لا يوجد مفتاح محفوظ لهذا المزود'), { code: 'secret_not_found' });
+    const settings = await deps.settings.load();
+    if (!settings.transcription.disclosures.some((d) => d.provider === provider && d.keyRef === keyRef)) {
+      throw Object.assign(new Error('يلزم قبول الإفصاح قبل أول تفريغ بهذا المفتاح'), { code: 'disclosure_required' });
+    }
     // مسار المصدر من المشروع المحفوظ فقط، لا من الواجهة
     const doc = await deps.projects.load(projectId);
     const bins = deps.bins();
 
+    // الفحص والتسجيل في كتلة متزامنة واحدة بعد كل await، كي لا يمرّ طلبان متداخلان معاً
+    if (running.has(projectId)) throw Object.assign(new Error('يوجد تفريغ جارٍ لهذا المشروع'), { code: 'transcript_busy' });
     const jobId = randomUUID();
     const ac = new AbortController();
     jobs.set(jobId, ac);
+    running.set(projectId, jobId);
     const emit = (e: Omit<TranscriptEvent, 'projectId' | 'jobId'>): void => {
       deps.window()?.webContents.send('transcript:event', { projectId, jobId, ...e } satisfies TranscriptEvent);
     };
@@ -115,7 +136,10 @@ export function registerTranscriptionIpc(ipc: IpcMainLike, deps: TranscriptionIp
         (transcript) => emit({ state: 'done', progress: 1, transcript }),
         (e: unknown) => emit({ state: 'failed', error: toIpcError(e) }),
       )
-      .finally(() => jobs.delete(jobId));
+      .finally(() => {
+        jobs.delete(jobId);
+        running.delete(projectId);
+      });
 
     return { jobId };
   });
@@ -123,4 +147,29 @@ export function registerTranscriptionIpc(ipc: IpcMainLike, deps: TranscriptionIp
   handle('transcript:cancel', (j) => {
     jobs.get(str(j, 'jobId'))?.abort();
   });
+
+  // الإفصاح يُسجَّل هنا بـkeyRef المفتاح المحفوظ فعلاً، لا بما ترسله الواجهة (FR-017)
+  handle('transcript:acceptDisclosure', async (p) => {
+    const provider = p;
+    if (!isProviderName(provider)) throw new ArgError('مزود غير معروف');
+    const keyRef = await deps.secrets.keyRef(provider);
+    if (!keyRef) throw Object.assign(new Error('لا يوجد مفتاح محفوظ لهذا المزود'), { code: 'secret_not_found' });
+    const settings = await deps.settings.load();
+    const disclosures = settings.transcription.disclosures.filter((d) => !(d.provider === provider && d.keyRef === keyRef));
+    await deps.settings.save({
+      transcription: { keyRef, disclosures: [...disclosures, { provider, keyRef, acceptedAt: new Date().toISOString() }] },
+    });
+  });
+
+  return {
+    isRunning: (projectId) => running.has(projectId),
+    cancelAll: () => {
+      for (const ac of jobs.values()) ac.abort();
+    },
+  };
+}
+
+/** مشروع محفوظ بحالة «جارية» بلا مهمة حيّة (إغلاق أثناء التفريغ): الصوت المستخرج القديم يُحذف (FR-017) */
+export function removeStaleAudio(cacheDir: string): Promise<void> {
+  return rm(join(cacheDir, 'audio.webm'), { force: true });
 }

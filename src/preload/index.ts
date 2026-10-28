@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron';
+import { isTestFromArgv } from './testFlag';
 
 // الجسر الوحيد بين الواجهة وmain (T024). كل قناة ترجع غلافاً {ok,value}|{ok,error}؛ نفكّه هنا ونرفض بكائن عادي {code,message}.
 type Envelope<T> = { ok: true; value: T } | { ok: false; error: { code: string; message: string } };
@@ -58,6 +59,8 @@ const api = {
   transcript: {
     start: (projectId: string, options: unknown) => call<{ jobId: string }>('transcript:start', projectId, options),
     cancel: (jobId: string) => call<void>('transcript:cancel', jobId),
+    // الإفصاح (FR-017) يُسجَّل في main وحده مع keyRef المفتاح المحفوظ؛ الواجهة لا تكتب disclosures/sendLog
+    acceptDisclosure: (provider: string) => call<void>('transcript:acceptDisclosure', provider),
     onEvent: (cb: (event: unknown) => void) => {
       const listener = (_e: unknown, raw: unknown): void => {
         if (typeof raw !== 'object' || raw === null) return;
@@ -73,7 +76,7 @@ const api = {
   app: {
     version: () => call<string>('app:version'),
     platform: process.platform,
-    isTest: process.env['AI_EDITOR_TEST'] === '1',
+    isTest: isTestFromArgv(process.argv),
   },
 };
 

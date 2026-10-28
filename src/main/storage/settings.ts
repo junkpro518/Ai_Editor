@@ -20,6 +20,17 @@ export interface Settings {
 // الرقعة تُدمج سطحياً داخل كل مفتاح علوي: save({ transcription: { keyRef } }) لا يمسح provider/model
 export type SettingsPatch = { [K in keyof Settings]?: Partial<Settings[K]> };
 
+/**
+ * حقول يكتبها main وحده (مراجعة US1 #3): سجل الإرسال والإفصاحات دليل FR-017 ولا يجوز أن تعدّلهما الواجهة عبر settings:save.
+ * ترمي { code: 'bad_argument' }. الدالة منفصلة عن save() لأن main نفسه يكتب هذين الحقلين عبر المخزن.
+ */
+export function assertRendererSettingsPatch(patch: SettingsPatch): void {
+  const t = patch.transcription;
+  if (t && ('sendLog' in t || 'disclosures' in t)) {
+    throw Object.assign(new Error('الواجهة لا تكتب sendLog/disclosures'), { code: 'bad_argument' });
+  }
+}
+
 export interface SettingsStore {
   load(): Promise<Settings>;
   save(patch: SettingsPatch): Promise<Settings>;

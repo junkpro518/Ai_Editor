@@ -49,6 +49,8 @@ describe('resolveFfmpeg', () => {
 
       process.env['FFMPEG_DIR'] = join(tmp, 'no-such-dir');
       expect(() => resolveFfmpeg()).toThrow(expect.objectContaining({ code: 'ffmpeg_missing' }));
+      // الحزمة (allowEnvOverride=false) تتجاهل المتغيّر وتجد ثنائياتها (مراجعة US1 #2)
+      expect(resolveFfmpeg({ allowEnvOverride: false }).ffmpeg).toBe(bins.ffmpeg);
     } finally {
       if (prev === undefined) delete process.env['FFMPEG_DIR'];
       else process.env['FFMPEG_DIR'] = prev;

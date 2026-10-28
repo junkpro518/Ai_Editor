@@ -14,7 +14,8 @@ import { registerTranscriptionIpc } from './transcription/ipc';
 import { plaintextTestSafeStorage } from './testSafeStorage';
 import { handleMediaProtocol, registerMediaScheme } from './protocol';
 
-const isTest = process.env['AI_EDITOR_TEST'] === '1';
+// خطافات الاختبار مستحيلة في الحزمة: العلم يحتاج بناءً غير محزوم والمتغيّر معاً (مراجعة US1 #2)
+const isTest = !app.isPackaged && process.env['AI_EDITOR_TEST'] === '1';
 // خطاف الاختبار فقط: خادم محلي بدل المزوّدين (tests/e2e) — يُقرأ حصراً عندما isTest
 const testProviderBaseUrl = isTest ? process.env['AI_EDITOR_PROVIDER_BASE_URL'] : undefined;
 
@@ -45,7 +46,14 @@ function createWindow(): void {
     height: 800,
     title: 'محرر المونتاج الذكي',
     show: false,
-    webPreferences: { preload: preloadPath, contextIsolation: true, nodeIntegration: false, sandbox: true },
+    webPreferences: {
+      preload: preloadPath,
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      // preload يقرأ علم الاختبار من argv لا من البيئة (src/preload/testFlag.ts)
+      ...(isTest ? { additionalArguments: ['--ai-editor-test'] } : {}),
+    },
   });
   // لا نوافذ جديدة ولا تنقّل خارج صفحة الواجهة (إسقاط ملف HTML على النافذة = تنقّل في Chromium)
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
@@ -74,7 +82,17 @@ app.whenReady().then(async () => {
   const settings = createSettingsStore(root);
   // في الاختبار فقط: مخزن نصي في مجلد بيانات مؤقت (testSafeStorage.ts)؛ الإنتاج دائماً safeStorage (القرار 18)
   const secrets = createSecrets({ safeStorage: isTest ? plaintextTestSafeStorage() : safeStorage, filePath: join(root, 'secrets.enc'), platform: process.platform });
-  const getBins = (): FfmpegBins => (bins ??= resolveFfmpeg({ resourcesDir: join(resourcesDir, 'ffmpeg') }));
+  // FFMPEG_DIR يُحترم في التطوير فقط؛ الحزمة تستعمل ثنائياتها حصراً
+  const getBins = (): FfmpegBins => (bins ??= resolveFfmpeg({ resourcesDir: join(resourcesDir, 'ffmpeg'), allowEnvOverride: !app.isPackaged }));
+  const transcription = registerTranscriptionIpc(ipcMain, {
+    window: () => win,
+    isTrustedSender: isTrustedUrl,
+    projects,
+    settings,
+    secrets,
+    bins: getBins,
+    baseUrls: testProviderBaseUrl ? { deepgram: testProviderBaseUrl, elevenlabs: testProviderBaseUrl } : undefined,
+  });
   registerIpc({
     window: () => win,
     isTrustedSender: isTrustedUrl,
@@ -85,17 +103,18 @@ app.whenReady().then(async () => {
     bins: getBins,
     defaultStylePath,
     isTest,
+    isTranscriptionRunning: transcription.isRunning,
   });
-  registerTranscriptionIpc(ipcMain, {
-    window: () => win,
-    isTrustedSender: isTrustedUrl,
-    projects,
-    settings,
-    secrets,
-    bins: getBins,
-    baseUrls: testProviderBaseUrl ? { deepgram: testProviderBaseUrl, elevenlabs: testProviderBaseUrl } : undefined,
+  const exporter = registerExportIpc({ window: () => win, isTrustedSender: isTrustedUrl, projects, bins: getBins, isTest });
+  // الخروج أثناء مهمة: نلغي فلا يبقى صوت مستخرج ولا MP4 ناقص (FR-017/FR-014)؛ أي خطأ هنا لا يعلّق الإغلاق
+  app.on('before-quit', () => {
+    try {
+      transcription.cancelAll();
+      exporter.cancelAll();
+    } catch {
+      // لا شيء
+    }
   });
-  registerExportIpc({ window: () => win, isTrustedSender: isTrustedUrl, projects, bins: () => (bins ??= resolveFfmpeg({ resourcesDir: join(resourcesDir, 'ffmpeg') })), isTest });
   await styles.ensureDefault(defaultStylePath);
   createWindow();
   app.on('activate', () => {
