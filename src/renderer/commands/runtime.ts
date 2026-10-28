@@ -19,7 +19,7 @@ import type { Lang } from '../i18n';
 // الأوامر تُنفَّذ هنا في الـrenderer (plan.md §Structure Decision)؛ main يحفظ فقط عبر IPC.
 
 export type Screen =
-  'import' | 'timeline' | 'proposal' | 'words' | 'style' | 'history' | 'settings' | 'export';
+  'import' | 'timeline' | 'proposal' | 'words' | 'style' | 'styleUpdate' | 'history' | 'settings' | 'export';
 
 export interface IpcError {
   code: string;
@@ -283,6 +283,8 @@ export async function importPath(
   probed?: ProbeLike,
 ): Promise<{ ok: true; projectId: string } | { ok: false; code: string; message: string }> {
   set({ importError: null });
+  // آخر تعديل مؤجَّل على المشروع المفتوح يُكتب قبل التبديل (مثل loadProject)؛ وإلا يستبدله حفظ المشروع الجديد في dirty ويضيع
+  await flushSave();
   try {
     const probe = probed ?? (await window.api.project.probe(path));
     set({ lastProbe: probe });

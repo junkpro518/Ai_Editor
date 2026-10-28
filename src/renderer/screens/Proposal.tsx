@@ -11,6 +11,7 @@ import { mountPreview } from '../player';
 import type { Player } from '../player';
 import { RUNNING_STATES, requestTranscript, useTranscriptUi } from '../transcript/run';
 import { transcriptErrorText } from '../components/TranscriptStatus';
+import { fieldLabel } from '../style/fields';
 import { timecode } from './Timeline';
 
 // شاشة المقترح (T048، FR-003..FR-006، القرار 22): قائمة البنود مع الزمن والنص والسبب، استثناء فوري بالنقر،
@@ -277,7 +278,7 @@ function ProposalList({
                     <span className={`badge ${item.reason}`}>{t(`reason.${item.reason}` as ReasonKey)}</span>
                     {item.state === 'blocked' && (
                       <span className="badge blocked" data-testid="item-blocked">
-                        {t('proposal.blocked', { rule: item.blockedBy ?? '' })}
+                        {t('proposal.blocked', { rule: fieldLabel(item.blockedBy ?? '') })}
                       </span>
                     )}
                   </td>

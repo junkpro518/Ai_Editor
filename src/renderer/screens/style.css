@@ -1,0 +1,195 @@
+/* لوحة النمط (T075) واقتراح تحديثه (T076) */
+.style-panel h2,
+.style-update h2 {
+  font-size: 16px;
+  margin: 20px 0 8px;
+}
+.style-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.style-field {
+  display: grid;
+  grid-template-columns: 220px 1fr max-content max-content;
+  gap: 12px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.style-field:last-child {
+  border-bottom: 0;
+}
+.style-field .label {
+  color: var(--text);
+}
+.style-field input[type='number'],
+.style-field input[type='text'],
+.style-field select {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+  width: 120px;
+}
+.style-field input[type='number'] {
+  direction: ltr;
+  text-align: end;
+}
+.style-field select {
+  width: auto;
+  min-width: 160px;
+}
+.style-field .unit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.style-field .mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.style-field[data-mode='mandatory'] .mode {
+  color: var(--danger);
+}
+.style-field .source {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.style-field .source[data-kind='user'] {
+  border-color: var(--accent);
+}
+.style-field .source[data-kind='learned'] {
+  border-color: #3ddc84;
+}
+.style-field .swatch {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  background-clip: padding-box;
+}
+.chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 4px 0 10px;
+  font-size: 13px;
+}
+.chip button {
+  padding: 0 6px;
+  color: var(--muted);
+}
+.chip button:hover {
+  color: var(--danger);
+}
+.style-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0;
+}
+.style-preview canvas {
+  width: 100%;
+  max-height: 40vh;
+  object-fit: contain;
+}
+.style-preview .warn {
+  color: var(--danger);
+}
+.style-panel table.items {
+  width: 100%;
+  border-collapse: collapse;
+}
+.style-panel table.items th,
+.style-panel table.items td {
+  border-bottom: 1px solid var(--line);
+  padding: 6px 8px;
+  text-align: start;
+}
+.style-panel td.num {
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  text-align: end;
+}
+.badge.current {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.style-upgrade {
+  justify-content: space-between;
+}
+
+/* اقتراح تحديث النمط */
+.style-update article {
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0;
+}
+.style-update article[data-state='accepted'],
+.style-update article[data-state='rejected'] {
+  border-color: var(--line);
+}
+.style-update table.diff {
+  border-collapse: collapse;
+  margin: 8px 0;
+}
+.style-update table.diff td,
+.style-update table.diff th {
+  border-bottom: 1px solid var(--line);
+  padding: 4px 12px;
+  text-align: start;
+}
+.style-update .from {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.style-update .to {
+  color: var(--accent);
+}
+.style-update ul {
+  margin: 4px 0 8px;
+  padding-inline-start: 20px;
+}
+.style-update .check {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+.style-update .actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.nav .nav-badge {
+  display: inline-block;
+  min-width: 18px;
+  margin-inline-start: 6px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #111;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+}

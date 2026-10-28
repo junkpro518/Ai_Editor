@@ -72,7 +72,9 @@ export async function createPlayer(opts: PlayerOptions): Promise<Player> {
     const cues = project?.id === opts.projectId ? project.captions.cues : [];
     // إطار مصدر مقصوص (خارج كل اللقطات) لا يطابق أي كابشن: −1
     const t = timelineFrame ?? (project ? sourceToTimeline(project.timeline.clips, i) : null) ?? -1;
-    preview.draw(t, frame, cues);
+    // النمط كذلك يُقرأ من الجلسة (يتبع تثبيت المشروع): style.setField يغيّر اللون/الخط ويجب أن تطابق المعاينة التصدير
+    const style = project?.id === opts.projectId ? (getState().style ?? undefined) : undefined;
+    preview.draw(t, frame, cues, style);
     current = i;
   }
 

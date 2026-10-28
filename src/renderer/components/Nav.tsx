@@ -10,6 +10,7 @@ const ITEMS: Array<{
     | 'nav.proposal'
     | 'nav.words'
     | 'nav.style'
+    | 'nav.styleUpdate'
     | 'nav.history'
     | 'nav.settings'
     | 'nav.export';
@@ -19,13 +20,15 @@ const ITEMS: Array<{
   { screen: 'timeline', key: 'nav.timeline', ready: true },
   { screen: 'proposal', key: 'nav.proposal', ready: true },
   { screen: 'words', key: 'nav.words', ready: true },
-  { screen: 'style', key: 'nav.style', ready: false },
+  { screen: 'style', key: 'nav.style', ready: true },
+  { screen: 'styleUpdate', key: 'nav.styleUpdate', ready: true },
   { screen: 'history', key: 'nav.history', ready: false },
   { screen: 'settings', key: 'nav.settings', ready: true },
   { screen: 'export', key: 'nav.export', ready: true },
 ];
 
-export function Nav({ current, hasProject }: { current: Screen; hasProject: boolean }) {
+/** pendingStyleUpdates: شارة على «تحديث النمط» بعدد اقتراحات التعلّم المعلّقة (US3) */
+export function Nav({ current, hasProject, pendingStyleUpdates = 0 }: { current: Screen; hasProject: boolean; pendingStyleUpdates?: number }) {
   const lang = useLang();
   return (
     <nav className="nav" aria-label={t('app.title')}>
@@ -45,6 +48,11 @@ export function Nav({ current, hasProject }: { current: Screen; hasProject: bool
                 onClick={() => navigate(item.screen)}
               >
                 {t(item.key)}
+                {item.screen === 'styleUpdate' && pendingStyleUpdates > 0 && (
+                  <span className="nav-badge" data-testid="style-update-badge">
+                    {pendingStyleUpdates}
+                  </span>
+                )}
               </button>
             </li>
           );

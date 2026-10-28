@@ -107,7 +107,7 @@ describe('proposal.exclude', () => {
     expect(p.items.map((i) => i.state)).toEqual(['excluded', 'excluded']);
     expect(p.totals).toEqual({ byReason: { silence: 0, repeat: 0, abandoned: 0, filler: 0 }, savedUs: 0 });
     expect(r.project.corrections).toEqual([
-      { id: 'id-1', at: FIXED_NOW, actor: 'user', kind: 'exclude_item', proposalId: 'prop-1', itemId: 'i1', ruleId: 'cut.silenceMaxUs', reason: 'silence', quote: 'صمت' },
+      { id: 'id-1', at: FIXED_NOW, actor: 'user', kind: 'exclude_item', proposalId: 'prop-1', itemId: 'i1', ruleId: 'cut.silenceMaxUs', reason: 'silence', quote: 'صمت 1.0 ث' },
       { id: 'id-2', at: FIXED_NOW, actor: 'user', kind: 'exclude_item', proposalId: 'prop-1', itemId: 'i2', ruleId: 'cut.fillerWords', reason: 'filler', quote: 'يعني' },
     ]);
     expect(r.project.timeline).toEqual(input.timeline);

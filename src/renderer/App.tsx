@@ -6,6 +6,8 @@ import { Timeline } from './screens/Timeline';
 import { Export } from './screens/Export';
 import { Proposal } from './screens/Proposal';
 import { WordReview } from './screens/WordReview';
+import { StylePanel, StyleUpgradeNotice } from './screens/StylePanel';
+import { StyleUpdate, pendingStyleUpdates } from './screens/StyleUpdate';
 import { Settings } from './screens/Settings';
 import { Disclosure } from './screens/Disclosure';
 import { TranscriptStatus } from './components/TranscriptStatus';
@@ -26,8 +28,9 @@ export function App() {
 
   return (
     <>
-      <Nav current={screen} hasProject={project !== null} />
+      <Nav current={screen} hasProject={project !== null} pendingStyleUpdates={pendingStyleUpdates(project).length} />
       {ready && <TranscriptStatus />}
+      {ready && <StyleUpgradeNotice />}
       <main>
         {initError && (
           <p className="error" role="alert">
@@ -38,6 +41,8 @@ export function App() {
         {ready && screen === 'timeline' && <Timeline />}
         {ready && screen === 'proposal' && <Proposal />}
         {ready && screen === 'words' && <WordReview />}
+        {ready && screen === 'style' && <StylePanel />}
+        {ready && screen === 'styleUpdate' && <StyleUpdate />}
         {ready && screen === 'settings' && <Settings />}
         {ready && screen === 'export' && <Export />}
       </main>

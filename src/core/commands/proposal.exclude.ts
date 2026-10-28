@@ -24,7 +24,8 @@ export const impl: CommandImpl<'proposal.exclude'> = (project, params, ctx) => {
     itemId: item.id,
     ruleId: item.ruleId,
     reason: item.reason,
-    quote: item.text || 'صمت',
+    // الصمت بلا نص: المدة تدخل الاقتباس حتى تُقرأ السابقة طبيعياً («صمت 0.9 ث»)
+    quote: item.text || `صمت ${((item.endUs - item.startUs) / 1e6).toFixed(1)} ث`,
   }));
   const proposals = project.proposals.with(index, { ...proposal, items, totals: computeTotals(items), state: 'reviewed' });
   return {

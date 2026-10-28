@@ -7,7 +7,8 @@ export interface Preview {
   readonly width: number;
   readonly height: number;
   /** يركّب بدقة المصدر على OffscreenCanvas ثم يعرض الناتج مصغّراً في canvas الظاهر؛ frameIndex إطار التايم لاين (الكابشن بإطاراته). */
-  draw(frameIndex: number, frame: CanvasImageSource | null, cues: ReadonlyArray<CaptionCue>): void;
+  /** styleOverride: نمط الجلسة الحالي (US3: تغيير اللون/الخط يظهر في المعاينة فوراً كما في التصدير) */
+  draw(frameIndex: number, frame: CanvasImageSource | null, cues: ReadonlyArray<CaptionCue>, styleOverride?: StyleVersion): void;
   /** FNV-1a على بكسلات الـOffscreen (لا الظاهر) — للاختبارات وفحص التطابق (R3). */
   pixelHash(): string;
   /** React يعيد إنشاء canvas عند تبديل الشاشة؛ نعيد الربط بلا إعادة فك. */
@@ -41,9 +42,9 @@ export function createPreview(initialCanvas: HTMLCanvasElement, source: SourceGe
   return {
     width,
     height,
-    draw(frameIndex, frame, cues) {
+    draw(frameIndex, frame, cues, styleOverride) {
       // fonts.ready حيّة لا مخبّأة: التصدير يقرأ نفس القيمة (export/run.ts) فيتطابقان
-      composeFrame(offCtx, frameIndex, source, frame, cues, style, { ready: fontsReady() });
+      composeFrame(offCtx, frameIndex, source, frame, cues, styleOverride ?? style, { ready: fontsReady() });
       blit();
     },
     attach(next) {
