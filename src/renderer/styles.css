@@ -182,3 +182,41 @@ main {
   gap: 8px;
   justify-content: flex-end;
 }
+
+/* التصدير (T051) */
+.export .actions {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+.export-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.export-progress progress {
+  flex: 1;
+  height: 10px;
+}
+.verdict {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 16px;
+}
+.verdict.good {
+  border-color: #3ddc84;
+}
+.verdict.bad {
+  border-color: var(--danger);
+}
+.verdict-title {
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.verdict.good .verdict-title {
+  color: #3ddc84;
+}
+.verdict.bad .verdict-title {
+  color: var(--danger);
+}

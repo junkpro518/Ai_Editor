@@ -1,7 +1,11 @@
+import { findOpenProposal } from '../proposal/types';
 import type { CommandImpl } from './types';
-import { CommandError } from './types';
 
-// هيكل المرحلة 2؛ يُملأ في قصة المستخدم الخاصة به.
-export const impl: CommandImpl<'proposal.discard'> = () => {
-  throw new CommandError('not_implemented', 'الأمر proposal.discard لم يُنفَّذ بعد');
+/** يلغي مقترحاً غير مطبَّق؛ اللقطات لا تتغير. */
+export const impl: CommandImpl<'proposal.discard'> = (project, params) => {
+  const { index, proposal } = findOpenProposal(project, params.proposalId);
+  return {
+    project: { ...project, proposals: project.proposals.with(index, { ...proposal, state: 'discarded' }) },
+    description: 'ألغى المقترح',
+  };
 };

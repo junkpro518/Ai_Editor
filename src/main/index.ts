@@ -9,6 +9,7 @@ import { createSecrets } from './secrets';
 import { resolveFfmpeg } from './ffmpeg/paths';
 import type { FfmpegBins } from './ffmpeg/paths';
 import { registerIpc } from './ipc';
+import { registerExportIpc } from './export/ipc';
 import { handleMediaProtocol, registerMediaScheme } from './protocol';
 
 const isTest = process.env['AI_EDITOR_TEST'] === '1';
@@ -65,10 +66,11 @@ app.whenReady().then(async () => {
   const styles = createStyleStore(root);
   const defaultStylePath = join(resourcesDir, 'styles', 'default-v1.json');
   let bins: FfmpegBins | null = null;
+  const projects = createProjectStore(root);
   registerIpc({
     window: () => win,
     isTrustedSender: isTrustedUrl,
-    projects: createProjectStore(root),
+    projects,
     styles,
     settings: createSettingsStore(root),
     secrets: createSecrets({ safeStorage, filePath: join(root, 'secrets.enc'), platform: process.platform }),
@@ -76,6 +78,7 @@ app.whenReady().then(async () => {
     defaultStylePath,
     isTest,
   });
+  registerExportIpc({ window: () => win, isTrustedSender: isTrustedUrl, projects, bins: () => (bins ??= resolveFfmpeg({ resourcesDir: join(resourcesDir, 'ffmpeg') })), isTest });
   await styles.ensureDefault(defaultStylePath);
   createWindow();
   app.on('activate', () => {

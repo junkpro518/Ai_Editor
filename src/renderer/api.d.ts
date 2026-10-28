@@ -4,6 +4,7 @@ import type { ProbeLike as ProbeResult } from '../core/commands/types';
 import type { HistoryEntry } from '../core/history/snapshots';
 import type { Settings, SettingsPatch } from '../main/storage/settings';
 import type { EncoderReport } from '../main/ffmpeg/encoders';
+import type { ExportFinishResult, ExportStartOptions } from '../main/export/ipc';
 
 declare global {
   interface IpcError {
@@ -36,6 +37,14 @@ declare global {
       delete(name: string): Promise<void>;
     };
     ffmpeg: { encoders(): Promise<EncoderReport> };
+    export: {
+      pickOutput(defaultPath: string): Promise<string | null>;
+      start(projectId: string, options: ExportStartOptions): Promise<{ sessionId: string }>;
+      chunk(sessionId: string, data: ArrayBuffer, isKey: boolean, timestampUs: number): Promise<void>;
+      referenceFrame(sessionId: string, index: number, png: ArrayBuffer): Promise<void>;
+      finish(sessionId: string): Promise<ExportFinishResult>;
+      cancel(sessionId: string): Promise<void>;
+    };
     media: { urlFor(projectId: string): string };
     app: { version(): Promise<string>; platform: string; isTest: boolean };
   }

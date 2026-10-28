@@ -40,6 +40,7 @@ interface FfprobeStream {
   avg_frame_rate?: string;
   duration?: string;
   nb_read_frames?: string;
+  nb_read_packets?: string;
   tags?: Record<string, string>;
   side_data_list?: Array<Record<string, unknown>>;
 }
@@ -82,6 +83,17 @@ function probeArgs(path: string, extra: string[]): string[] {
   return ['-protocol_whitelist', 'file,pipe', ...extra, `file:${path}`];
 }
 
+/** العدّ الدقيق بفكّ كل الإطارات (-count_frames) — لفحص التطابق بعد التصدير فقط (R3 الطبقة 3)، لا للاستيراد. */
+export async function countFramesExact(bins: { ffprobe: string }, filePath: string): Promise<number> {
+  const json = await runFfprobe(
+    bins.ffprobe,
+    probeArgs(resolve(filePath), ['-print_format', 'json', '-count_frames', '-select_streams', 'v:0', '-show_entries', 'stream=nb_read_frames']),
+  );
+  const n = Number((JSON.parse(json) as FfprobeOutput).streams?.[0]?.nb_read_frames);
+  if (!Number.isInteger(n) || n < 0) throw new ProbeError('no_video_stream', 'لم نستطع عدّ إطارات الفيديو');
+  return n;
+}
+
 export async function probe(bins: { ffprobe: string }, filePath: string, limits?: Partial<ProbeLimits>): Promise<ProbeResult> {
   const lim = { ...DEFAULT_LIMITS, ...limits };
   const path = resolve(filePath);
@@ -122,12 +134,13 @@ export async function probe(bins: { ffprobe: string }, filePath: string, limits?
   const sourceIsVfr = !!(r && avg && !fpsEquals(r, avg)) || !r;
   const fps = sourceIsVfr ? nearestStandardFps(avg ?? (r as Rational)) : (r as Rational);
 
-  // عدّ الإطارات مكلف → بعد الحدود فقط (nb_frames غير موثوق)
+  // العدّ بعد الحدود فقط (nb_frames غير موثوق). T096: -count_packets بلا فكّ (S8: 94 ث → 3 ث لـ15 دقيقة)؛
+  // في H.264/HEVC داخل MP4 حزمة = إطار. العدّ الدقيق بالفكّ في countFramesExact لفحص التطابق بعد التصدير (T042)
   const countJson = await runFfprobe(
     bins.ffprobe,
-    probeArgs(path, ['-print_format', 'json', '-count_frames', '-select_streams', 'v:0', '-show_entries', 'stream=nb_read_frames']),
+    probeArgs(path, ['-print_format', 'json', '-count_packets', '-select_streams', 'v:0', '-show_entries', 'stream=nb_read_packets']),
   );
-  const frameCount = Number((JSON.parse(countJson) as FfprobeOutput).streams?.[0]?.nb_read_frames);
+  const frameCount = Number((JSON.parse(countJson) as FfprobeOutput).streams?.[0]?.nb_read_packets);
   if (!Number.isInteger(frameCount) || frameCount <= 0) throw new ProbeError('no_video_stream', 'لم نستطع عدّ إطارات الفيديو');
 
   const result: ProbeResult = {

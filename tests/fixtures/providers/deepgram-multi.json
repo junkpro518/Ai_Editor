@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "transaction_key": "deprecated",
+    "request_id": "3b9d7f1a-2c4e-4a6b-8d0f-1e3c5a7b9d2f",
+    "sha256": "4f6a1d2b8e9c0f3a5b7d9e1f2a4c6e8b0d2f4a6c8e0b2d4f6a8c0e2b4d6f8a0c",
+    "created": "2026-10-28T07:01:00.000Z",
+    "duration": 5.021,
+    "channels": 1,
+    "models": ["1f3c5e7a-9b2d-4e6f-8a0c-2b4d6e8f0a1c"],
+    "model_info": {
+      "1f3c5e7a-9b2d-4e6f-8a0c-2b4d6e8f0a1c": { "name": "nova-3", "version": "2025-01-10.0", "arch": "nova-3" }
+    }
+  },
+  "results": {
+    "channels": [
+      {
+        "alternatives": [
+          {
+            "transcript": "نرفع الملف على cloud storage اليوم.",
+            "confidence": 0.9412,
+            "languages": ["ar", "en"],
+            "words": [
+              { "word": "نرفع", "start": 0.12, "end": 0.48, "confidence": 0.9811, "punctuated_word": "نرفع", "language": "ar" },
+              { "word": "الملف", "start": 0.52, "end": 0.92, "confidence": 0.9623, "punctuated_word": "الملف", "language": "ar" },
+              { "word": "على", "start": 0.96, "end": 1.16, "confidence": 0.9105, "punctuated_word": "على", "language": "ar" },
+              { "word": "cloud", "start": 1.24, "end": 1.6, "confidence": 0.8732, "punctuated_word": "cloud", "language": "en" },
+              { "word": "storage", "start": 1.64, "end": 2.12, "confidence": 0.9047, "punctuated_word": "storage", "language": "en" },
+              { "word": "اليوم", "start": 2.2, "end": 2.6, "confidence": 0.9388, "punctuated_word": "اليوم.", "language": "ar" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

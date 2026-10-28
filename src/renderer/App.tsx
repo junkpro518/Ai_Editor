@@ -3,6 +3,7 @@ import { Nav } from './components/Nav';
 import { ConfirmDialog } from './components/ConfirmDialog';
 import { Import } from './screens/Import';
 import { Timeline } from './screens/Timeline';
+import { Export } from './screens/Export';
 import { answerConfirm, init, useRuntime } from './commands/runtime';
 import { t, useLang } from './i18n';
 
@@ -27,6 +28,7 @@ export function App() {
         )}
         {ready && screen === 'import' && <Import />}
         {ready && screen === 'timeline' && <Timeline />}
+        {ready && screen === 'export' && <Export />}
       </main>
       {pendingConfirm && <ConfirmDialog command={pendingConfirm.name} onAnswer={answerConfirm} />}
     </>

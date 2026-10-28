@@ -34,7 +34,7 @@ export interface IpcError {
 export type Envelope<T> = { ok: true; value: T } | { ok: false; error: IpcError };
 
 // الأخطاء تعبر IPC كأغلفة {code,message} لا كـError (contextBridge يُسقط الخصائص المخصصة والـstack لا يصل الواجهة)
-function toIpcError(e: unknown): IpcError {
+export function toIpcError(e: unknown): IpcError {
   const code =
     typeof e === 'object' && e !== null && typeof (e as { code?: unknown }).code === 'string'
       ? (e as { code: string }).code
@@ -43,50 +43,56 @@ function toIpcError(e: unknown): IpcError {
   return { code, message };
 }
 
-class ArgError extends Error {
+export class ArgError extends Error {
   code = 'bad_argument';
 }
-const str = (v: unknown, what: string): string => {
+export const str = (v: unknown, what: string): string => {
   if (typeof v !== 'string' || v.length === 0 || v.length > 4096)
     throw new ArgError(`وسيط غير صالح: ${what}`);
   return v;
 };
-const int = (v: unknown, what: string): number => {
+export const int = (v: unknown, what: string): number => {
   if (!Number.isInteger(v) || (v as number) < 0) throw new ArgError(`وسيط غير صالح: ${what}`);
   return v as number;
 };
-const obj = (v: unknown, what: string): Record<string, unknown> => {
+export const obj = (v: unknown, what: string): Record<string, unknown> => {
   if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new ArgError(`وسيط غير صالح: ${what}`);
   return v as Record<string, unknown>;
 };
-const absPath = (v: unknown, what: string): string => {
+export const absPath = (v: unknown, what: string): string => {
   const s = str(v, what);
   if (!isAbsolute(s) || s.includes('\0')) throw new ArgError(`مسار غير مطلق: ${what}`);
   return s;
 };
 // معرّفات المشاريع والأنماط تصبح أسماء مجلدات: لا فواصل مسار ولا نقاط
-const id = (v: unknown, what: string): string => {
+export const id = (v: unknown, what: string): string => {
   const s = str(v, what);
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(s)) throw new ArgError(`معرّف غير صالح: ${what}`);
   return s;
 };
 
-export function registerIpc(deps: IpcDeps): void {
-  // المسارات التي اختارها المستخدم عبر الحوار في هذه الجلسة؛ probe لا يقبل غيرها (إلا في الاختبار)
-  const pickedPaths = new Set<string>();
-  const probedPaths = new Set<string>();
+export type Handle = <T>(channel: string, fn: (...args: unknown[]) => Promise<T> | T) => void;
 
-  function handle<T>(channel: string, fn: (...args: unknown[]) => Promise<T> | T): void {
+/** مسجّل قنوات بغلاف موحد؛ تستعمله registerIpc وقنوات التصدير (src/main/export/ipc.ts). */
+export function makeHandle(isTrustedSender: IpcDeps['isTrustedSender']): Handle {
+  return function handle<T>(channel: string, fn: (...args: unknown[]) => Promise<T> | T): void {
     ipcMain.handle(channel, async (event, ...args: unknown[]): Promise<Envelope<T>> => {
       try {
         // دفاع في العمق: لا يُقبل طلب إلا من صفحة الواجهة نفسها (لا من صفحة انزلق إليها التنقل)
-        if (!deps.isTrustedSender(event.senderFrame?.url ?? '')) throw new ArgError('مصدر الطلب غير موثوق');
+        if (!isTrustedSender(event.senderFrame?.url ?? '')) throw new ArgError('مصدر الطلب غير موثوق');
         return { ok: true, value: await fn(...args) };
       } catch (e) {
         return { ok: false, error: toIpcError(e) };
       }
     });
-  }
+  };
+}
+
+export function registerIpc(deps: IpcDeps): void {
+  // المسارات التي اختارها المستخدم عبر الحوار في هذه الجلسة؛ probe لا يقبل غيرها (إلا في الاختبار)
+  const pickedPaths = new Set<string>();
+  const probedPaths = new Set<string>();
+  const handle = makeHandle(deps.isTrustedSender);
 
   function allowSourcePath(doc: ProjectDocument): void {
     // مسار المصدر يجب أن يكون قد مرّ بـprobe في هذه الجلسة أو جاء من load لمشروع محفوظ

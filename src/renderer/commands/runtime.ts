@@ -8,7 +8,7 @@ import type {
 import { execute } from '../../core/commands/registry';
 import { getCommandSpec } from '../../core/contracts/validate';
 import type { ExecuteResult } from '../../core/commands/registry';
-import type { CommandContext, ProbeLike } from '../../core/commands/types';
+import type { CommandContext, Effect, ProbeLike } from '../../core/commands/types';
 import { History } from '../../core/history/snapshots';
 import type { Actor } from '../../core/history/snapshots';
 import { setLang } from '../i18n';
@@ -109,6 +109,13 @@ function newId(): string {
   return crypto.randomUUID();
 }
 
+// آثار الأوامر (CommandResult.effects): كل نوع يسجّل معالجه من وحدته (مثل export/run.ts) حتى لا يستورد runtime تلك الوحدات
+type EffectHandler<K extends Effect['kind']> = (effect: Extract<Effect, { kind: K }>, project: ProjectDocument, style: StyleVersion) => void;
+const effectHandlers = new Map<Effect['kind'], EffectHandler<Effect['kind']>>();
+export function onEffect<K extends Effect['kind']>(kind: K, handler: EffectHandler<K>): void {
+  effectHandlers.set(kind, handler as unknown as EffectHandler<Effect['kind']>);
+}
+
 function ctx(extra?: Partial<CommandContext>): CommandContext {
   if (!state.style)
     throw { code: 'style_missing', message: 'النمط الافتراضي لم يُحمَّل بعد' } satisfies IpcError;
@@ -170,6 +177,7 @@ export async function run<N extends CommandName>(
   // لقطة على القرص للأوامر القابلة للتراجع فقط؛ undo/redo يعيدان entry لكنهما لا يُنشئان مدخلاً جديداً
   if (result.entry && getCommandSpec(name).undoable)
     await window.api.project.writeSnapshot(result.project.id, result.entry);
+  for (const effect of result.effects ?? []) effectHandlers.get(effect.kind)?.(effect, result.project, state.style!);
   return result;
 }
 

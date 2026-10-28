@@ -51,9 +51,9 @@ describe('سجل الأوامر الموحد', () => {
     const p = makeProject();
     expect(codeOf(() => execute(p, 'proposal.apply', { proposalId: 'x' }, makeCtx(), user(history)))).toBe('confirmation_required');
     expect(history.entries()).toHaveLength(0);
-    // مع التأكيد يصل إلى التنفيذ (هيكل المرحلة 2 يرمي not_implemented)
+    // مع التأكيد يصل إلى التنفيذ الحقيقي (المرحلة 3): مقترح غير موجود
     expect(codeOf(() => execute(p, 'proposal.apply', { proposalId: 'x' }, makeCtx(), { ...user(history), confirmed: true }))).toBe(
-      'not_implemented',
+      'proposal_not_found',
     );
   });
 

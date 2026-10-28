@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import type { ProjectDocument, StyleVersion } from '../../src/core/contracts/types';
+import type { ProjectDocument, StyleVersion, Transcript } from '../../src/core/contracts/types';
 import type { CommandContext } from '../../src/core/commands/types';
 
 export const FIXED_NOW = '2026-10-28T00:00:00.000Z';
@@ -46,4 +46,45 @@ export function makeStyle(): StyleVersion {
 export function makeCtx(): CommandContext {
   let n = 0;
   return { style: makeStyle(), now: () => FIXED_NOW, newId: () => `id-${++n}` };
+}
+
+/**
+ * تفريغ حتمي من مصفوفة [نص، بدايةUs، نهايةUs، ثقة؟]؛ `segments` اختيارية كمجموعات فهارس كلمات
+ * (بلا segments يشتق المولّد الجمل من الفجوات/علامات الترقيم).
+ */
+export function makeTranscript(
+  words: Array<[string, number, number, number?]>,
+  opts: { durationUs?: number; segments?: number[][] } = {},
+): Transcript {
+  const ws = words.map(([text, startUs, endUs, confidence], i) => ({
+    id: `w${i + 1}`,
+    text,
+    startUs,
+    endUs,
+    confidence: confidence ?? 0.95,
+  }));
+  const last = ws[ws.length - 1];
+  const t: Transcript = {
+    schemaVersion: 1,
+    provider: 'test',
+    model: 'fixture',
+    modelParams: {},
+    audioSha256: 'b'.repeat(64),
+    language: 'ar',
+    durationUs: opts.durationUs ?? (last ? last.endUs : 0),
+    createdAt: FIXED_NOW,
+    words: ws,
+  };
+  if (opts.segments) {
+    t.segments = opts.segments.map((idx) => {
+      const seg = idx.map((i) => ws[i]!);
+      return {
+        startUs: seg[0]!.startUs,
+        endUs: seg[seg.length - 1]!.endUs,
+        wordIds: seg.map((w) => w.id),
+        text: seg.map((w) => w.text).join(' '),
+      };
+    });
+  }
+  return t;
 }

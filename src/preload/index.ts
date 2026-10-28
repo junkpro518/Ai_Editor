@@ -42,6 +42,17 @@ const api = {
     delete: (name: string) => call<void>('secrets:delete', name),
   },
   ffmpeg: { encoders: () => call('ffmpeg:encoders') },
+  // التصدير (T050): الواجهة ترمّز وترسل الكتل؛ main يدمج ويفحص (src/main/export/ipc.ts)
+  export: {
+    pickOutput: (defaultPath: string) => call<string | null>('export:pickOutput', defaultPath),
+    start: (projectId: string, options: unknown) => call<{ sessionId: string }>('export:start', projectId, options),
+    chunk: (sessionId: string, data: ArrayBuffer, isKey: boolean, timestampUs: number) =>
+      call<void>('export:chunk', sessionId, data, isKey, timestampUs),
+    referenceFrame: (sessionId: string, index: number, png: ArrayBuffer) =>
+      call<void>('export:referenceFrame', sessionId, index, png),
+    finish: (sessionId: string) => call('export:finish', sessionId),
+    cancel: (sessionId: string) => call<void>('export:cancel', sessionId),
+  },
   media: { urlFor: (projectId: string) => `media://source/${encodeURIComponent(projectId)}` },
   app: {
     version: () => call<string>('app:version'),

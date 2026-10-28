@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "transaction_key": "deprecated",
+    "request_id": "8c1f2a5e-7d3b-4f0a-9b6e-2d1c3e4f5a6b",
+    "sha256": "4f6a1d2b8e9c0f3a5b7d9e1f2a4c6e8b0d2f4a6c8e0b2d4f6a8c0e2b4d6f8a0c",
+    "created": "2026-10-28T07:00:00.000Z",
+    "duration": 5.021,
+    "channels": 1,
+    "models": ["1f3c5e7a-9b2d-4e6f-8a0c-2b4d6e8f0a1c"],
+    "model_info": {
+      "1f3c5e7a-9b2d-4e6f-8a0c-2b4d6e8f0a1c": { "name": "nova-3", "version": "2025-01-10.0", "arch": "nova-3" }
+    }
+  },
+  "results": {
+    "channels": [
+      {
+        "alternatives": [
+          {
+            "transcript": "السلام عليكم. اليوم نبدأ، يعني نبدأ الشرح.",
+            "confidence": 0.9731,
+            "words": [
+              { "word": "السلام", "start": 0.08, "end": 0.56, "confidence": 0.9982, "punctuated_word": "السلام" },
+              { "word": "عليكم", "start": 0.6, "end": 1.04, "confidence": 0.9951, "punctuated_word": "عليكم." },
+              { "word": "اليوم", "start": 1.2, "end": 1.6, "confidence": 0.9124, "punctuated_word": "اليوم" },
+              { "word": "نبدأ", "start": 1.64, "end": 2.0, "confidence": 0.6612, "punctuated_word": "نبدأ،" },
+              { "word": "يعني", "start": 2.88, "end": 3.12, "confidence": 0.4537, "punctuated_word": "يعني" },
+              { "word": "نبدأ", "start": 3.16, "end": 3.52, "confidence": 0.8809, "punctuated_word": "نبدأ" },
+              { "word": "الشرح", "start": 3.56, "end": 4.08, "confidence": 0.9707, "punctuated_word": "الشرح." }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

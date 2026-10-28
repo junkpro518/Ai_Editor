@@ -4,13 +4,13 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveFfmpeg } from '../../src/main/ffmpeg/paths';
 import { runFfmpeg, runFfprobe, FfmpegError } from '../../src/main/ffmpeg/process';
-import { probe, ProbeError } from '../../src/main/ffmpeg/probe';
+import { countFramesExact, probe, ProbeError } from '../../src/main/ffmpeg/probe';
 import { detectEncoders } from '../../src/main/ffmpeg/encoders';
 import { nearestStandardFps, fpsEquals } from '../../src/core/time';
 
 const repo = fileURLToPath(new URL('../..', import.meta.url));
 const fixtures = join(repo, 'tests/fixtures');
-const tmp = join(repo, 'out/test-tmp');
+const tmp = join(repo, 'out/test-tmp/ffmpeg');
 const fx = (name: string): string => join(fixtures, name);
 
 const bins = resolveFfmpeg();
@@ -85,6 +85,17 @@ describe('probe', () => {
 
     const again = await probe(bins, fx('tiny-5s.mp4'));
     expect(again.hash).toBe(r.hash);
+  });
+
+  it('T096: العدّ بـ-count_packets سريع (< 2 ث لـtiny-5s) ويطابق countFramesExact', async () => {
+    const t0 = performance.now();
+    const r = await probe(bins, fx('tiny-5s.mp4'));
+    expect(performance.now() - t0).toBeLessThan(2000);
+    expect(r.frameCount).toBe(150);
+    expect(await countFramesExact(bins, fx('tiny-5s.mp4'))).toBe(150);
+    // VFR: الحزم = الإطارات أيضاً (H.264 داخل MP4: حزمة لكل إطار)
+    const vfr = await probe(bins, fx('tiny-vfr-5s.mp4'));
+    expect(vfr.frameCount).toBe(await countFramesExact(bins, fx('tiny-vfr-5s.mp4')));
   });
 
   it('tiny-ntsc: fps كسري 30000/1001', async () => {

@@ -22,7 +22,7 @@ const ITEMS: Array<{
   { screen: 'style', key: 'nav.style', ready: false },
   { screen: 'history', key: 'nav.history', ready: false },
   { screen: 'settings', key: 'nav.settings', ready: false },
-  { screen: 'export', key: 'nav.export', ready: false },
+  { screen: 'export', key: 'nav.export', ready: true },
 ];
 
 export function Nav({ current, hasProject }: { current: Screen; hasProject: boolean }) {

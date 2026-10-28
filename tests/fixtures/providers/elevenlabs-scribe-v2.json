@@ -1,0 +1,18 @@
+{
+  "language_code": "ar",
+  "language_probability": 0.9873,
+  "text": "السلام عليكم. (laughter) اليوم نبدأ الشرح",
+  "words": [
+    { "text": "السلام", "start": 0.08, "end": 0.56, "type": "word", "speaker_id": "speaker_0", "logprob": -0.0021 },
+    { "text": " ", "start": 0.56, "end": 0.6, "type": "spacing", "speaker_id": "speaker_0", "logprob": 0.0 },
+    { "text": "عليكم.", "start": 0.6, "end": 1.04, "type": "word", "speaker_id": "speaker_0", "logprob": -0.0514 },
+    { "text": " ", "start": 1.04, "end": 1.1, "type": "spacing", "speaker_id": "speaker_0", "logprob": 0.0 },
+    { "text": "(laughter)", "start": 1.1, "end": 1.9, "type": "audio_event", "speaker_id": "speaker_0", "logprob": -0.3 },
+    { "text": " ", "start": 1.9, "end": 2.0, "type": "spacing", "speaker_id": "speaker_0", "logprob": 0.0 },
+    { "text": "اليوم", "start": 2.0, "end": 2.4, "type": "word", "speaker_id": "speaker_0", "logprob": -1.2039 },
+    { "text": " ", "start": 2.4, "end": 2.44, "type": "spacing", "speaker_id": "speaker_0", "logprob": 0.0 },
+    { "text": "نبدأ", "start": 2.44, "end": 2.8, "type": "word", "speaker_id": "speaker_0" },
+    { "text": " ", "start": 2.8, "end": 2.84, "type": "spacing", "speaker_id": "speaker_0", "logprob": 0.0 },
+    { "text": "الشرح", "start": 2.84, "end": 3.36, "type": "word", "speaker_id": "speaker_0", "logprob": 0.25 }
+  ]
+}
