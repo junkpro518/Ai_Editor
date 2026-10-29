@@ -34,7 +34,7 @@ description: "Task list for feature 001 — إثبات تقني: مونتاج م
 - [X] T003 [P] إعداد ESLint + Prettier مع قاعدة حدود الطبقات: `src/core/**` ممنوع من استيراد `electron`، `react`، `src/main/**`، `src/renderer/**` (eslint `no-restricted-imports`) في `eslint.config.js`
 - [X] T004 [P] إعداد vitest (`vitest.config.ts`: بيئة node لـ`tests/unit` و`tests/contract`) وPlaywright-Electron (`playwright.config.ts` لـ`tests/e2e`) وسكربتات `pnpm test`، `pnpm test:e2e`، `pnpm dev`، `pnpm build`، `pnpm ffmpeg:fetch` (T005)، `pnpm acceptance:parity` (T042)، `pnpm fixtures:fetch` (T095)
 - [X] T005 [P] سكربت جلب FFmpeg لويندوز: `scripts/ffmpeg-build/fetch-win.sh` ينزّل BtbN `win64-lgpl` من وسم بتاريخ مثبّت، يتحقق من SHA-256 المثبّت، يفك إلى `resources/ffmpeg/win32-x64/` مع `COPYING.LGPLv3` (research.md R4)؛ ونفس السكربت يجلب `linux64-lgpl` إلى `resources/ffmpeg/linux-x64/` **للتطوير وCI فقط** (مستثنى من الحزمة في electron-builder)
-- [ ] T006 [P] *(السكربت مكتوب 2026-10-28؛ التنفيذ والتحقق يحتاجان ماك المالك)* سكربت بناء FFmpeg لماك: `scripts/ffmpeg-build/build-mac.sh` يبني ffmpeg/ffprobe من نفس فرع الإصدار بـ`--enable-version3` بدون `--enable-gpl`، مع libopus وzimg وh264_videotoolbox وaac، ويتحقق أن `ffmpeg -buildconf` لا يحوي `--enable-gpl`، ويخرج إلى `resources/ffmpeg/darwin-{arm64,x64}/` + `LICENSES/`
+- [X] T006 [P] *(السكربت مكتوب 2026-10-28؛ التنفيذ والتحقق يحتاجان ماك المالك)* سكربت بناء FFmpeg لماك: `scripts/ffmpeg-build/build-mac.sh` يبني ffmpeg/ffprobe من نفس فرع الإصدار بـ`--enable-version3` بدون `--enable-gpl`، مع libopus وzimg وh264_videotoolbox وaac، ويتحقق أن `ffmpeg -buildconf` لا يحوي `--enable-gpl`، ويخرج إلى `resources/ffmpeg/darwin-{arm64,x64}/` + `LICENSES/`
 - [X] T007 [P] نسخ خطوط OFL إلى `resources/fonts/` (IBM Plex Sans Arabic كافتراضي، Cairo، Tajawal، Noto Sans Arabic، Noto Naskh Arabic) مع ملفات `OFL.txt` وتسجيلها في `docs/licenses/INVENTORY.md`
 - [X] T008 [P] نسخ مخططات العقود إلى المصدر ومولّد الأنواع: `scripts/gen-types.ts` يولّد `src/core/contracts/types.ts` من `specs/001-proof-of-concept/contracts/*.schema.json` (json-schema-to-typescript، MIT) ويبني validators بـ ajv في `src/core/contracts/validate.ts`
 - [X] T009 [P] إعداد CI (`.github/workflows/ci.yml`): Linux لوحدات/عقود/تكامل؛ macOS لبناء FFmpeg (T006) وe2e وسكربت التطابق؛ بلا مفاتيح API في CI
@@ -81,6 +81,13 @@ description: "Task list for feature 001 — إثبات تقني: مونتاج م
 - [X] T032 تجربة التصدير الأولية (S9/S10) في `scripts/spike/export-spike.ts`: مقطع 2 دقيقة 1080p30 → decode → `composeFrame` (بكابشن تجريبي عربي ثابت) → `VideoEncoder` → Annex-B عبر stdin إلى FFmpeg `-c:v copy -c:a aac` → قياس السرعة (≥1.0× الزمن الحقيقي) وفحص ±1 إطار؛ وإن غاب مشفّر Chromium: المسار الاحتياطي rawvideo → مشفّر FFmpeg عتادي
 - [ ] T033 *(يحتاج ماك المالك؛ الأوامر في scripts/spike/README.md)* S6/S7/S12 على ماك: بناء FFmpeg LGPL في CI (T006)، قائمة المشفّرات الفعلية + ترميز تجريبي، تجربة توقيع + notarization جافة لحزمة فيها ffmpeg
 - [X] T034 تسجيل النتائج في `specs/001-proof-of-concept/measurements.md` مع قرار **استمرار / فيتو** لكل عتبة (القرار 15) وتاريخ، وتثبيت عتبة PSNR/SSIM الأولية لفحص التطابق (FR-014)؛ عند أي فيتو: التوقف والعودة للمالك قبل المرحلة 3
+
+### متابعات من قياس الماك (أُضيفت 2026-10-29 من measurements-mac.md)
+
+- [ ] T099 إصلاح التغليف: `electron-builder.yml` يجد ثنائيات FFmpeg على ماك (`from: resources/ffmpeg/darwin-${arch}` أو مطابقة `${os}`)، وبناء `darwin-x64` أو حصر هدف ماك في arm64 حتى يتوفر؛ التحقق أن `AiEditor.app/Contents/Resources/ffmpeg/` يحوي ffmpeg/ffprobe وأن التطبيق المغلَّف يجدهما (`resolveFfmpeg` بفرع `process.resourcesPath`)
+- [ ] T100 جعل `tests/integration/ffmpeg.test.ts` مستقلاً عن النظام (`<platform>-<arch>` بدل `linux-x64` الحرفي)
+- [ ] T101 تحقيق فشل `tests/e2e/captions.spec.ts:244` على الماك (بصمة المعاينة ≠ مرجع التصدير مع الكابشن المحروق): هل مسارا المعاينة والمرجع يرسمان على سياقين مختلفين (GPU مقابل OffscreenCanvas برمجي)؟ الإصلاح أن يولَّد المرجع والمعاينة من نفس السياق/الإعداد؛ وإن كان فرق التنعيم حتمياً بين السياقين، يُستبدل التطابق الحرفي بمقارنة PSNR عالية (≥ 45 dB) مع توثيق السبب
+- [ ] T102 إعادة قياس عتبة PSNR/SSIM لفحص التطابق على الماك بمسار التطبيق الفعلي (`src/main/parity.ts` مع yuv420p) وتثبيت عتبة لكل منصة إن لزم (القيم الأولية: Linux 35.2/0.85، ماك بالسكربت 32.2/0.85)
 
 ### متابعات من مهمة القياس (أُضيفت 2026-10-28 بعد T034)
 
