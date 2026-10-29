@@ -27,3 +27,6 @@ tests/fixtures/*.mov
 tests/fixtures/*.webm
 tests/fixtures/*.wav
 tests/fixtures/wer/audio/
+
+# موارد المالك الخاصة (محادثات وملفات كبيرة) — لا تُرفع
+خام/موارد-خاصة/
