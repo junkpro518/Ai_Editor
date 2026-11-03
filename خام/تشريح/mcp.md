@@ -1,6 +1,6 @@
 # MCP (Model Context Protocol)
 
-**المصادر في خام:** `خام/مستودعات-الوثيقة/MCP.md`  
+**المصادر في خام:** `خام/وارد-قديم/مستودعات-الوثيقة/MCP.md`  
 **الرابط الأصلي:** https://github.com/modelcontextprotocol/modelcontextprotocol · https://modelcontextprotocol.io  
 **النوع:** مواصفة / بروتوكول  
 **الترخيص:** MIT (README) — NOASSERTION في GitHub · **النجوم:** 9537 · **آخر تحديث:** 2026-10-26 · **اللغة/الحزمة:** TypeScript schema (إصدار المخطط في README: 2026-07-28) + SDKs  

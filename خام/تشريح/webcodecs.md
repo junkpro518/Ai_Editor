@@ -1,6 +1,6 @@
 # WebCodecs
 
-**المصادر في خام:** `خام/مستودعات-الوثيقة/WebCodecs.md`  
+**المصادر في خام:** `خام/وارد-قديم/مستودعات-الوثيقة/WebCodecs.md`  
 **الرابط الأصلي:** https://github.com/w3c/webcodecs · https://w3c.github.io/webcodecs/  
 **النوع:** مواصفة W3C / واجهة متصفح  
 **الترخيص:** W3C (وثيقة) — NOASSERTION في GitHub · **النجوم:** 1299 · **آخر تحديث:** 2026-10-26 · **اللغة/الحزمة:** مواصفة (Bikeshed/HTML)  
